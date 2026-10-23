@@ -135,6 +135,15 @@ export default class Player {
         cameraOffset[0] = offsetXZ[0];
         cameraOffset[2] = offsetXZ[2];
       }
+
+      camera.setPosition(
+        vec3.add(
+          vec3.create(),
+          this.proceduralAnimationModel.baseJoint.position,
+          cameraOffset,
+        ),
+      );
+      camera.setDir(vec3.scale(vec3.create(), cameraOffset, -1.0));
       // -------------------------------------
 
       // Update drag based on velocity
