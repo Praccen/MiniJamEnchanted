@@ -27,7 +27,7 @@
               typescript
               typescript
               typescript-language-server
-              (python311Packages.python.withPackages (p: [ p.rangehttpserver ]))
+              (python3Packages.python.withPackages (p: [ p.rangehttpserver ]))
             ];
             shellHook = ''
               export npm_config_prefix=$PWD/.npm-global
