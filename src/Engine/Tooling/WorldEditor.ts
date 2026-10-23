@@ -41,7 +41,7 @@ class Command {
   addCommand(
     commandChain: string,
     commandLogic: (args: string[]) => string,
-    updatePhysics: boolean = false
+    updatePhysics: boolean = false,
   ) {
     const commands = commandChain.split(" ").filter((part) => part.length > 0);
     if (commands.length == 0) {
@@ -108,7 +108,7 @@ class Command {
     }
 
     const matches = Array.from(this.childCommands.keys()).filter((key) =>
-      key.startsWith(commands[0])
+      key.startsWith(commands[0]),
     );
 
     const exactMatch = matches.find((match) => match == commands[0]);
@@ -158,7 +158,7 @@ class Command {
       let childCompleteAndSuggestion = this.childCommands
         .get(commands[0])
         .getAutocomplete(
-          commandChain.trimStart().substring(commands[0].length).trimStart()
+          commandChain.trimStart().substring(commands[0].length).trimStart(),
         );
 
       if (childCompleteAndSuggestion.complete.length > 0) {
@@ -177,7 +177,7 @@ let baseCommand = new Command();
 export function addNewConsoleCommand(
   commandChain: string,
   commandLogic: (args: string[]) => string,
-  updatePhysics: boolean = false
+  updatePhysics: boolean = false,
 ) {
   baseCommand.addCommand(commandChain, commandLogic, updatePhysics);
 }
@@ -225,7 +225,7 @@ export default class WorldEditor {
     camera: Camera,
     scene: Scene,
     physicsScene: PhysicsScene,
-    guiRenderer: GUIRenderer
+    guiRenderer: GUIRenderer,
   ) {
     this.camera = camera;
     this.scene = scene;
@@ -270,7 +270,7 @@ export default class WorldEditor {
 
     this.guiElements.push(
       consoleCommandsTextEdit.getInputElement(),
-      histoySearchTextEdit.getInputElement()
+      histoySearchTextEdit.getInputElement(),
     );
 
     let self = this;
@@ -282,7 +282,7 @@ export default class WorldEditor {
           self.searchHistory(
             histoySearchTextEdit,
             consoleCommandsTextEdit,
-            false
+            false,
           );
         }
       });
@@ -358,7 +358,7 @@ export default class WorldEditor {
           self.searchMode = false;
         } else {
           const autocompleted = self.tabComplete(
-            consoleCommandsTextEdit.getInputElement().value
+            consoleCommandsTextEdit.getInputElement().value,
           );
           if (autocompleted.complete.length > 0) {
             consoleCommandsTextEdit.getInputElement().value =
@@ -396,7 +396,7 @@ export default class WorldEditor {
       ) {
         self.commandHistoryIndex = Math.min(
           self.commandHistory.length,
-          ++self.commandHistoryIndex
+          ++self.commandHistoryIndex,
         );
         consoleCommandsTextEdit.getInputElement().value =
           self.commandHistory[
@@ -426,7 +426,7 @@ export default class WorldEditor {
       ) {
         self.parseConsoleInput(
           consoleCommandsTextEdit.getInputElement().value,
-          consoleOutput
+          consoleOutput,
         );
         consoleCommandsTextEdit.getInputElement().value = "";
         consoleOutput.scrollToBottom = true;
@@ -468,9 +468,9 @@ export default class WorldEditor {
             pitchJaw,
             vec2.fromValues(
               self.mousePosition.y - self.mousePosition.previousY,
-              self.mousePosition.x - self.mousePosition.previousX
+              self.mousePosition.x - self.mousePosition.previousX,
             ),
-            -self.sensitivity
+            -self.sensitivity,
           );
           self.camera.setPitchJawDegrees(pitchJaw[0], pitchJaw[1]);
         } else if (self.mouseMiddleHeld || self.mouseRightHeld) {
@@ -479,13 +479,13 @@ export default class WorldEditor {
             camPos,
             camPos,
             self.camera.getRight(),
-            -(self.mousePosition.x - self.mousePosition.previousX) * 0.02
+            -(self.mousePosition.x - self.mousePosition.previousX) * 0.02,
           );
           vec3.scaleAndAdd(
             camPos,
             camPos,
             self.camera.getUp(),
-            (self.mousePosition.y - self.mousePosition.previousY) * 0.02
+            (self.mousePosition.y - self.mousePosition.previousY) * 0.02,
           );
           self.camera.setPosition(camPos);
         }
@@ -544,7 +544,7 @@ export default class WorldEditor {
           camPos,
           camPos,
           self.camera.getDir(),
-          -event.deltaY * 0.01
+          -event.deltaY * 0.01,
         );
         self.camera.setPosition(camPos);
       }
@@ -581,14 +581,14 @@ export default class WorldEditor {
               quat.create(),
               rotChange[0],
               rotChange[1],
-              rotChange[2]
-            )
+              rotChange[2],
+            ),
           );
           return "Successfully rotated";
         }
         return "Failed to rotate";
       },
-      true
+      true,
     );
 
     addNewConsoleCommand(
@@ -610,13 +610,13 @@ export default class WorldEditor {
           vec3.add(
             self.currentlySelectedTransform.position,
             self.currentlySelectedTransform.position,
-            translationChange
+            translationChange,
           );
           return "Successfully translated";
         }
         return "Failed to translate";
       },
-      true
+      true,
     );
 
     addNewConsoleCommand(
@@ -638,13 +638,13 @@ export default class WorldEditor {
           vec3.add(
             self.currentlySelectedTransform.scale,
             self.currentlySelectedTransform.scale,
-            scaleChange
+            scaleChange,
           );
           return "Successfully scaled";
         }
         return "Failed to scale";
       },
-      true
+      true,
     );
 
     addNewConsoleCommand(
@@ -666,13 +666,13 @@ export default class WorldEditor {
           vec3.add(
             self.currentlySelectedTransform.origin,
             self.currentlySelectedTransform.origin,
-            originChange
+            originChange,
           );
           return "Successfully updated origin";
         }
         return "Failed to change origin";
       },
-      true
+      true,
     );
 
     addNewConsoleCommand("exit", (args: string[]): string => {
@@ -734,13 +734,13 @@ export default class WorldEditor {
   searchHistory(
     histoySearchTextEdit: EditText,
     consoleCommandsTextEdit: EditText,
-    tickUpIndex: boolean = true
+    tickUpIndex: boolean = true,
   ) {
     let previousResults = new Set<string>(this.searchModeSuggestions); // Copy
     this.searchModeSuggestions = new Set<string>(
       this.commandHistory.filter((command) =>
-        command.startsWith(histoySearchTextEdit.getInputElement().value)
-      )
+        command.startsWith(histoySearchTextEdit.getInputElement().value),
+      ),
     );
 
     let same = false;
@@ -804,14 +804,14 @@ export default class WorldEditor {
               quat.create(),
               rotChange[0],
               rotChange[1],
-              rotChange[2]
-            )
+              rotChange[2],
+            ),
           );
           return "Successfully rotated";
         }
         return "Failed to rotate";
       },
-      true
+      true,
     );
 
     addNewConsoleCommand("this is a test command", (args: string[]): string => {
@@ -822,7 +822,7 @@ export default class WorldEditor {
       "this is another test command",
       (args: string[]): string => {
         return "this is another test command";
-      }
+      },
     );
 
     const tests: { input: string; complete: string; suggestions: string[] }[] =
@@ -934,7 +934,7 @@ export default class WorldEditor {
       this.camera,
       this.scene.renderer,
       vec2.fromValues(this.mousePosition.x, this.mousePosition.y),
-      this.internalPhysicsScene
+      this.internalPhysicsScene,
     );
 
     this.currentlySelectedTransform.setTranslation(hitPosition);
@@ -985,7 +985,7 @@ export default class WorldEditor {
       this.camera,
       this.scene.renderer,
       vec2.fromValues(this.mousePosition.x, this.mousePosition.y),
-      this.internalPhysicsScene
+      this.internalPhysicsScene,
     );
     if (hit.object == undefined) {
       this.currentlySelectedTransform = null;
@@ -1017,6 +1017,10 @@ export default class WorldEditor {
     consoleOutput.scrollToBottom = true;
   }
 
+  setSelectedTransform(transform: Transform) {
+    this.currentlySelectedTransform = transform;
+  }
+
   private tabComplete(input: string): {
     complete: string;
     suggestions: string[];
@@ -1040,7 +1044,7 @@ export default class WorldEditor {
     let self = this;
 
     let returnString = command.command.logic(
-      input.split(" ").filter((arg) => arg.length > 0)
+      input.split(" ").filter((arg) => arg.length > 0),
     );
 
     consoleOutput.textString += returnString + "\n";
@@ -1077,13 +1081,13 @@ export default class WorldEditor {
                   mesh.meshPath,
                   mesh.diffuse,
                   mesh.specular,
-                  true
+                  true,
                 )
               : await this.scene.addNewMesh(
                   mesh.meshPath,
                   mesh.diffuse,
                   mesh.specular,
-                  false
+                  false,
                 );
 
           if (this.currentlySelectedTransform == null) {
@@ -1101,7 +1105,7 @@ export default class WorldEditor {
 
           if (mesh.emission != undefined && mesh.emission.length > 0) {
             bundle.emission = this.scene.renderer.textureStore.getTexture(
-              mesh.emission
+              mesh.emission,
             );
           }
           let translation = placement.translation;
@@ -1126,7 +1130,7 @@ export default class WorldEditor {
               bundle.transform.position,
               translation[0],
               translation[1],
-              translation[2]
+              translation[2],
             );
           }
           if (scale != undefined && scale.length == 3) {
@@ -1140,7 +1144,7 @@ export default class WorldEditor {
               bundle.transform.rotation,
               rotation[0],
               rotation[1],
-              rotation[2]
+              rotation[2],
             );
           } else if (rotation != undefined && rotation.length == 4) {
             quat.set(
@@ -1148,31 +1152,31 @@ export default class WorldEditor {
               rotation[0],
               rotation[1],
               rotation[2],
-              rotation[3]
+              rotation[3],
             );
           }
 
           const physicsObject = this.internalPhysicsScene.addNewPhysicsObject(
-            bundle.transform
+            bundle.transform,
           );
           placementsMapEntry.po = physicsObject;
           physicsObject.boundingBox.setMinAndMaxVectors(
             bundle.getMinAndMaxPositions().min,
-            bundle.getMinAndMaxPositions().max
+            bundle.getMinAndMaxPositions().max,
           );
           physicsObject.isStatic = true;
 
           if (mesh.meshCollision) {
             physicsObject.setupInternalTreeFromGraphicsObject(
               bundle.graphicsObject,
-              mesh.meshPath
+              mesh.meshPath,
             );
           }
 
           if (mesh.collision) {
             this.physicsScene.addNewPhysicsObject(
               physicsObject.transform,
-              physicsObject
+              physicsObject,
             );
           }
         }

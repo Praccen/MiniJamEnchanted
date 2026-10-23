@@ -1,4 +1,5 @@
 import {
+  addNewConsoleCommand,
   Camera,
   Frustum,
   GUIRenderer,
@@ -7,6 +8,7 @@ import {
   Renderer3D,
   Scene,
   vec3,
+  WorldEditor,
 } from "praccen-web-engine";
 import GameGUI from "../GUI/GameGUI.js";
 import { Input } from "../Input.js";
@@ -34,6 +36,8 @@ export default class Game {
 
   private saveScreenshot = false;
 
+  worldEditor: WorldEditor;
+
   constructor(renderer: Renderer3D, guiRenderer: GUIRenderer, seed: string) {
     this.seed = seed;
     game = this;
@@ -59,6 +63,25 @@ export default class Game {
     vec3.zero(this.physicsScene.gravity);
 
     this.player = new Player(this.scene, this.physicsScene, vec3.create());
+
+    this.worldEditor = new WorldEditor(
+      this.camera,
+      this.scene,
+      this.physicsScene,
+      this.guiRenderer,
+    );
+
+    addNewConsoleCommand("add box", (args: string[]) => {
+      let box = this.scene.addNewMesh(
+        "Assets/objs/cube.obj",
+        args[2] ?? "CSS:rgb(255, 0, 0)",
+        "CSS:rgb(0, 0, 0)",
+      );
+      this.physicsScene.addNewPhysicsObject(box.transform);
+
+      this.worldEditor.setSelectedTransform(box.transform);
+      return "Added box";
+    });
   }
 
   resize(width: number, height: number) {
@@ -75,7 +98,9 @@ export default class Game {
   update(dt: number) {
     this.gameTimer += dt;
 
-    this.player.update(this.camera, dt);
+    if (!this.worldEditor.interacting()) {
+      this.player.update(this.camera, dt);
+    }
     this.physicsScene.update(dt);
   }
 
