@@ -13,6 +13,7 @@ import {
   Transform,
 } from "../../Engine.js";
 import EditText from "../Rendering/GUI/Objects/Text/EditText.js";
+import TranslateGizmo from "./TranslateGizmo.js";
 
 let json: {
   meshes: {
@@ -197,7 +198,21 @@ export default class WorldEditor {
       placmentIndex: number;
     }[]
   >();
-  private currentlySelectedTransform: Transform = null;
+  private _currentlySelectedTransform: Transform = null;
+  /**
+   * The transform the editor commands and the gizmo act on.
+   * Implemented as an accessor so that the gizmo follows the selection no
+   * matter which of the many assignment sites changed it.
+   */
+  private get currentlySelectedTransform(): Transform {
+    return this._currentlySelectedTransform;
+  }
+  private set currentlySelectedTransform(transform: Transform) {
+    this._currentlySelectedTransform = transform;
+    if (this.gizmo != undefined) {
+      this.gizmo.setTarget(transform);
+    }
+  }
   private mousePosition = { x: 0, y: 0, previousX: 0, previousY: 0 };
   private mouseLeftHeld = false;
   private mouseRightHeld = false;
@@ -221,6 +236,8 @@ export default class WorldEditor {
 
   private guiElements: HTMLElement[] = [];
 
+  gizmo: TranslateGizmo;
+
   constructor(
     camera: Camera,
     scene: Scene,
@@ -232,6 +249,8 @@ export default class WorldEditor {
     this.physicsScene = physicsScene;
     this.internalPhysicsScene = new PhysicsScene();
     vec3.zero(this.internalPhysicsScene.gravity);
+
+    this.gizmo = new TranslateGizmo(camera, scene);
 
     this.guiRenderer = guiRenderer;
 
@@ -461,6 +480,24 @@ export default class WorldEditor {
       self.mousePosition.x = event.clientX;
       self.mousePosition.y = event.clientY;
       if (self.interacting()) {
+        if (self.gizmo.isDragging()) {
+          // Shift snaps to the grid step while dragging a handle.
+          if (
+            self.gizmo.updateDrag(
+              vec2.fromValues(self.mousePosition.x, self.mousePosition.y),
+              self.shiftHeld
+            )
+          ) {
+            self.internalPhysicsScene.update(0.0, true, false);
+            self.saveNeeded = true;
+          }
+          return;
+        }
+
+        self.gizmo.updateHover(
+          vec2.fromValues(self.mousePosition.x, self.mousePosition.y)
+        );
+
         if (!self.shiftHeld && (self.mouseMiddleHeld || self.mouseRightHeld)) {
           let pitchJaw = self.camera.getPitchJawDegrees();
           vec2.scaleAndAdd(
@@ -504,8 +541,18 @@ export default class WorldEditor {
     document.addEventListener("mousedown", (event) => {
       if (event.button == 0) {
         self.mouseLeftHeld = true;
-        if (self.interacting() && self.tHeld) {
-          self.placeFromRayIntersection();
+        if (self.interacting()) {
+          // The gizmo gets first refusal on the click, so grabbing a handle
+          // never doubles as a reselect or a hold T placement.
+          if (
+            self.gizmo.startDrag(
+              vec2.fromValues(self.mousePosition.x, self.mousePosition.y)
+            )
+          ) {
+            // Handle grabbed, nothing else should act on this click.
+          } else if (self.tHeld) {
+            self.placeFromRayIntersection();
+          }
         }
       }
       if (event.button == 1) {
@@ -520,7 +567,12 @@ export default class WorldEditor {
       if (event.button == 0) {
         self.mouseLeftHeld = false;
         if (self.interacting()) {
-          if (self.tHeld) {
+          if (self.gizmo.isDragging()) {
+            self.gizmo.endDrag();
+            if (self.saveNeeded && self.autosave) {
+              self.save();
+            }
+          } else if (self.tHeld) {
             if (self.saveNeeded && self.autosave) {
               self.save();
             }
@@ -724,6 +776,23 @@ export default class WorldEditor {
 
   setEnabled(enabled: boolean) {
     this.guiDiv.setHidden(!enabled);
+  }
+
+  /**
+   * Rebuilds the gizmo geometry. Call once per frame before rendering, from
+   * preRenderingUpdate. The gizmo is scaled to keep a constant size on screen,
+   * so its geometry depends on the current camera position and has to be
+   * refreshed every frame rather than only when the selection changes.
+   */
+  preRenderingUpdate() {
+    // Only show the gizmo while the editor is actually open.
+    if (!this.interacting()) {
+      this.gizmo.setTarget(null);
+    } else if (this.gizmo.getTarget() != this.currentlySelectedTransform) {
+      this.gizmo.setTarget(this.currentlySelectedTransform);
+    }
+
+    this.gizmo.updateGeometry();
   }
 
   interacting(): boolean {

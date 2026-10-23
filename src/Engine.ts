@@ -28,6 +28,9 @@ import Heightmap from "./Engine/Rendering/Objects/GraphicsObjects/Heightmap.js";
 import WorldEditor, {
   addNewConsoleCommand,
 } from "./Engine/Tooling/WorldEditor.js";
+import TranslateGizmo, {
+  GizmoHandle,
+} from "./Engine/Tooling/TranslateGizmo.js";
 import Vec3Lerp from "./Engine/Tooling/Vec3Lerp.js";
 
 // Rendering exports
@@ -60,7 +63,13 @@ export {
 };
 
 // Tooling
-export { WorldEditor, addNewConsoleCommand, Vec3Lerp };
+export {
+  WorldEditor,
+  addNewConsoleCommand,
+  TranslateGizmo,
+  GizmoHandle,
+  Vec3Lerp,
+};
 
 // Global exports
 export let applicationStartTime = Date.now();
