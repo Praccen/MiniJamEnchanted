@@ -25,8 +25,8 @@
               tree-sitter-grammars.tree-sitter-typescript
               nodejs
               typescript
-              nodePackages.typescript
-              nodePackages.typescript-language-server
+              typescript
+              typescript-language-server
               (python311Packages.python.withPackages (p: [ p.rangehttpserver ]))
             ];
             shellHook = ''
