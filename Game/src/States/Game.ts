@@ -107,7 +107,7 @@ export default class Game {
   preRenderingUpdate(dt: number) {
     this.player.preRenderingUpdate(dt);
 
-    if (Input.keys["P"]) {
+    if (!this.worldEditor.interacting && Input.keys["P"]) {
       if (!this.pWasPressed) {
         this.saveScreenshot = true;
       }
