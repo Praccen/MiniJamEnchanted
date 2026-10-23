@@ -35,6 +35,6 @@ npm run format
 ### Running
 
 ```
-1. Setup a server that hosts the root of this repo
-2. Goto the [server address]/Game in a browser
+npm run host
+# Then open http://localhost:8080/ in browser of your choice 
 ```
