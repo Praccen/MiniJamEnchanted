@@ -71,17 +71,26 @@ export default class Game {
       this.guiRenderer,
     );
 
-    addNewConsoleCommand("add box", (args: string[]) => {
-      let box = this.scene.addNewMesh(
-        "Assets/objs/cube.obj",
-        args[2] ?? "CSS:rgb(255, 0, 0)",
-        "CSS:rgb(0, 0, 0)",
-      );
-      this.physicsScene.addNewPhysicsObject(box.transform);
+    this.worldEditor.internalPhysicsScene.addNewPhysicsObject(
+      null,
+      this.player.physicsObject,
+    );
 
-      this.worldEditor.setSelectedTransform(box.transform);
-      return "Added box";
-    });
+    addNewConsoleCommand(
+      "add box",
+      (args: string[]) => {
+        let box = this.scene.addNewMesh(
+          "Assets/objs/cube.obj",
+          args[2] ?? "CSS:rgb(255, 0, 0)",
+          "CSS:rgb(0, 0, 0)",
+        );
+        let po = this.physicsScene.addNewPhysicsObject(box.transform);
+        this.worldEditor.internalPhysicsScene.addNewPhysicsObject(null, po);
+        this.worldEditor.setSelectedTransform(box.transform);
+        return "Added box";
+      },
+      true,
+    );
   }
 
   resize(width: number, height: number) {

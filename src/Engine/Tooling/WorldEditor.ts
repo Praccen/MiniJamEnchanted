@@ -937,7 +937,9 @@ export default class WorldEditor {
       this.internalPhysicsScene,
     );
 
-    this.currentlySelectedTransform.setTranslation(hitPosition);
+    if (hitPosition) {
+      this.currentlySelectedTransform.setTranslation(hitPosition);
+    }
 
     if (currentlySelectedPhysicObject != undefined) {
       currentlySelectedPhysicObject.isCollidable = wasCollidable;
