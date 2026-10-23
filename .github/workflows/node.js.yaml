@@ -1,0 +1,32 @@
+name: Build on NixOS
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build build and install engine
+        run: |
+          nix --experimental-features "nix-command flakes" develop -c npm install
+          nix --experimental-features "nix-command flakes" develop -c npm run build:release --if-present
+
+      - name: Link and build game
+        run: |
+          nix --experimental-features "nix-command flakes" develop -c npm run setup
+          echo "Installed"
+          nix --experimental-features "nix-command flakes" develop -c npm run build --if-present
+          echo "Build"
+
+      - name: Copy files
+        run: |
+          rm -fr /var/www/ldjam59.rlyeh.nu/*
+          cp Game/index.html /var/www/ldjam59.rlyeh.nu/
+          cp Game/index.css /var/www/ldjam59.rlyeh.nu/
+          cp Game/dist -r /var/www/ldjam59.rlyeh.nu/
+          cp Game/Assets -r /var/www/ldjam59.rlyeh.nu/
