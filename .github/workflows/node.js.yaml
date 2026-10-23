@@ -25,8 +25,8 @@ jobs:
 
       - name: Copy files
         run: |
-          rm -fr /var/www/ldjam59.rlyeh.nu/*
-          cp Game/index.html /var/www/ldjam59.rlyeh.nu/
-          cp Game/index.css /var/www/ldjam59.rlyeh.nu/
-          cp Game/dist -r /var/www/ldjam59.rlyeh.nu/
-          cp Game/Assets -r /var/www/ldjam59.rlyeh.nu/
+          rm -fr /var/www/mini222.rlyeh.nu/*
+          cp Game/index.html /var/www/mini222.rlyeh.nu/
+          cp Game/index.css /var/www/mini222.rlyeh.nu/
+          cp Game/dist -r /var/www/mini222.rlyeh.nu/
+          cp Game/Assets -r /var/www/mini222.rlyeh.nu/
