@@ -1,0 +1,132 @@
+# Blender 3.3.1 MTL File: 'Bridge.blend'
+# www.blender.org
+
+newmtl texture
+Ns 302.500000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gbjor/source/repos/DungeonCrawlerRougelite/Game/Assets/objs/dungeonPack/dungeon_texture.png
+
+newmtl texture.009
+Ns 302.500000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gbjor/source/repos/DungeonCrawlerRougelite/Game/Assets/objs/dungeonPack/dungeon_texture.png
+
+newmtl texture.010
+Ns 302.500000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gbjor/source/repos/DungeonCrawlerRougelite/Game/Assets/objs/dungeonPack/dungeon_texture.png
+
+newmtl texture.011
+Ns 302.500000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gbjor/source/repos/DungeonCrawlerRougelite/Game/Assets/objs/dungeonPack/dungeon_texture.png
+
+newmtl texture.015
+Ns 302.500000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gbjor/source/repos/DungeonCrawlerRougelite/Game/Assets/objs/dungeonPack/dungeon_texture.png
+
+newmtl texture.018
+Ns 302.500000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gbjor/source/repos/DungeonCrawlerRougelite/Game/Assets/objs/dungeonPack/dungeon_texture.png
+
+newmtl texture.029
+Ns 302.500000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gbjor/source/repos/DungeonCrawlerRougelite/Game/Assets/objs/dungeonPack/dungeon_texture.png
+
+newmtl texture.033
+Ns 302.500000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gbjor/source/repos/DungeonCrawlerRougelite/Game/Assets/objs/dungeonPack/dungeon_texture.png
+
+newmtl texture.034
+Ns 302.500000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gbjor/source/repos/DungeonCrawlerRougelite/Game/Assets/objs/dungeonPack/dungeon_texture.png
+
+newmtl texture.035
+Ns 302.500000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gbjor/source/repos/DungeonCrawlerRougelite/Game/Assets/objs/dungeonPack/dungeon_texture.png
+
+newmtl texture.036
+Ns 302.500000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gbjor/source/repos/DungeonCrawlerRougelite/Game/Assets/objs/dungeonPack/dungeon_texture.png
+
+newmtl texture.037
+Ns 302.500000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gbjor/source/repos/DungeonCrawlerRougelite/Game/Assets/objs/dungeonPack/dungeon_texture.png
+
+newmtl texture.038
+Ns 302.500000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/gbjor/source/repos/DungeonCrawlerRougelite/Game/Assets/objs/dungeonPack/dungeon_texture.png

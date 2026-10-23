@@ -1,0 +1,41 @@
+{
+  "devDependencies": {
+    "@types/node": "^18.16.3",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "eslint": "^9.34.0",
+    "tsup": "^8.0.2",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "gl-matrix": "^3.4.3",
+    "howler": "^2.2.4",
+    "http-server": "^14.1.1",
+    "prettier": "^2.7.1",
+    "typescript-language-server": "^4.3.3"
+  },
+  "version": "1.0.0",
+  "description": "Praccen's WebGL engine",
+  "name": "praccen-web-engine",
+  "scripts": {
+    "dev": "npm run dev --prefix Game",
+    "build": "tsup && npm run build --prefix Game",
+    "build:release": "NODE_ENV=production tsup",
+    "setup": "npm install && npm link --prefix Game && npm install --prefix Game .",
+    "format": "prettier --write src && prettier --write Game/src",
+    "lint": "eslint src Game/src --ext .ts",
+    "lint:fix": "eslint src Game/src --ext .ts --fix",
+    "host": "http-server -a 127.0.0.1 -c-1"
+  },
+  "main": "./dist/Engine.cjs.js",
+  "module": "./dist/Engine.esm.js",
+  "types": "./dist/Engine.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/Engine.d.ts",
+      "import": "./dist/Engine.esm.js",
+      "require": "./dist/Engine.cjs.js"
+    }
+  }
+}

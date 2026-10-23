@@ -1,0 +1,61 @@
+import Shape from "./Shape.js";
+import { ReadonlyVec3, mat4, vec3 } from "gl-matrix";
+
+export default class Ray extends Shape {
+  private start: vec3;
+  private dir: vec3;
+  private inverseMatrix: mat4;
+
+  constructor() {
+    super();
+    this.start = vec3.create();
+    this.dir = vec3.fromValues(0.0, 0.0, 1.0);
+    this.inverseMatrix = mat4.create();
+
+    this.verticesNeedsUpdate = true; // Leave it always as true to trigger octree check when recalculating
+  }
+
+  setStart(start: ReadonlyVec3) {
+    vec3.copy(this.start, start);
+  }
+
+  setDir(dir: ReadonlyVec3) {
+    vec3.normalize(this.dir, dir);
+  }
+
+  getDir(): ReadonlyVec3 {
+    let start = this.getTransformedVertices()[0];
+    let end = vec3.transformMat4(
+      vec3.create(),
+      vec3.add(vec3.create(), this.start, this.dir),
+      this.inverseMatrix
+    );
+
+    return vec3.subtract(vec3.create(), end, start); // Not normalized because we want to keep distances
+  }
+
+  setStartAndDir(start: ReadonlyVec3, dir: ReadonlyVec3) {
+    vec3.copy(this.start, start);
+    vec3.normalize(this.dir, dir);
+  }
+
+  setInverseMatrix(matrix: mat4) {
+    this.inverseMatrix = matrix;
+  }
+
+  getTransformedVertices(): Array<vec3> {
+    return [vec3.transformMat4(vec3.create(), this.start, this.inverseMatrix)];
+  }
+
+  getTransformedNormals(): Array<vec3> {
+    return [];
+  }
+
+  getTransformedEdges(): Array<vec3> {
+    return [vec3.normalize(vec3.create(), this.getDir())];
+  }
+
+  getTransformedEdgeNormals(): Array<vec3> {
+    return [];
+  }
+}

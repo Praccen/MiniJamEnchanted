@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello Typescript!</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+
+  <body>
+    <div id="Menus">
+      <div id="MainMenu" class="MenuPage">
+        <button id="StartButton">Start</button>
+        Seed: <input id="SeedInput" type="edit" value="testSeed3" />
+      </div>
+    </div>
+  </body>
+
+  <script id="menu-script" type="text/javascript" charset="utf-8">
+    localStorage.removeItem("StartGame");
+    localStorage.removeItem("CloseGame");
+
+    let mainMenuDiv = document.getElementById("MainMenu");
+    let seedEdit = document.getElementById("SeedInput");
+
+    function unloadGame() {
+      const oldScript = document.getElementById("game-script");
+      if (oldScript) {
+        oldScript.remove();
+      }
+
+      if (window.GameNamePlaceholder) {
+        delete window.GameNamePlaceholder;
+      }
+
+      const canvases = document.getElementsByClassName("canvas");
+      for (const canvas of canvases) {
+        canvas.remove();
+      }
+
+      const guiContainers = document.getElementsByClassName("guiContainer");
+      for (const container of guiContainers) {
+        container.remove();
+      }
+
+      const inventoryCanvases =
+        document.getElementsByClassName("inventoryCanvas");
+      for (const invCanvas of inventoryCanvases) {
+        invCanvas.remove();
+      }
+
+      localStorage.removeItem("StartGame");
+      localStorage.removeItem("Seed");
+      localStorage.setItem("CloseGame", "");
+    }
+
+    function loadGameVersion(version) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.id = "game-script";
+        script.src = "./dist/main.iife.js"; // TODO: Replace with version
+        script.async = true;
+
+        document.head.appendChild(script);
+
+        script.onload = () => {
+          console.log("Loaded new script with version: " + version);
+          resolve();
+        };
+
+        script.onerror = () => {
+          reject(new Error("Couldn't load script with version: " + version));
+        };
+      });
+    }
+    loadGameVersion("latest"); // Pre load for play, will download resources ahead of time to reduce loading screen for player when starting the game
+
+    window.addEventListener("gameOver", (ev) => {
+      unloadGame();
+      mainMenuDiv.style.display = "grid";
+      setTimeout(() => {
+        localStorage.removeItem("CloseGame");
+        loadGameVersion("latest");
+      }, 100);
+    });
+
+    let startBtn = document.getElementById("StartButton");
+    startBtn.addEventListener("click", (ev) => {
+      mainMenuDiv.style.display = "none";
+      localStorage.setItem("Seed", seedEdit.value);
+      localStorage.setItem("StartGame", "");
+    });
+  </script>
+</html>
