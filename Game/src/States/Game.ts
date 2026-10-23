@@ -3,6 +3,7 @@ import {
   Frustum,
   GUIRenderer,
   MousePicking,
+  PhysicsScene,
   Renderer3D,
   Scene,
   vec3,
@@ -26,6 +27,7 @@ export default class Game {
   gui: GameGUI;
 
   scene: Scene;
+  physicsScene: PhysicsScene;
   player: Player;
 
   private gameTimer = 0.0;
@@ -53,7 +55,10 @@ export default class Game {
 
     this.scene = new Scene(this.renderer);
     this.scene.getDirectionalLight().ambientMultiplier = 0.5;
-    this.player = new Player(this.scene, vec3.create());
+    this.physicsScene = new PhysicsScene();
+    vec3.zero(this.physicsScene.gravity);
+
+    this.player = new Player(this.scene, this.physicsScene, vec3.create());
   }
 
   resize(width: number, height: number) {
@@ -71,9 +76,12 @@ export default class Game {
     this.gameTimer += dt;
 
     this.player.update(this.camera, dt);
+    this.physicsScene.update(dt);
   }
 
   preRenderingUpdate(dt: number) {
+    this.player.preRenderingUpdate(dt);
+
     if (Input.keys["P"]) {
       if (!this.pWasPressed) {
         this.saveScreenshot = true;
@@ -91,7 +99,7 @@ export default class Game {
         this.camera,
         this.camera.getFrustum(),
         true,
-        "captureScreen.png"
+        "captureScreen.png",
       );
       this.saveScreenshot = false;
     } else {

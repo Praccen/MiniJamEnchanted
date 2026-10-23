@@ -132,7 +132,7 @@ export default class ProceduralAnimationObject {
   constructor(scene: Scene, startPos: vec3) {
     // this.buildSkeleton(startPos, scene, worm);
     // this.buildSkeletonFromLog(startPos, scene, HumanoidBuildLog, 2.0);
-    this.buildSkeletonFromLog(startPos, scene, CatBuildLog, 4.0);
+    this.buildSkeletonFromLog(startPos, scene, CatBuildLog, 1.0);
     this.normalizeRotationAxes(this.baseJoint);
   }
 
@@ -140,7 +140,7 @@ export default class ProceduralAnimationObject {
     startPos: vec3,
     scene: Scene,
     log: string,
-    scale: number
+    scale: number,
   ) {
     let forward = vec3.fromValues(1.0, 0.0, 0.0);
     let colour = "CSS:rgb(255,0,0)";
@@ -170,7 +170,7 @@ export default class ProceduralAnimationObject {
             gb: scene.addNewMesh(
               "Assets/objs/cube.obj",
               colour,
-              "CSS:rgb(0, 0, 0)"
+              "CSS:rgb(0, 0, 0)",
             ),
             children: [],
           };
@@ -179,13 +179,13 @@ export default class ProceduralAnimationObject {
             this.baseJoint.gb.transform.scale,
             0.1 * scale,
             0.1 * scale,
-            0.1 * scale
+            0.1 * scale,
           );
           vec3.set(
             this.baseJoint.gb.transform.scale,
             length * scale,
             width * scale,
-            width * scale
+            width * scale,
           );
           vec3.scale(this.baseJoint.gb.transform.origin, forward, -0.5);
 
@@ -218,7 +218,7 @@ export default class ProceduralAnimationObject {
                 gb: scene.addNewMesh(
                   "Assets/objs/cube.obj",
                   colour,
-                  "CSS:rgb(0, 0, 0)"
+                  "CSS:rgb(0, 0, 0)",
                 ),
                 children: [],
               },
@@ -228,13 +228,13 @@ export default class ProceduralAnimationObject {
             currentParent.children[index].joint.gb.transform.scale,
             length * scale,
             width * scale,
-            width * scale
+            width * scale,
           );
           vec3.set(
             currentParent.children[index].joint.gb.transform.origin,
             -0.5,
             0.0,
-            0.0
+            0.0,
           );
 
           joints.set(line.split(/\s+/)[1] ?? "", currentParent.children[index]);
@@ -278,7 +278,7 @@ export default class ProceduralAnimationObject {
                 "Not enough values for command in animation build log: " +
                   command +
                   " " +
-                  arg
+                  arg,
               );
               break;
             }
@@ -303,7 +303,7 @@ export default class ProceduralAnimationObject {
                 "Not enough values for command in animation build log: " +
                   command +
                   " " +
-                  arg
+                  arg,
               );
               break;
             }
@@ -325,7 +325,7 @@ export default class ProceduralAnimationObject {
           default:
             console.warn(
               "Unsupported command in procedural animation build log: " +
-                command
+                command,
             );
             break;
         }
@@ -336,21 +336,21 @@ export default class ProceduralAnimationObject {
     quat.rotationTo(
       this.forwardAdjustment,
       vec3.fromValues(0.0, 0.0, 1.0),
-      this.localForward
+      this.localForward,
     );
   }
 
   private buildSkeleton(
     startPos: vec3,
     scene: Scene,
-    parameters: SkeletonParameters
+    parameters: SkeletonParameters,
   ) {
     this.baseJoint = {
       position: startPos,
       gb: scene.addNewMesh(
         "Assets/objs/cube.obj",
         parameters.headColour,
-        "CSS:rgb(0, 0, 0)"
+        "CSS:rgb(0, 0, 0)",
       ),
       children: [],
     };
@@ -359,7 +359,7 @@ export default class ProceduralAnimationObject {
       this.baseJoint.gb.transform.scale,
       parameters.headLength,
       parameters.headThickness,
-      parameters.headThickness
+      parameters.headThickness,
     );
     vec3.set(this.baseJoint.gb.transform.origin, -0.5, 0.0, 0.0);
 
@@ -368,7 +368,7 @@ export default class ProceduralAnimationObject {
     while (counter < parameters.bodySegments) {
       if (
         parameters.segmentsWithLimbs.findIndex(
-          (value) => value == counter - 1
+          (value) => value == counter - 1,
         ) >= 0
       ) {
         this.addLimbs(
@@ -377,7 +377,7 @@ export default class ProceduralAnimationObject {
           parameters.limbSegmentLength,
           parameters.limbThickness,
           1.0 - (2.0 / parameters.bodySegments) * counter,
-          parameters.limbColour
+          parameters.limbColour,
         );
       }
 
@@ -409,7 +409,7 @@ export default class ProceduralAnimationObject {
             gb: scene.addNewMesh(
               "Assets/objs/cube.obj",
               parameters.bodyColour,
-              "CSS:rgb(0, 0, 0)"
+              "CSS:rgb(0, 0, 0)",
             ),
             children: [],
           },
@@ -419,7 +419,7 @@ export default class ProceduralAnimationObject {
         joint.children[index].joint.gb.transform.scale,
         parameters.bodySegmentLength,
         parameters.bodySegmentThickness,
-        parameters.bodySegmentThickness
+        parameters.bodySegmentThickness,
       );
       vec3.set(joint.children[index].joint.gb.transform.origin, -0.5, 0.0, 0.0);
 
@@ -437,7 +437,7 @@ export default class ProceduralAnimationObject {
         parameters.limbSegmentLength,
         parameters.limbThickness,
         1.0 - (2.0 / parameters.bodySegments) * counter,
-        parameters.limbColour
+        parameters.limbColour,
       );
     }
   }
@@ -448,7 +448,7 @@ export default class ProceduralAnimationObject {
     legLength: number,
     thickness: number,
     forwardInfluence: number,
-    legsColour: string
+    legsColour: string,
   ) {
     joint.children.push({
       constraints: [
@@ -471,7 +471,7 @@ export default class ProceduralAnimationObject {
         gb: scene.addNewMesh(
           "Assets/objs/cube.obj",
           legsColour,
-          "CSS:rgb(0, 0, 0)"
+          "CSS:rgb(0, 0, 0)",
         ),
         children: [
           {
@@ -495,7 +495,7 @@ export default class ProceduralAnimationObject {
               gb: scene.addNewMesh(
                 "Assets/objs/cube.obj",
                 legsColour,
-                "CSS:rgb(0, 0, 0)"
+                "CSS:rgb(0, 0, 0)",
               ),
               children: [],
             },
@@ -524,7 +524,7 @@ export default class ProceduralAnimationObject {
         gb: scene.addNewMesh(
           "Assets/objs/cube.obj",
           legsColour,
-          "CSS:rgb(0, 0, 0)"
+          "CSS:rgb(0, 0, 0)",
         ),
         children: [
           {
@@ -548,7 +548,7 @@ export default class ProceduralAnimationObject {
               gb: scene.addNewMesh(
                 "Assets/objs/cube.obj",
                 legsColour,
-                "CSS:rgb(0, 0, 0)"
+                "CSS:rgb(0, 0, 0)",
               ),
               children: [],
             },
@@ -561,40 +561,40 @@ export default class ProceduralAnimationObject {
       joint.children[0].joint.gb.transform.scale,
       legLength,
       thickness,
-      thickness
+      thickness,
     );
     vec3.set(joint.children[0].joint.gb.transform.origin, -0.5, 0.0, 0.0);
     vec3.set(
       joint.children[0].joint.children[0].joint.gb.transform.scale,
       legLength,
       thickness,
-      thickness
+      thickness,
     );
     vec3.set(
       joint.children[0].joint.children[0].joint.gb.transform.origin,
       -0.5,
       0.0,
-      0.0
+      0.0,
     );
 
     vec3.set(
       joint.children[1].joint.gb.transform.scale,
       legLength,
       thickness,
-      thickness
+      thickness,
     );
     vec3.set(joint.children[1].joint.gb.transform.origin, -0.5, 0.0, 0.0);
     vec3.set(
       joint.children[1].joint.children[0].joint.gb.transform.scale,
       legLength,
       thickness,
-      thickness
+      thickness,
     );
     vec3.set(
       joint.children[1].joint.children[0].joint.gb.transform.origin,
       -0.5,
       0.0,
-      0.0
+      0.0,
     );
 
     joint.children[0].constraints.push({
@@ -636,7 +636,7 @@ export default class ProceduralAnimationObject {
       up[2],
       forward[0],
       forward[1],
-      forward[2]
+      forward[2],
     );
 
     let outQuat = quat.fromMat3(quat.create(), rotationMatrix);
@@ -669,7 +669,7 @@ export default class ProceduralAnimationObject {
     // ---- Configurable up, no drifting problems, use environment normal as up for climbing ----
     this.baseRotation = this.getRotationWithUp(
       this.headingDirection,
-      this.upDirection
+      this.upDirection,
     );
     //-------------------------------------------------------------------------------------------
 
@@ -683,7 +683,7 @@ export default class ProceduralAnimationObject {
       let offsetDir = vec3.sub(
         vec3.create(),
         childJoint.joint.position,
-        joint.position
+        joint.position,
       );
       let currDist = vec3.len(offsetDir);
       if (currDist > 0.0001) {
@@ -713,7 +713,7 @@ export default class ProceduralAnimationObject {
               vec3.create(),
               joint.position,
               offsetDir,
-              currDist
+              currDist,
             );
 
             break;
@@ -725,7 +725,7 @@ export default class ProceduralAnimationObject {
               : vec3.transformQuat(
                   vec3.create(),
                   constraint.payload.axis,
-                  prevRotation
+                  prevRotation,
                 );
 
             if (constraint.payload.slerp != undefined) {
@@ -736,7 +736,7 @@ export default class ProceduralAnimationObject {
                 rotationQuat,
                 constraint.payload.slerp.start,
                 constraint.payload.slerp.end,
-                Math.min(constraint.payload.slerp.progress, 1.0)
+                Math.min(constraint.payload.slerp.progress, 1.0),
               );
 
               if (constraint.payload.slerp.progress >= 1.0) {
@@ -747,7 +747,7 @@ export default class ProceduralAnimationObject {
               let crossAxis = vec3.cross(
                 vec3.create(),
                 transformedAxis,
-                offsetDir
+                offsetDir,
               );
               vec3.normalize(crossAxis, crossAxis);
 
@@ -772,7 +772,7 @@ export default class ProceduralAnimationObject {
                       break;
                     case ResolutionType.FLERP:
                       let exFlerp = childJoint.constraints.find(
-                        (value) => value.type == ConstraintType.EXCLUSIVE_FLERP
+                        (value) => value.type == ConstraintType.EXCLUSIVE_FLERP,
                       );
                       let startSlerp = true;
 
@@ -780,7 +780,7 @@ export default class ProceduralAnimationObject {
                         for (const compareJoint of exFlerp.payload.compareTo) {
                           const otherRotConstraint =
                             compareJoint.constraints.find(
-                              (value) => value.type == ConstraintType.ROTATION
+                              (value) => value.type == ConstraintType.ROTATION,
                             );
                           if (
                             otherRotConstraint?.payload.slerp?.progress <
@@ -798,12 +798,12 @@ export default class ProceduralAnimationObject {
                           start: quat.setAxisAngle(
                             quat.create(),
                             crossAxis,
-                            angle
+                            angle,
                           ),
                           end: quat.setAxisAngle(
                             quat.create(),
                             crossAxis,
-                            -constraint.payload.angleMax * 0.97
+                            -constraint.payload.angleMax * 0.97,
                           ),
                           progress: 0.0,
                           speed: 3.0,
@@ -824,7 +824,7 @@ export default class ProceduralAnimationObject {
               vec3.create(),
               joint.position,
               offsetDir,
-              currDist
+              currDist,
             );
             quat.mul(rotation, rotationQuat, rotation);
             quat.normalize(rotation, rotation);
@@ -838,7 +838,7 @@ export default class ProceduralAnimationObject {
         quat.rotationTo(
           childJoint.joint.gb.transform.rotation,
           vec3.fromValues(-1.0, 0.0, 0.0),
-          tempAxis
+          tempAxis,
         );
       } else {
         quat.identity(childJoint.joint.gb.transform.rotation);
@@ -847,7 +847,7 @@ export default class ProceduralAnimationObject {
       quat.mul(
         childJoint.joint.gb.transform.rotation,
         rotation,
-        childJoint.joint.gb.transform.rotation
+        childJoint.joint.gb.transform.rotation,
       );
       this.animateRecursive(childJoint.joint, rotation, dt);
     }
