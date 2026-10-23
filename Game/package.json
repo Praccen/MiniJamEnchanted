@@ -19,5 +19,8 @@
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup"
+  },
+  "allowScripts": {
+    "esbuild": true
   }
 }
