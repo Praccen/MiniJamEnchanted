@@ -25,7 +25,7 @@
     "format": "prettier --write src && prettier --write Game/src",
     "lint": "eslint src Game/src --ext .ts",
     "lint:fix": "eslint src Game/src --ext .ts --fix",
-    "host": "http-server -a 127.0.0.1 -c-1"
+    "host": "http-server -a 127.0.0.1 -c-1 Game"
   },
   "main": "./dist/Engine.cjs.js",
   "module": "./dist/Engine.esm.js",
@@ -39,6 +39,6 @@
     }
   },
   "allowScripts": {
-    "esbuild@0.25.1": true
+    "esbuild@0.27.2": true
   }
 }
