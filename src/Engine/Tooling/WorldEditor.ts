@@ -23,6 +23,10 @@ let json: {
     specular: string;
     emission: string;
     collision: boolean;
+    isStatic: boolean;
+    frictionCoefficient: number;
+    collisionCoefficient: number;
+    drag: number;
     meshCollision: boolean;
     placements: {
       translation: number[];
@@ -1243,7 +1247,22 @@ export default class WorldEditor {
 
           if (mesh.collision) {
             // this.scene.addNewShape(physicsObject.boundingBox);
-            this.physicsScene.addNewPhysicsObject(null, physicsObject);
+            const po = this.physicsScene.addNewPhysicsObject(
+              null,
+              physicsObject,
+            );
+            if (mesh.isStatic != undefined) {
+              po.isStatic = mesh.isStatic;
+            }
+            if (mesh.collisionCoefficient != undefined) {
+              po.collisionCoefficient = mesh.collisionCoefficient;
+            }
+            if (mesh.frictionCoefficient != undefined) {
+              po.frictionCoefficient = mesh.frictionCoefficient;
+            }
+            if (mesh.drag != undefined) {
+              po.drag = mesh.drag;
+            }
           }
         }
       }
