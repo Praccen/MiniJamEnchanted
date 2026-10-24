@@ -25,11 +25,11 @@ export default class Player {
   constructor(scene: Scene, physicsScene: PhysicsScene, startPos: vec3) {
     this.proceduralAnimationModel = new ProceduralAnimationObject(
       scene,
-      startPos,
+      startPos
     );
 
     this.physicsObject = physicsScene.addNewPhysicsObject(
-      this.proceduralAnimationModel.baseJoint.gb.transform,
+      this.proceduralAnimationModel.baseJoint.gb.transform
     );
     this.physicsObject.mass = this.mass;
 
@@ -57,7 +57,7 @@ export default class Player {
     camera.setPitchJawDegrees(this.pitch, this.jaw); // Update the rotation of the camera
 
     this.proceduralAnimationModel.headingDirection = vec3.clone(
-      camera.getDir(),
+      camera.getDir()
     );
 
     let accVec = vec3.create();
@@ -77,21 +77,21 @@ export default class Player {
       vec2.sqrLen(
         vec2.fromValues(
           Input.joystickLeftDirection[0],
-          Input.joystickLeftDirection[1],
-        ),
+          Input.joystickLeftDirection[1]
+        )
       ) > 0.001
     ) {
       vec3.scaleAndAdd(
         accVec,
         accVec,
         right,
-        Input.joystickLeftDirection[0] * 2.0,
+        Input.joystickLeftDirection[0] * 2.0
       );
       vec3.scaleAndAdd(
         accVec,
         accVec,
         forward,
-        -Input.joystickLeftDirection[1] * 2.0,
+        -Input.joystickLeftDirection[1] * 2.0
       );
     }
     // Keyboard control
@@ -119,7 +119,7 @@ export default class Player {
         this.physicsObject.force,
         this.physicsObject.force,
         accVec,
-        this.accelerationForce,
+        this.accelerationForce
       );
     }
 
@@ -137,14 +137,14 @@ export default class Player {
     let cameraOffset = vec3.scale(
       vec3.create(),
       camera.getDir(),
-      -cameraDistance,
+      -cameraDistance
     );
 
     vec3.scaleAndAdd(
       cameraOffset,
       cameraOffset,
       camera.getRight(),
-      1.0 - Math.min(cameraDistance, 0.8),
+      1.0 - Math.min(cameraDistance, 0.8)
     );
 
     // cameraOffset[1] += 1.0;
@@ -155,8 +155,8 @@ export default class Player {
       vec3.add(
         vec3.create(),
         this.proceduralAnimationModel.baseJoint.position,
-        cameraOffset,
-      ),
+        cameraOffset
+      )
     );
     // -------------------------------------
 

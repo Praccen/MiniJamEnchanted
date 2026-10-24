@@ -67,7 +67,7 @@ export default class Game {
       this.camera,
       this.scene,
       this.physicsScene,
-      this.guiRenderer,
+      this.guiRenderer
     );
 
     this.worldEditor.loadWorld([
@@ -79,7 +79,7 @@ export default class Game {
 
     this.worldEditor.internalPhysicsScene.addNewPhysicsObject(
       null,
-      this.player.physicsObject,
+      this.player.physicsObject
     );
 
     this.physicsScene.update(0.0, true, false);
@@ -90,14 +90,14 @@ export default class Game {
         let box = this.scene.addNewMesh(
           "Assets/objs/cube.obj",
           args[2] ?? "CSS:rgb(255, 0, 0)",
-          "CSS:rgb(0, 0, 0)",
+          "CSS:rgb(0, 0, 0)"
         );
         let po = this.physicsScene.addNewPhysicsObject(box.transform);
         this.worldEditor.internalPhysicsScene.addNewPhysicsObject(null, po);
         this.worldEditor.setSelectedTransform(box.transform);
         return "Added box";
       },
-      true,
+      true
     );
   }
 
@@ -143,7 +143,7 @@ export default class Game {
         this.camera,
         this.camera.getFrustum(),
         true,
-        "captureScreen.png",
+        "captureScreen.png"
       );
       this.saveScreenshot = false;
     } else {

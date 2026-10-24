@@ -18,7 +18,7 @@ export namespace SAT {
     shapeAVertices: Array<vec3>,
     shapeBVertices: Array<vec3>,
     reverse: { value: boolean },
-    margin: number,
+    margin: number
   ): number {
     let maxA = vec3.dot(overlapVector, shapeAVertices[0]);
     let minA = maxA;
@@ -69,7 +69,7 @@ export namespace SAT {
     shapeAVertices: Array<vec3>,
     shapeBVertices: Array<vec3>,
     relativeVelocity: vec3,
-    info: { first: number; last: number; max: number; intersectionVec: vec3 },
+    info: { first: number; last: number; max: number; intersectionVec: vec3 }
   ): boolean {
     let minA = Infinity,
       minB = Infinity;
@@ -176,7 +176,7 @@ export namespace SAT {
   export function getIntersectionPoint(
     shapeA: Shape,
     shapeB: Shape,
-    testAxis: vec3,
+    testAxis: vec3
   ): vec3 {
     const verticesA = shapeA.getTransformedVertices();
     const verticesB = shapeB.getTransformedVertices();
@@ -233,7 +233,7 @@ export namespace SAT {
       Math.abs(minA),
       Math.abs(maxA),
       Math.abs(minB),
-      Math.abs(maxB),
+      Math.abs(maxB)
     );
     const tolerance = Math.max(Epsilon, scale * 1e-6);
 
@@ -277,7 +277,7 @@ export namespace SAT {
     shapeA: Shape,
     shapeB: Shape,
     intersectionAxis: vec3,
-    intersectionDepth: { depth: number },
+    intersectionDepth: { depth: number }
   ): boolean {
     intersectionDepth.depth = Infinity;
 
@@ -292,7 +292,7 @@ export namespace SAT {
         shapeAVertices,
         shapeBVertices,
         reverse,
-        shapeA.margin + shapeB.margin,
+        shapeA.margin + shapeB.margin
       );
 
       if (overlap < 0.0) {
@@ -336,7 +336,7 @@ export namespace SAT {
       let crossVector = vec3.cross(
         vec3.create(),
         shapeANormals[0],
-        shapeBNormals[0],
+        shapeBNormals[0]
       );
 
       if (vec3.sqrLen(crossVector) < Epsilon) {
@@ -390,7 +390,7 @@ export namespace SAT {
     shapeB: Shape,
     velocityA: ReadonlyVec3,
     velocityB: ReadonlyVec3,
-    timeMax: number,
+    timeMax: number
   ): [number, vec3] {
     // Treat shapeA as stationary and shapeB as moving
     let relativeVel = vec3.subtract(vec3.create(), velocityB, velocityA);
@@ -413,7 +413,7 @@ export namespace SAT {
           shapeAVertices,
           shapeBVertices,
           relativeVel,
-          info,
+          info
         )
       ) {
         return [Infinity, null];
@@ -428,7 +428,7 @@ export namespace SAT {
           shapeAVertices,
           shapeBVertices,
           relativeVel,
-          info,
+          info
         )
       ) {
         return [Infinity, null];
@@ -448,7 +448,7 @@ export namespace SAT {
       let crossVector = vec3.cross(
         vec3.create(),
         shapeANormals[0],
-        shapeBNormals[0],
+        shapeBNormals[0]
       );
 
       if (vec3.sqrLen(crossVector) < Epsilon) {
@@ -461,7 +461,7 @@ export namespace SAT {
               shapeAVertices,
               shapeBVertices,
               relativeVel,
-              info,
+              info
             )
           ) {
             return [Infinity, null];
@@ -475,7 +475,7 @@ export namespace SAT {
               shapeAVertices,
               shapeBVertices,
               relativeVel,
-              info,
+              info
             )
           ) {
             return [Infinity, null];
@@ -504,7 +504,7 @@ export namespace SAT {
               shapeAVertices,
               shapeBVertices,
               relativeVel,
-              info,
+              info
             )
           ) {
             return [Infinity, null];
