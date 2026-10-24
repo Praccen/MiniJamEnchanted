@@ -1,23 +1,6 @@
 {
   "meshes": [
     {
-      "name": "Ground",
-      "meshPath": "Assets/objs/cube.obj",
-      "diffuse": "CSS:rgb(255,255,255)",
-      "specular": "CSS:rgb(0,0,0)",
-      "collision": true,
-      "frictionCoefficient": 1.0,
-      "placements": [
-        {
-          "translation": [0, -4, 0],
-          "scale": [100, 1, 100],
-          "oneLineFormat": null,
-          "rotation": [0, 0, 0, 1],
-          "origin": [0, 0, 0]
-        }
-      ]
-    },
-    {
       "name": "asd",
       "meshPath": "Assets/objs/cube.obj",
       "diffuse": "CSS:rgb(255,255,255)",

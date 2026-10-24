@@ -70,7 +70,10 @@ export default class Game {
       this.guiRenderer,
     );
 
-    this.worldEditor.loadWorld("Assets/placements/placements.json");
+    this.worldEditor.loadWorld([
+      "Assets/placements/placements.json",
+      "Assets/placements/floor.json",
+    ]);
 
     this.worldEditor.internalPhysicsScene.addNewPhysicsObject(
       null,

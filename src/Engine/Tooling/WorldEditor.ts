@@ -1132,143 +1132,150 @@ export default class WorldEditor {
     }
   }
 
-  async loadWorld(path: string) {
-    let placements = await fetch(path);
-    json = await placements.json();
+  async loadWorld(paths: Array<string>) {
+    for (const path of paths) {
+      let placements = await fetch(path);
+      json = await placements.json();
 
-    if (json.meshes != undefined) {
-      for (const mesh of json.meshes) {
-        if (this.placementsMap.has(mesh.name)) {
-          throw (
-            'Tried to load meshes with duplicate name "' +
-            mesh.name +
-            '" from ' +
-            path +
-            "."
-          );
+      if (json.meshes != undefined) {
+        for (const mesh of json.meshes) {
+          if (this.placementsMap.has(mesh.name)) {
+            throw (
+              'Tried to load meshes with duplicate name "' +
+              mesh.name +
+              '" from ' +
+              path +
+              "."
+            );
+          }
+          this.placementsMap.set(mesh.name, []);
+          for (let i = 0; i < mesh.placements.length; i++) {
+            const placement = mesh.placements[i];
+            const bundle =
+              mesh.meshPath.endsWith("glb") || mesh.meshPath.endsWith("gltf")
+                ? this.scene.addNewAnimatedMesh(
+                    mesh.meshPath,
+                    mesh.diffuse,
+                    mesh.specular,
+                    true
+                  )
+                : this.scene.addNewMesh(
+                    mesh.meshPath,
+                    mesh.diffuse,
+                    mesh.specular,
+                    false
+                  );
+
+            if (this.currentlySelectedTransform == null) {
+              this.currentlySelectedTransform = bundle.transform;
+            }
+
+            const index =
+              this.placementsMap.get(mesh.name).push({
+                gb: bundle,
+                po: null,
+                jsonMesh: mesh,
+                placementIndex: i,
+              }) - 1;
+            let placementsMapEntry = this.placementsMap.get(mesh.name)[index];
+
+            if (mesh.emission != undefined && mesh.emission.length > 0) {
+              bundle.emission = this.scene.renderer.textureStore.getTexture(
+                mesh.emission
+              );
+            }
+            let translation = placement.translation;
+            let scale = placement.scale;
+            let rotation = placement.rotation;
+            let origin = placement.origin;
+
+            // If there's a oneLineFormat, use that
+            if (
+              placement.oneLineFormat != undefined &&
+              placement.oneLineFormat.length > 0
+            ) {
+              let [p, s, r, o] = placement.oneLineFormat.split("|");
+              translation = p.split(",").map((n: string) => parseFloat(n));
+              scale = s.split(",").map((n: string) => parseFloat(n));
+              rotation = r.split(",").map((n: string) => parseFloat(n));
+              origin = o.split(",").map((n: string) => parseFloat(n));
+            }
+
+            if (translation != undefined && translation.length == 3) {
+              vec3.set(
+                bundle.transform.position,
+                translation[0],
+                translation[1],
+                translation[2]
+              );
+            }
+            if (scale != undefined && scale.length == 3) {
+              vec3.set(bundle.transform.scale, scale[0], scale[1], scale[2]);
+            }
+            if (origin != undefined && origin.length == 3) {
+              vec3.set(
+                bundle.transform.origin,
+                origin[0],
+                origin[1],
+                origin[2]
+              );
+            }
+            if (rotation != undefined && rotation.length == 3) {
+              quat.fromEuler(
+                bundle.transform.rotation,
+                rotation[0],
+                rotation[1],
+                rotation[2]
+              );
+            } else if (rotation != undefined && rotation.length == 4) {
+              quat.set(
+                bundle.transform.rotation,
+                rotation[0],
+                rotation[1],
+                rotation[2],
+                rotation[3]
+              );
+            }
+
+            const physicsObject = this.internalPhysicsScene.addNewPhysicsObject(
+              bundle.transform
+            );
+            placementsMapEntry.po = physicsObject;
+            physicsObject.setupBoundingBoxFromGraphicsBundle(bundle);
+            physicsObject.isStatic = true;
+
+            if (mesh.meshCollision) {
+              physicsObject.setupInternalTreeFromGraphicsObject(
+                bundle.graphicsObject,
+                mesh.meshPath
+              );
+            }
+
+            if (mesh.collision) {
+              // this.scene.addNewShape(physicsObject.boundingBox);
+              const po = this.physicsScene.addNewPhysicsObject(
+                null,
+                physicsObject
+              );
+              if (mesh.isStatic != undefined) {
+                po.isStatic = mesh.isStatic;
+              }
+              if (mesh.collisionCoefficient != undefined) {
+                po.collisionCoefficient = mesh.collisionCoefficient;
+              }
+              if (mesh.frictionCoefficient != undefined) {
+                po.frictionCoefficient = mesh.frictionCoefficient;
+              }
+              if (mesh.drag != undefined) {
+                po.drag = mesh.drag;
+              }
+            }
+          }
         }
-        this.placementsMap.set(mesh.name, []);
-        for (let i = 0; i < mesh.placements.length; i++) {
-          const placement = mesh.placements[i];
-          const bundle =
-            mesh.meshPath.endsWith("glb") || mesh.meshPath.endsWith("gltf")
-              ? this.scene.addNewAnimatedMesh(
-                  mesh.meshPath,
-                  mesh.diffuse,
-                  mesh.specular,
-                  true,
-                )
-              : this.scene.addNewMesh(
-                  mesh.meshPath,
-                  mesh.diffuse,
-                  mesh.specular,
-                  false,
-                );
 
-          if (this.currentlySelectedTransform == null) {
-            this.currentlySelectedTransform = bundle.transform;
-          }
-
-          const index =
-            this.placementsMap.get(mesh.name).push({
-              gb: bundle,
-              po: null,
-              jsonMesh: mesh,
-              placementIndex: i,
-            }) - 1;
-          let placementsMapEntry = this.placementsMap.get(mesh.name)[index];
-
-          if (mesh.emission != undefined && mesh.emission.length > 0) {
-            bundle.emission = this.scene.renderer.textureStore.getTexture(
-              mesh.emission,
-            );
-          }
-          let translation = placement.translation;
-          let scale = placement.scale;
-          let rotation = placement.rotation;
-          let origin = placement.origin;
-
-          // If there's a oneLineFormat, use that
-          if (
-            placement.oneLineFormat != undefined &&
-            placement.oneLineFormat.length > 0
-          ) {
-            let [p, s, r, o] = placement.oneLineFormat.split("|");
-            translation = p.split(",").map((n: string) => parseFloat(n));
-            scale = s.split(",").map((n: string) => parseFloat(n));
-            rotation = r.split(",").map((n: string) => parseFloat(n));
-            origin = o.split(",").map((n: string) => parseFloat(n));
-          }
-
-          if (translation != undefined && translation.length == 3) {
-            vec3.set(
-              bundle.transform.position,
-              translation[0],
-              translation[1],
-              translation[2],
-            );
-          }
-          if (scale != undefined && scale.length == 3) {
-            vec3.set(bundle.transform.scale, scale[0], scale[1], scale[2]);
-          }
-          if (origin != undefined && origin.length == 3) {
-            vec3.set(bundle.transform.origin, origin[0], origin[1], origin[2]);
-          }
-          if (rotation != undefined && rotation.length == 3) {
-            quat.fromEuler(
-              bundle.transform.rotation,
-              rotation[0],
-              rotation[1],
-              rotation[2],
-            );
-          } else if (rotation != undefined && rotation.length == 4) {
-            quat.set(
-              bundle.transform.rotation,
-              rotation[0],
-              rotation[1],
-              rotation[2],
-              rotation[3],
-            );
-          }
-
-          const physicsObject = this.internalPhysicsScene.addNewPhysicsObject(
-            bundle.transform,
-          );
-          placementsMapEntry.po = physicsObject;
-          physicsObject.setupBoundingBoxFromGraphicsBundle(bundle);
-          physicsObject.isStatic = true;
-
-          if (mesh.meshCollision) {
-            physicsObject.setupInternalTreeFromGraphicsObject(
-              bundle.graphicsObject,
-              mesh.meshPath,
-            );
-          }
-
-          if (mesh.collision) {
-            // this.scene.addNewShape(physicsObject.boundingBox);
-            const po = this.physicsScene.addNewPhysicsObject(
-              null,
-              physicsObject,
-            );
-            if (mesh.isStatic != undefined) {
-              po.isStatic = mesh.isStatic;
-            }
-            if (mesh.collisionCoefficient != undefined) {
-              po.collisionCoefficient = mesh.collisionCoefficient;
-            }
-            if (mesh.frictionCoefficient != undefined) {
-              po.frictionCoefficient = mesh.frictionCoefficient;
-            }
-            if (mesh.drag != undefined) {
-              po.drag = mesh.drag;
-            }
-          }
-        }
+        this.internalPhysicsScene.update(0.0, true, false);
+        this.physicsScene.update(0.0, true, false);
       }
-
-      this.internalPhysicsScene.update(0.0, true, false);
-      this.physicsScene.update(0.0, true, false);
     }
   }
 

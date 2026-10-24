@@ -1,0 +1,21 @@
+{
+    "meshes": [
+        {
+            "name": "floorTiledWood_center",
+            "meshPath": "Assets/objs/VoxelInterior/TilesWoodenGroundFloor_01.obj",
+            "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
+            "specular": "CSS:rgb(0,0,0)",
+            "collision": true,
+            "meshCollision": true,
+            "placements": [
+                {
+                    "translation": [0, -4, 0],
+                    "scale": [4, 1, 4],
+                    "oneLineFormat": null,
+                    "rotation": [0, 0, 0, 1],
+                    "origin": [0, 0, 0]
+                }
+            ]
+        }
+    ]
+}

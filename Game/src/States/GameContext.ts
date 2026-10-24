@@ -49,6 +49,7 @@ export default class GameContext {
       let meshes = [
         "Assets/objs/cube.obj",
         "Assets/objs/VoxelInterior/ChairBirchBlueSeat_00.obj",
+        "Assets/objs/VoxelInterior/TilesWoodenGroundFloor_01.obj",
       ];
 
       progress.requested = meshes.length;
