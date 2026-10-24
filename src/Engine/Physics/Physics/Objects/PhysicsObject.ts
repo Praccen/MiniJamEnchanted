@@ -19,6 +19,7 @@ export default class PhysicsObject {
   frictionCoefficient: number = 0.0;
   collisionCoefficient: number = 0.0;
   drag: number = 0.0;
+  angularDamping: number = 2.0;
   velocity: vec3 = vec3.create();
   impulse: vec3 = vec3.create();
   force: vec3 = vec3.create();

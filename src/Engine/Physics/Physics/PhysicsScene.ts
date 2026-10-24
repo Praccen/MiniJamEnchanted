@@ -394,38 +394,16 @@ export default class PhysicsScene {
               physicsObject.transform.rotation,
             );
 
-            const angularDamping = 2.0; // Per sekund; justera efter känsla.
-
             vec3.scale(
               physicsObject.angularVelocity,
               physicsObject.angularVelocity,
-              Math.exp(-angularDamping * dt),
+              Math.exp(-physicsObject.angularDamping * dt),
             );
 
             // Eliminera mycket små resthastigheter.
             if (vec3.squaredLength(physicsObject.angularVelocity) < 1e-6) {
               vec3.set(physicsObject.angularVelocity, 0, 0, 0);
             }
-          }
-
-          if (physicsObject.testRotationActive) {
-            const deltaRotation = quat.setAxisAngle(
-              quat.create(),
-              physicsObject.testRotationAxis,
-              Math.PI * dt,
-            );
-
-            quat.multiply(
-              physicsObject.transform.rotation,
-              deltaRotation,
-              physicsObject.transform.rotation,
-            );
-
-            quat.normalize(
-              physicsObject.transform.rotation,
-              physicsObject.transform.rotation,
-            );
-            // physicsObject.testRotationActive = false;
           }
 
           physicsObject.transform.calculateMatrices();

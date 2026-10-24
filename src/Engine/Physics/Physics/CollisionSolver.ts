@@ -1,7 +1,6 @@
 import { mat4, quat, vec3 } from "gl-matrix";
 import { IntersectionTester } from "./IntersectionTester.js";
 import PhysicsObject from "./Objects/PhysicsObject.js";
-import { collisionPointVisualizer } from "../../Tooling/WorldEditor.js";
 
 const skin_width = 0.02;
 
@@ -38,6 +37,115 @@ export namespace CollisionSolver {
     }
 
     return final_mtv;
+  }
+
+  function getInverseMass(object: PhysicsObject): number {
+    if (object.isStatic || object.isImmovable || object.mass <= 0) {
+      return 0;
+    }
+
+    return 1 / object.mass;
+  }
+
+  function getWorldMassCenter(object: PhysicsObject): vec3 {
+    return vec3.transformMat4(
+      vec3.create(),
+      object.massCenter,
+      object.transform.matrix,
+    );
+  }
+
+  /**
+   * Beräknar förändringen i vinkelhastighet från en
+   * vinkelimpuls, utan att faktiskt ändra objektet.
+   */
+  function getAngularVelocityChange(
+    object: PhysicsObject,
+    angularImpulse: vec3,
+  ): vec3 {
+    if (
+      object.isStatic ||
+      object.isImmovable ||
+      object.mass <= 0 ||
+      !object.dynamicCollisionResponses
+    ) {
+      return vec3.create();
+    }
+
+    const inverseRotation = quat.invert(
+      quat.create(),
+      object.transform.rotation,
+    );
+
+    const localImpulse = vec3.transformQuat(
+      vec3.create(),
+      angularImpulse,
+      inverseRotation,
+    );
+
+    localImpulse[0] *= object.inverseInertiaLocal[0];
+    localImpulse[1] *= object.inverseInertiaLocal[1];
+    localImpulse[2] *= object.inverseInertiaLocal[2];
+
+    return vec3.transformQuat(
+      vec3.create(),
+      localImpulse,
+      object.transform.rotation,
+    );
+  }
+
+  /**
+   * Effektiv invers massa i en viss riktning vid en kontaktpunkt.
+   * Tar hänsyn till både translation och rotation.
+   */
+  function getEffectiveInverseMass(
+    object: PhysicsObject,
+    contactPoint: vec3,
+    direction: vec3,
+  ): number {
+    const invMass = getInverseMass(object);
+
+    if (invMass === 0) {
+      return 0;
+    }
+
+    const worldCenter = getWorldMassCenter(object);
+    const r = vec3.subtract(vec3.create(), contactPoint, worldCenter);
+
+    // Vinkelimpuls som skapas av en enhetsimpuls i riktningen.
+    const angularImpulse = vec3.cross(vec3.create(), r, direction);
+
+    const angularVelocityChange = getAngularVelocityChange(
+      object,
+      angularImpulse,
+    );
+
+    // Kontaktpunktens hastighetsförändring från rotationen.
+    const rotationalVelocityChange = vec3.cross(
+      vec3.create(),
+      angularVelocityChange,
+      r,
+    );
+
+    return invMass + vec3.dot(direction, rotationalVelocityChange);
+  }
+
+  /**
+   * Hastigheten vid kontaktpunkten:
+   * linjär hastighet + vinkelhastighet × hävarm.
+   */
+  function getVelocityAtPoint(object: PhysicsObject, contactPoint: vec3): vec3 {
+    const worldCenter = getWorldMassCenter(object);
+
+    const r = vec3.subtract(vec3.create(), contactPoint, worldCenter);
+
+    const rotationalVelocity = vec3.cross(
+      vec3.create(),
+      object.angularVelocity,
+      r,
+    );
+
+    return vec3.add(vec3.create(), object.velocity, rotationalVelocity);
   }
 
   function applyAngularImpulse(
@@ -103,191 +211,170 @@ export namespace CollisionSolver {
         continue;
       }
 
-      let axis = vec3.clone(inf.axis);
+      const contactPoint = inf.point;
+      const axis = vec3.normalize(vec3.create(), inf.axis);
 
-      let e1Vel = po1.velocity;
-      let e2Vel = po2.velocity;
+      const invMass1 = getInverseMass(po1);
+      const invMass2 = getInverseMass(po2);
 
-      let velDifference = vec3.sub(vec3.create(), e1Vel, e2Vel);
-      let dotProd = vec3.dot(velDifference, axis);
-      if (dotProd < 0.0) {
-        let eN = vec3.cross(
-          vec3.create(),
-          vec3.cross(vec3.create(), velDifference, axis),
-          axis,
+      if (invMass1 + invMass2 === 0) {
+        continue;
+      }
+
+      // Hastigheter vid själva kontaktpunkten, inklusive rotation.
+      const velocity1 = getVelocityAtPoint(po1, contactPoint);
+      const velocity2 = getVelocityAtPoint(po2, contactPoint);
+
+      const relativeVelocity = vec3.subtract(
+        vec3.create(),
+        velocity1,
+        velocity2,
+      );
+
+      // Negativ hastighet längs normalen betyder att objekten närmar sig.
+      const normalSpeed = vec3.dot(relativeVelocity, axis);
+
+      if (normalSpeed < 0) {
+        const restitution = Math.max(
+          0,
+          Math.max(po1.collisionCoefficient, po2.collisionCoefficient),
         );
 
-        if (vec3.squaredLength(eN) > 0.0001) {
-          vec3.normalize(eN, eN);
-        }
+        const normalMass =
+          getEffectiveInverseMass(po1, contactPoint, axis) +
+          getEffectiveInverseMass(po2, contactPoint, axis);
 
-        let e1Change = vec3.create();
-        let e2Change = vec3.create();
+        if (normalMass > 1e-8) {
+          // Impulsens storlek längs kollisionsnormalen.
+          const normalImpulseMagnitude =
+            (-(1 + restitution) * normalSpeed) / normalMass;
 
-        let collisionCoefficient = Math.max(
-          po1.collisionCoefficient,
-          po2.collisionCoefficient,
-        ); // TODO: This can be calculated differently, will be based on material abilities in the future
-        let frictionCoefficient = Math.min(
-          po1.frictionCoefficient,
-          po2.frictionCoefficient,
-        ); // TODO: This can be calculated differently, will be based on material abilities in the future
+          const normalImpulse = vec3.scale(
+            vec3.create(),
+            axis,
+            normalImpulseMagnitude,
+          );
 
-        if (
-          po1 &&
-          !po1.isStatic &&
-          !po1.isImmovable &&
-          po2 &&
-          !po2.isStatic &&
-          !po2.isImmovable
-        ) {
-          let v1Dot = vec3.dot(e1Vel, axis);
-          let v2Dot = vec3.dot(e2Vel, axis);
-          let tangentVel1 = vec3.dot(velDifference, eN);
-          let tangentVel2 = -tangentVel1;
-          let u1Dot =
-            ((po1.mass - collisionCoefficient * po2.mass) /
-              (po1.mass + po2.mass)) *
-              v1Dot +
-            (((1.0 + collisionCoefficient) * po2.mass) /
-              (po1.mass + po2.mass)) *
-              v2Dot;
-          let u2Dot =
-            ((po2.mass - collisionCoefficient * po1.mass) /
-              (po2.mass + po1.mass)) *
-              v2Dot +
-            (((1.0 + collisionCoefficient) * po1.mass) /
-              (po2.mass + po1.mass)) *
-              v1Dot;
+          // Friktionsimpuls längs kontaktens tangentplan.
+          const tangentVelocity = vec3.scaleAndAdd(
+            vec3.create(),
+            relativeVelocity,
+            axis,
+            -normalSpeed,
+          );
 
-          let frictionMagnitude1 =
-            -tangentVel1 *
-            Math.min(
-              frictionCoefficient,
-              frictionCoefficient * Math.abs(u1Dot - v1Dot),
-            );
-          let frictionMagnitude2 =
-            -tangentVel2 *
-            Math.min(
-              frictionCoefficient,
-              frictionCoefficient * Math.abs(u2Dot - v2Dot),
+          const tangentSpeed = vec3.length(tangentVelocity);
+
+          let frictionImpulse = vec3.create();
+
+          if (tangentSpeed > 1e-8) {
+            const tangent = vec3.scale(
+              vec3.create(),
+              tangentVelocity,
+              1 / tangentSpeed,
             );
 
-          vec3.scaleAndAdd(e1Change, e1Change, axis, u1Dot - v1Dot);
-          vec3.scaleAndAdd(e1Change, e1Change, eN, frictionMagnitude1);
+            const tangentMass =
+              getEffectiveInverseMass(po1, contactPoint, tangent) +
+              getEffectiveInverseMass(po2, contactPoint, tangent);
 
-          vec3.scaleAndAdd(e2Change, e2Change, axis, u2Dot - v2Dot);
-          vec3.scaleAndAdd(e2Change, e2Change, eN, frictionMagnitude2);
-        } else if (po1.isStatic || po1.isImmovable) {
-          let inverseVelDifference = vec3.negate(vec3.create(), velDifference);
-          let v2Dot = vec3.dot(inverseVelDifference, axis);
-          let relativeTangentVel = vec3.dot(inverseVelDifference, eN);
-          let frictionMagnitude =
-            relativeTangentVel *
-            Math.min(
-              frictionCoefficient,
-              frictionCoefficient * Math.abs(v2Dot),
-            );
+            if (tangentMass > 1e-8) {
+              const frictionCoefficient = Math.max(
+                0,
+                Math.min(po1.frictionCoefficient, po2.frictionCoefficient),
+              );
+
+              // Coulomb-liknande friktion: begränsad av normalimpulsen.
+              const desiredFrictionMagnitude = tangentSpeed / tangentMass;
+              const maxFrictionMagnitude =
+                frictionCoefficient * normalImpulseMagnitude;
+
+              const frictionMagnitude = Math.min(
+                desiredFrictionMagnitude,
+                maxFrictionMagnitude,
+              );
+
+              frictionImpulse = vec3.scale(
+                vec3.create(),
+                tangent,
+                -frictionMagnitude,
+              );
+            }
+          }
+
+          // Samlad impuls på po1. po2 får motsatt impuls.
+          const impulse = vec3.add(
+            vec3.create(),
+            normalImpulse,
+            frictionImpulse,
+          );
+
+          const oppositeImpulse = vec3.negate(vec3.create(), impulse);
+
+          // Linjär rörelse.
+          vec3.scaleAndAdd(po1.velocity, po1.velocity, impulse, invMass1);
 
           vec3.scaleAndAdd(
-            e2Change,
-            e2Change,
-            axis,
-            -v2Dot * (1.0 + collisionCoefficient),
+            po2.velocity,
+            po2.velocity,
+            oppositeImpulse,
+            invMass2,
           );
-          vec3.scaleAndAdd(e2Change, e2Change, eN, -frictionMagnitude);
-        } else if (po2.isStatic || po2.isImmovable) {
-          let v1Dot = vec3.dot(velDifference, axis);
-          let relativeTangentVel = vec3.dot(velDifference, eN);
-          let frictionMagnitude =
-            relativeTangentVel *
-            Math.min(
-              frictionCoefficient,
-              frictionCoefficient * Math.abs(v1Dot),
-            );
 
-          vec3.scaleAndAdd(
-            e1Change,
-            e1Change,
-            axis,
-            -v1Dot * (1.0 + collisionCoefficient),
-          );
-          vec3.scaleAndAdd(e1Change, e1Change, eN, -frictionMagnitude);
-        }
-
-        const contactPoint = inf.point;
-
-        if (contactPoint) {
-          // Linear impulses derived from the velocity changes.
-          const impulse1 = vec3.scale(vec3.create(), e1Change, po1.mass * 0.1);
-
-          const impulse2 = vec3.scale(vec3.create(), e2Change, po2.mass * 0.1);
-
-          if (po1.dynamicCollisionResponses) {
-            applyAngularImpulse(po1, contactPoint, impulse1);
-            let visualizationMat = mat4.create();
-            mat4.translate(visualizationMat, visualizationMat, contactPoint);
-            collisionPointVisualizer.setTransformMatrix(visualizationMat);
-          }
-          if (po2.dynamicCollisionResponses) {
-            applyAngularImpulse(po2, contactPoint, impulse2);
-            let visualizationMat = mat4.create();
-            mat4.translate(visualizationMat, visualizationMat, contactPoint);
-            collisionPointVisualizer.setTransformMatrix(visualizationMat);
-          }
-        }
-
-        vec3.add(e1Vel, e1Vel, e1Change);
-        if (axis[1] > 0.4) {
-          po1.onGround = true;
-        }
-
-        vec3.add(e2Vel, e2Vel, e2Change);
-        if (axis[1] < -0.4) {
-          po2.onGround = true;
+          // Rotation. Statiska/immovable objekt ignoreras av funktionen.
+          applyAngularImpulse(po1, contactPoint, impulse);
+          applyAngularImpulse(po2, contactPoint, oppositeImpulse);
         }
       }
-    }
 
-    let displacement = CollisionSolver.getTranslationNeeded(
-      intersectionInformation,
-    );
-    let totalMass = po1.mass + po2.mass;
-    let po1Part = 0.5;
-    let po2Part = 0.5;
+      if (axis[1] > 0.4) {
+        po1.onGround = true;
+      }
 
-    if (totalMass >= 0.0) {
-      po1Part = po1.mass / totalMass;
-      po2Part = po2.mass / totalMass;
-    }
+      if (axis[1] < -0.4) {
+        po2.onGround = true;
+      }
 
-    if (po2.isImmovable || po2.isStatic) {
-      po1Part = 1.0;
-    }
-    if (po1.isImmovable || po1.isStatic) {
-      po2Part = 1.0;
-    }
-
-    if (!po1.isImmovable && !po1.isStatic) {
-      vec3.scaleAndAdd(
-        po1.unearthVelocity,
-        po1.unearthVelocity,
-        displacement,
-        po1Part * 10.0,
+      let displacement = CollisionSolver.getTranslationNeeded(
+        intersectionInformation,
       );
-      // po1.transform.translate(vec3.scale(vec3.create(), displacement, po1Part));
-    }
+      let totalMass = po1.mass + po2.mass;
+      let po1Part = 0.5;
+      let po2Part = 0.5;
 
-    if (!po2.isImmovable && !po2.isStatic) {
-      vec3.scaleAndAdd(
-        po2.unearthVelocity,
-        po2.unearthVelocity,
-        displacement,
-        -po2Part * 10.0,
-      );
-      // po2.transform.translate(
-      //   vec3.scale(vec3.create(), displacement, -po2Part)
-      // );
+      if (totalMass >= 0.0) {
+        po1Part = po1.mass / totalMass;
+        po2Part = po2.mass / totalMass;
+      }
+
+      if (po2.isImmovable || po2.isStatic) {
+        po1Part = 1.0;
+      }
+      if (po1.isImmovable || po1.isStatic) {
+        po2Part = 1.0;
+      }
+
+      if (!po1.isImmovable && !po1.isStatic) {
+        vec3.scaleAndAdd(
+          po1.unearthVelocity,
+          po1.unearthVelocity,
+          displacement,
+          po1Part * 10.0,
+        );
+        // po1.transform.translate(vec3.scale(vec3.create(), displacement, po1Part));
+      }
+
+      if (!po2.isImmovable && !po2.isStatic) {
+        vec3.scaleAndAdd(
+          po2.unearthVelocity,
+          po2.unearthVelocity,
+          displacement,
+          -po2Part * 10.0,
+        );
+        // po2.transform.translate(
+        //   vec3.scale(vec3.create(), displacement, -po2Part)
+        // );
+      }
     }
   }
 }

@@ -10,8 +10,9 @@
       "frictionCoefficient": 0.4,
       "dynamicCollisionResponses": true,
       "mass": 1.0,
-      "collisionCoefficient": 0.7,
+      "collisionCoefficient": 0.8,
       "drag": 0.5,
+      "angularDamping": 0.4,
       "placements": [
         {
           "translation": [-4, 0, 0],
