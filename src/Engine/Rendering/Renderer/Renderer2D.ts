@@ -17,6 +17,14 @@ export default class Renderer2D extends RendererBase {
     this.guiShaderProgram = new GUIShaderProgram(this.gl);
   }
 
+  /**
+   * Renderer2D draws straight to the canvas with no intermediate framebuffer,
+   * so it has no way to resolve a supersampled image back down. Keep it at 1x.
+   */
+  setSSAAFactor(_factor: number) {
+    super.setSSAAFactor(1.0);
+  }
+
   render(
     scene: Scene,
     camera: Camera,

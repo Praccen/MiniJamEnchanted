@@ -13,13 +13,25 @@ export default class RendererBase {
   textureStore: TextureStore;
   meshStore: MeshStore;
 
+  // Internal (possibly supersampled) resolution. All full screen framebuffers
+  // and viewports before the final blit use these.
   protected width: number;
   protected height: number;
+
+  // Display resolution, in CSS pixels. The canvas is laid out at this size and
+  // the final blit targets it.
+  protected displayWidth: number;
+  protected displayHeight: number;
+
+  protected ssaaFactor: number;
 
   gl: WebGL2RenderingContext;
 
   constructor() {
     this.initGL();
+    this.ssaaFactor = 1.0;
+    this.displayWidth = 100;
+    this.displayHeight = 100;
     this.width = 100;
     this.height = 100;
 
@@ -69,14 +81,40 @@ export default class RendererBase {
     this.gl.enable(this.gl.CULL_FACE);
   }
 
+  /**
+   * Set the display size, in CSS pixels. The internal rendering resolution is
+   * this multiplied by the current SSAA factor.
+   */
   setSize(x: number, y: number, updateStyle: boolean = false) {
-    this.width = x;
-    this.height = y;
+    this.displayWidth = x;
+    this.displayHeight = y;
+
+    this.width = Math.max(1, Math.round(x * this.ssaaFactor));
+    this.height = Math.max(1, Math.round(y * this.ssaaFactor));
 
     if (updateStyle) {
-      this.domElement.width = this.width;
-      this.domElement.height = this.height;
+      // The canvas stays at the display resolution. Supersampling happens in
+      // the offscreen framebuffers, and the final pass resolves them down into
+      // this buffer, so the browser never has to rescale the canvas itself.
+      this.domElement.width = this.displayWidth;
+      this.domElement.height = this.displayHeight;
+      this.domElement.style.width = this.displayWidth + "px";
+      this.domElement.style.height = this.displayHeight + "px";
     }
+  }
+
+  /**
+   * Supersampling factor. 2.0 renders at twice the width and height (four
+   * times the fragments) and downsamples on output. Reallocates every full
+   * screen framebuffer, so don't call this per frame.
+   */
+  setSSAAFactor(factor: number) {
+    this.ssaaFactor = Math.min(Math.max(factor, 0.5), 4.0);
+    this.setSize(this.displayWidth, this.displayHeight, true);
+  }
+
+  getSSAAFactor(): number {
+    return this.ssaaFactor;
   }
 
   protected takeScreenshot(screenshotName: string) {

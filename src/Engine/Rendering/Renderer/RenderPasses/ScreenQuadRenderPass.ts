@@ -1,17 +1,17 @@
 import Framebuffer from "../Framebuffers/Framebuffer.js";
 import Texture from "../../AssetHandling/Textures/Texture.js";
 import ScreenQuad from "../../Objects/GraphicsObjects/ScreenQuad.js";
-import ScreenQuadShaderProgram from "../ShaderPrograms/ScreenQuadShaderProgram.js";
+import ShaderProgram from "../ShaderPrograms/ShaderProgram.js";
 
 export default class ScreenQuadPass {
   private gl: WebGL2RenderingContext;
   private screenQuad: ScreenQuad;
-  private screenQuadShaderProgram: ScreenQuadShaderProgram;
+  private screenQuadShaderProgram: ShaderProgram;
   outputFramebuffer: Framebuffer;
 
   constructor(
     gl: WebGL2RenderingContext,
-    screenQuadShaderProgram: ScreenQuadShaderProgram,
+    screenQuadShaderProgram: ShaderProgram,
     inputTextures: Texture[],
   ) {
     this.gl = gl;

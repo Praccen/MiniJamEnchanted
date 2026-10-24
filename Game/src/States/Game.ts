@@ -99,6 +99,23 @@ export default class Game {
       },
       true,
     );
+
+    addNewConsoleCommand("set ssaa", (args: string[]) => {
+      const requested = parseFloat(args[2]);
+      if (isNaN(requested)) {
+        return (
+          "Usage: set ssaa <factor>, current: " + this.renderer.getSSAAFactor()
+        );
+      }
+      this.renderer.setSSAAFactor(requested);
+      // setSSAAFactor re-applies the last display size, so the camera and GUI
+      // need nothing here. Report what we actually clamped to.
+      return "SSAA factor set to " + this.renderer.getSSAAFactor();
+    });
+
+    addNewConsoleCommand("get ssaa", () => {
+      return "SSAA factor: " + this.renderer.getSSAAFactor();
+    });
   }
 
   resize(width: number, height: number) {

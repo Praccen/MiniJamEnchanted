@@ -15,6 +15,10 @@ export default class GameContext {
     this.renderer = new Renderer3D();
     document.body.appendChild(this.renderer.domElement);
 
+    // Supersample 2x per axis to resolve the hard voxel edges. Adjustable at
+    // runtime with the "set ssaa" console command if this is too slow.
+    this.renderer.setSSAAFactor(2.0);
+
     this.renderer.useVolumetric = true;
     this.renderer.setFogTexture("Assets/Textures/Fog.png");
 

@@ -11,6 +11,7 @@ import PointShadowRenderPass from "./RenderPasses/ShadowPasses/PointShadowRender
 import VolumetricLightingPass from "./RenderPasses/Volumetric/VolumetricLightingPass.js";
 import ParticleRenderPass from "./RenderPasses/Particles/ParticleRenderPass.js";
 import ScreenQuadShaderProgram from "./ShaderPrograms/ScreenQuadShaderProgram.js";
+import DownsampleShaderProgram from "./ShaderPrograms/DownsampleShaderProgram.js";
 import SkyboxShaderProgram from "./ShaderPrograms/Skybox/SkyboxShaderProgram.js";
 import GeometryPassShaderProgram from "./ShaderPrograms/DeferredRendering/GeometryPassShaderProgram.js";
 import GeometryPassInstancedShaderProgram from "./ShaderPrograms/DeferredRendering/GeometryPassInstancedShaderProgram.js";
@@ -34,6 +35,7 @@ import BlurMaskShaderProgram from "./ShaderPrograms/PostProcessing/BlurMaskShade
 export default class Renderer3D extends RendererBase {
   // ---- Multi use ----
   screenQuadShaderProgram: ScreenQuadShaderProgram;
+  downsampleShaderProgram: DownsampleShaderProgram;
   // -------------------
 
   // ---- Shadows ----
@@ -96,6 +98,7 @@ export default class Renderer3D extends RendererBase {
 
     // ---- Multi use ----
     this.screenQuadShaderProgram = new ScreenQuadShaderProgram(this.gl);
+    this.downsampleShaderProgram = new DownsampleShaderProgram(this.gl);
     // -------------------
 
     // ---- Shadows ----
@@ -237,7 +240,7 @@ export default class Renderer3D extends RendererBase {
 
     this.finishedOutputRenderPass = new ScreenQuadPass(
       this.gl,
-      this.screenQuadShaderProgram,
+      this.downsampleShaderProgram,
       this.finishedFramebuffer.textures,
     );
   }
@@ -245,10 +248,19 @@ export default class Renderer3D extends RendererBase {
   setSize(x: number, y: number, updateStyle: boolean = false) {
     super.setSize(x, y, updateStyle);
 
-    this.geometryRenderPass.setResolution(x, y);
-    this.finishedFramebuffer.setProportions(x, y);
-    this.blurMaskFramebuffer.setProportions(x, y);
-    this.volumetricLightingPass.setResolution(x, y);
+    // Full screen buffers run at the internal (supersampled) resolution, which
+    // super.setSize() has just derived from the display size. Shadow buffers
+    // have their own fixed resolutions and are deliberately not resized here.
+    this.geometryRenderPass.setResolution(this.width, this.height);
+    this.finishedFramebuffer.setProportions(this.width, this.height);
+    this.blurMaskFramebuffer.setProportions(this.width, this.height);
+    this.volumetricLightingPass.setResolution(this.width, this.height);
+
+    this.downsampleShaderProgram.use();
+    this.gl.uniform1i(
+      this.downsampleShaderProgram.getUniformLocation("ssaaSamples")[0],
+      Math.max(1, Math.ceil(this.ssaaFactor)),
+    );
   }
 
   setSkybox(path?: string) {
@@ -363,6 +375,10 @@ export default class Renderer3D extends RendererBase {
     this.shapesRenderPass.draw(scene, camera, this.showCullingShapes);
     // ----------------
 
+    // Back to the display resolution for the final blit. No pass before this
+    // one sets the viewport to the canvas size, so this is required whenever
+    // the internal resolution differs from the display resolution.
+    this.gl.viewport(0, 0, this.displayWidth, this.displayHeight);
     this.finishedOutputRenderPass.draw();
 
     if (saveScreenshot) {

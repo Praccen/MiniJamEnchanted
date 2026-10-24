@@ -143,8 +143,10 @@ export default class Framebuffer {
    * @param height New height of the framebuffer
    */
   setProportions(width: number, height: number) {
-    this.width = width;
-    this.height = height;
+    // Callers can derive sizes by scaling (SSAA factor, volumetric render
+    // scale), so guard against fractional dimensions reaching texImage2D.
+    this.width = Math.max(1, Math.round(width));
+    this.height = Math.max(1, Math.round(height));
     for (let texture of this.textures) {
       texture.setTextureData(null, this.width, this.height);
     }
@@ -158,8 +160,8 @@ export default class Framebuffer {
       this.gl.renderbufferStorage(
         this.gl.RENDERBUFFER,
         this.gl.DEPTH24_STENCIL8,
-        width,
-        height,
+        this.width,
+        this.height,
       );
       this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
     }
