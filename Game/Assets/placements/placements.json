@@ -34,6 +34,23 @@
           "origin": [0, 0, 0]
         }
       ]
+    },
+    {
+      "name": "Chair",
+      "meshPath": "Assets/objs/VoxelInterior/ChairBirchBlueSeat_00.obj",
+      "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
+      "specular": "CSS:rgb(0,0,0)",
+      "collision": true,
+      "meshCollision": true,
+      "placements": [
+        {
+          "translation": [5, -2.0502751855301344, 1],
+          "scale": [4, 4, 4],
+          "oneLineFormat": null,
+          "rotation": [0, 0, 0, 1],
+          "origin": [0, 0, 0]
+        }
+      ]
     }
   ]
 }
