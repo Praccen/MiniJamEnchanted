@@ -26,10 +26,6 @@ export default class PhysicsObject {
   physicsObjectId: number;
   angularVelocity: vec3 = vec3.create();
   inverseInertiaLocal: vec3 = vec3.create();
-
-  testRotationAxis: vec3 = vec3.create();
-  testRotationActive = false;
-
   unearthVelocity: vec3 = vec3.create();
 
   /**

@@ -56,8 +56,8 @@ export namespace CollisionSolver {
   }
 
   /**
-   * Beräknar förändringen i vinkelhastighet från en
-   * vinkelimpuls, utan att faktiskt ändra objektet.
+   * Calculates the change in angular velocity from an
+   * angular impulse without modifying the object.
    */
   function getAngularVelocityChange(
     object: PhysicsObject,
@@ -95,8 +95,8 @@ export namespace CollisionSolver {
   }
 
   /**
-   * Effektiv invers massa i en viss riktning vid en kontaktpunkt.
-   * Tar hänsyn till både translation och rotation.
+   * Effective inverse mass in a given direction at a contact point.
+   * Takes both translation and rotation into account.
    */
   function getEffectiveInverseMass(
     object: PhysicsObject,
@@ -112,7 +112,7 @@ export namespace CollisionSolver {
     const worldCenter = getWorldMassCenter(object);
     const r = vec3.subtract(vec3.create(), contactPoint, worldCenter);
 
-    // Vinkelimpuls som skapas av en enhetsimpuls i riktningen.
+    // Angular impulse caused by a unit impulse in this direction.
     const angularImpulse = vec3.cross(vec3.create(), r, direction);
 
     const angularVelocityChange = getAngularVelocityChange(
@@ -120,7 +120,7 @@ export namespace CollisionSolver {
       angularImpulse,
     );
 
-    // Kontaktpunktens hastighetsförändring från rotationen.
+    // Change in contact point velocity caused by rotation.
     const rotationalVelocityChange = vec3.cross(
       vec3.create(),
       angularVelocityChange,
@@ -131,8 +131,8 @@ export namespace CollisionSolver {
   }
 
   /**
-   * Hastigheten vid kontaktpunkten:
-   * linjär hastighet + vinkelhastighet × hävarm.
+   * Velocity at the contact point:
+   * linear velocity + angular velocity × lever arm.
    */
   function getVelocityAtPoint(object: PhysicsObject, contactPoint: vec3): vec3 {
     const worldCenter = getWorldMassCenter(object);
@@ -163,13 +163,13 @@ export namespace CollisionSolver {
       object.transform.matrix,
     );
 
-    // Vektorn från masscentrum till kontaktpunkten.
+    // Vector from the center of mass to the contact point.
     const r = vec3.subtract(vec3.create(), contactPoint, worldMassCenter);
 
-    // Vinkelimpuls: ΔL = r × J.
+    // Angular impulse: ΔL = r × J.
     const angularImpulse = vec3.cross(vec3.create(), r, impulse);
 
-    // Omvandla vinkelimpulsen till objektets lokala koordinater.
+    // Transform the angular impulse into the object's local space.
     const inverseRotation = quat.invert(
       quat.create(),
       object.transform.rotation,
@@ -186,14 +186,14 @@ export namespace CollisionSolver {
     localAngularImpulse[1] *= object.inverseInertiaLocal[1];
     localAngularImpulse[2] *= object.inverseInertiaLocal[2];
 
-    // Tillbaka till världskoordinater.
+    // Transform back to world space.
     const worldAngularVelocityChange = vec3.transformQuat(
       vec3.create(),
       localAngularImpulse,
       object.transform.rotation,
     );
 
-    // momentum används här som vinkelhastighet (rad/s).
+    // angularVelocity is stored in world space (rad/s).
     vec3.add(
       object.angularVelocity,
       object.angularVelocity,
@@ -221,7 +221,7 @@ export namespace CollisionSolver {
         continue;
       }
 
-      // Hastigheter vid själva kontaktpunkten, inklusive rotation.
+      // Velocities at the contact point, including rotation.
       const velocity1 = getVelocityAtPoint(po1, contactPoint);
       const velocity2 = getVelocityAtPoint(po2, contactPoint);
 
@@ -231,7 +231,7 @@ export namespace CollisionSolver {
         velocity2,
       );
 
-      // Negativ hastighet längs normalen betyder att objekten närmar sig.
+      // A negative velocity along the normal means the objects are approaching.
       const normalSpeed = vec3.dot(relativeVelocity, axis);
 
       if (normalSpeed < 0) {
@@ -245,7 +245,7 @@ export namespace CollisionSolver {
           getEffectiveInverseMass(po2, contactPoint, axis);
 
         if (normalMass > 1e-8) {
-          // Impulsens storlek längs kollisionsnormalen.
+          // Magnitude of the impulse along the collision normal.
           const normalImpulseMagnitude =
             (-(1 + restitution) * normalSpeed) / normalMass;
 
@@ -255,7 +255,7 @@ export namespace CollisionSolver {
             normalImpulseMagnitude,
           );
 
-          // Friktionsimpuls längs kontaktens tangentplan.
+          // Friction impulse along the contact tangent plane.
           const tangentVelocity = vec3.scaleAndAdd(
             vec3.create(),
             relativeVelocity,
@@ -284,7 +284,7 @@ export namespace CollisionSolver {
                 Math.min(po1.frictionCoefficient, po2.frictionCoefficient),
               );
 
-              // Coulomb-liknande friktion: begränsad av normalimpulsen.
+              // Coulomb-style friction, limited by the normal impulse.
               const desiredFrictionMagnitude = tangentSpeed / tangentMass;
               const maxFrictionMagnitude =
                 frictionCoefficient * normalImpulseMagnitude;
@@ -302,7 +302,7 @@ export namespace CollisionSolver {
             }
           }
 
-          // Samlad impuls på po1. po2 får motsatt impuls.
+          // Combined impulse applied to po1. po2 receives the opposite impulse.
           const impulse = vec3.add(
             vec3.create(),
             normalImpulse,
@@ -311,7 +311,7 @@ export namespace CollisionSolver {
 
           const oppositeImpulse = vec3.negate(vec3.create(), impulse);
 
-          // Linjär rörelse.
+          // Linear motion.
           vec3.scaleAndAdd(po1.velocity, po1.velocity, impulse, invMass1);
 
           vec3.scaleAndAdd(
@@ -321,7 +321,7 @@ export namespace CollisionSolver {
             invMass2,
           );
 
-          // Rotation. Statiska/immovable objekt ignoreras av funktionen.
+          // Rotation. Static and immovable objects are ignored by the function.
           applyAngularImpulse(po1, contactPoint, impulse);
           applyAngularImpulse(po2, contactPoint, oppositeImpulse);
         }

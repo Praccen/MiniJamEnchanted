@@ -382,7 +382,6 @@ export default class PhysicsScene {
               angularSpeed * dt,
             );
 
-            // Vinkelhastigheten uttrycks i världskoordinater.
             quat.multiply(
               physicsObject.transform.rotation,
               deltaRotation,
@@ -400,7 +399,7 @@ export default class PhysicsScene {
               Math.exp(-physicsObject.angularDamping * dt),
             );
 
-            // Eliminera mycket små resthastigheter.
+            // Remove small jitters
             if (vec3.squaredLength(physicsObject.angularVelocity) < 1e-6) {
               vec3.set(physicsObject.angularVelocity, 0, 0, 0);
             }

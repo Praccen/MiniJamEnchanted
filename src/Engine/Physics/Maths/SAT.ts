@@ -165,6 +165,14 @@ export namespace SAT {
     return true;
   }
 
+  /**
+   * This will find the average point of intersection between two shapes along an axis.
+   * This assumes that the shapes are intersecting and can not be used to find out IF two shapes are intersecting.
+   * @param shapeA Shape A
+   * @param shapeB Shape B
+   * @param testAxis The axis to test along.
+   * @returns The average point of intersection.
+   */
   export function getIntersectionPoint(
     shapeA: Shape,
     shapeB: Shape,
@@ -183,7 +191,7 @@ export namespace SAT {
 
     const axis = vec3.normalize(vec3.create(), testAxis);
 
-    // Hitta projektionernas yttervärden längs SAT-axeln.
+    // Find projections extreme values along SAT-axis
     let minA = Infinity;
     let maxA = -Infinity;
     let minB = Infinity;
@@ -201,7 +209,7 @@ export namespace SAT {
       maxB = Math.max(maxB, projection);
     }
 
-    // Välj de två motstående ytor som ligger närmast varandra.
+    // Chose the surfaces closest to each other
     const overlap1 = Math.abs(minA - maxB);
     const overlap2 = Math.abs(maxA - minB);
 
@@ -216,7 +224,7 @@ export namespace SAT {
       surfaceB = minB;
     }
 
-    // Beräkna centrum för shapeA:s stödytor.
+    // Calculate center of face for shape A
     const faceCenterA = vec3.create();
     let countA = 0;
 
@@ -244,8 +252,8 @@ export namespace SAT {
 
     vec3.scale(faceCenterA, faceCenterA, 1 / countA);
 
-    // Placera punkten mitt mellan stödplanen längs SAT-axeln,
-    // men behåll shapeA:s position i de vinkelräta riktningarna.
+    // Place point between faces of shapes
+    // keep shape A's position along the orthogonal axises
     const targetProjection = (surfaceA + surfaceB) * 0.5;
     const currentProjection = vec3.dot(axis, faceCenterA);
     const correction = targetProjection - currentProjection;
