@@ -1169,13 +1169,13 @@ export default class WorldEditor {
                     mesh.meshPath,
                     mesh.diffuse,
                     mesh.specular,
-                    true
+                    true,
                   )
                 : this.scene.addNewMesh(
                     mesh.meshPath,
                     mesh.diffuse,
                     mesh.specular,
-                    false
+                    false,
                   );
 
             if (this.currentlySelectedTransform == null) {
@@ -1193,7 +1193,7 @@ export default class WorldEditor {
 
             if (mesh.emission != undefined && mesh.emission.length > 0) {
               bundle.emission = this.scene.renderer.textureStore.getTexture(
-                mesh.emission
+                mesh.emission,
               );
             }
             let translation = placement.translation;
@@ -1218,7 +1218,7 @@ export default class WorldEditor {
                 bundle.transform.position,
                 translation[0],
                 translation[1],
-                translation[2]
+                translation[2],
               );
             }
             if (scale != undefined && scale.length == 3) {
@@ -1229,7 +1229,7 @@ export default class WorldEditor {
                 bundle.transform.origin,
                 origin[0],
                 origin[1],
-                origin[2]
+                origin[2],
               );
             }
             if (rotation != undefined && rotation.length == 3) {
@@ -1237,7 +1237,7 @@ export default class WorldEditor {
                 bundle.transform.rotation,
                 rotation[0],
                 rotation[1],
-                rotation[2]
+                rotation[2],
               );
             } else if (rotation != undefined && rotation.length == 4) {
               quat.set(
@@ -1245,12 +1245,12 @@ export default class WorldEditor {
                 rotation[0],
                 rotation[1],
                 rotation[2],
-                rotation[3]
+                rotation[3],
               );
             }
 
             const physicsObject = this.internalPhysicsScene.addNewPhysicsObject(
-              bundle.transform
+              bundle.transform,
             );
             placementsMapEntry.po = physicsObject;
             physicsObject.setupBoundingBoxFromGraphicsBundle(bundle);
@@ -1259,7 +1259,7 @@ export default class WorldEditor {
             if (mesh.meshCollision) {
               physicsObject.setupInternalTreeFromGraphicsObject(
                 bundle.graphicsObject,
-                mesh.meshPath
+                mesh.meshPath,
               );
             }
 
@@ -1267,7 +1267,7 @@ export default class WorldEditor {
               // this.scene.addNewShape(physicsObject.boundingBox);
               const po = this.physicsScene.addNewPhysicsObject(
                 null,
-                physicsObject
+                physicsObject,
               );
               if (mesh.isStatic != undefined) {
                 po.isStatic = mesh.isStatic;
@@ -1281,9 +1281,9 @@ export default class WorldEditor {
               if (mesh.drag != undefined) {
                 po.drag = mesh.drag;
               }
-            }
-            if (mesh.dynamicCollisionResponses != undefined) {
-              po.dynamicCollisionResponses = mesh.dynamicCollisionResponses;
+              if (mesh.dynamicCollisionResponses != undefined) {
+                po.dynamicCollisionResponses = mesh.dynamicCollisionResponses;
+              }
             }
           }
         }
