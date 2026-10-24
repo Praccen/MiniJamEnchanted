@@ -18,7 +18,7 @@ export namespace SAT {
     shapeAVertices: Array<vec3>,
     shapeBVertices: Array<vec3>,
     reverse: { value: boolean },
-    margin: number
+    margin: number,
   ): number {
     let maxA = vec3.dot(overlapVector, shapeAVertices[0]);
     let minA = maxA;
@@ -69,7 +69,7 @@ export namespace SAT {
     shapeAVertices: Array<vec3>,
     shapeBVertices: Array<vec3>,
     relativeVelocity: vec3,
-    info: { first: number; last: number; max: number; intersectionVec: vec3 }
+    info: { first: number; last: number; max: number; intersectionVec: vec3 },
   ): boolean {
     let minA = Infinity,
       minB = Infinity;
@@ -165,116 +165,92 @@ export namespace SAT {
     return true;
   }
 
-  /**
-   * This will find the average point of intersection between two shapes along an axis.
-   * This assumes that the shapes are intersecting and can not be used to find out IF two shapes are intersecting.
-   * @param shapeA Shape A
-   * @param shapeB Shape B
-   * @param testAxis The axis to test along.
-   * @returns The average point of intersection.
-   */
   export function getIntersectionPoint(
     shapeA: Shape,
     shapeB: Shape,
-    testAxis: vec3
+    testAxis: vec3,
   ): vec3 {
-    let shapeAVertices = shapeA.getTransformedVertices();
-    let shapeBVertices = shapeB.getTransformedVertices();
+    const verticesA = shapeA.getTransformedVertices();
+    const verticesB = shapeB.getTransformedVertices();
 
-    let maxAPoints: Array<number> = new Array<number>();
-    let minAPoints: Array<number> = new Array<number>();
-    let maxBPoints: Array<number> = new Array<number>();
-    let minBPoints: Array<number> = new Array<number>();
-
-    let maxA = vec3.dot(testAxis, shapeAVertices[0]);
-    maxAPoints.push(0);
-    let minA = maxA;
-    minAPoints.push(0);
-    let maxB = vec3.dot(testAxis, shapeBVertices[0]);
-    maxBPoints.push(0);
-    let minB = maxB;
-    minBPoints.push(0);
-
-    let tempDot = 0.0;
-
-    for (let i = 1; i < shapeAVertices.length; i++) {
-      tempDot = vec3.dot(testAxis, shapeAVertices[i]);
-      if (tempDot < minA) {
-        minA = tempDot;
-        minAPoints.length = 0;
-        minAPoints.push(i);
-      } else if (Math.abs(tempDot - minA) < Epsilon) {
-        minAPoints.push(i);
-      }
-      if (tempDot > maxA) {
-        maxA = tempDot;
-        maxAPoints.length = 0;
-        maxAPoints.push(i);
-      } else if (Math.abs(tempDot - maxA) < Epsilon) {
-        maxAPoints.push(i);
-      }
+    if (
+      verticesA.length === 0 ||
+      verticesB.length === 0 ||
+      vec3.sqrLen(testAxis) < Epsilon
+    ) {
+      return vec3.create();
     }
 
-    for (let i = 1; i < shapeBVertices.length; i++) {
-      tempDot = vec3.dot(testAxis, shapeBVertices[i]);
-      if (tempDot < minB) {
-        minB = tempDot;
-        minBPoints.length = 0;
-        minBPoints.push(i);
-      } else if (Math.abs(tempDot - minB) < Epsilon) {
-        minBPoints.push(i);
-      }
-      if (tempDot > maxB) {
-        maxB = tempDot;
-        maxBPoints.length = 0;
-        maxBPoints.push(i);
-      } else if (Math.abs(tempDot - maxB) < Epsilon) {
-        maxBPoints.push(i);
-      }
+    const axis = vec3.normalize(vec3.create(), testAxis);
+
+    // Hitta projektionernas yttervärden längs SAT-axeln.
+    let minA = Infinity;
+    let maxA = -Infinity;
+    let minB = Infinity;
+    let maxB = -Infinity;
+
+    for (const vertex of verticesA) {
+      const projection = vec3.dot(axis, vertex);
+      minA = Math.min(minA, projection);
+      maxA = Math.max(maxA, projection);
     }
 
-    let overlap1 = Math.abs(maxB - minA);
-    let overlap2 = Math.abs(maxA - minB);
+    for (const vertex of verticesB) {
+      const projection = vec3.dot(axis, vertex);
+      minB = Math.min(minB, projection);
+      maxB = Math.max(maxB, projection);
+    }
 
-    // let averagePoint = new Vec3();
-    // let nrPoints = 0;
-    let intersectionPoint = vec3.create();
+    // Välj de två motstående ytor som ligger närmast varandra.
+    const overlap1 = Math.abs(minA - maxB);
+    const overlap2 = Math.abs(maxA - minB);
 
-    if (overlap1 > overlap2) {
-      // overlap2
-      // for (const p of maxAPoints) {
-      // 	averagePoint.add(shapeAVertices[p]);
-      // 	nrPoints++;
-      // }
-      // for (const p of minBPoints) {
-      // 	averagePoint.add(shapeBVertices[p]);
-      // 	nrPoints++;
-      // }
+    let surfaceA: number;
+    let surfaceB: number;
 
-      if (maxAPoints.length == 1) {
-        vec3.copy(intersectionPoint, shapeAVertices[maxAPoints[0]]);
-      } else if (minBPoints.length == 1) {
-        vec3.copy(intersectionPoint, shapeBVertices[minBPoints[0]]);
-      }
+    if (overlap1 <= overlap2) {
+      surfaceA = minA;
+      surfaceB = maxB;
     } else {
-      // overlap1;
-      // for (const p of minAPoints) {
-      // 	averagePoint.add(shapeAVertices[p]);
-      // 	nrPoints++;
-      // }
-      // for (const p of maxBPoints) {
-      // 	averagePoint.add(shapeBVertices[p]);
-      // 	nrPoints++;
-      // }
+      surfaceA = maxA;
+      surfaceB = minB;
+    }
 
-      if (minAPoints.length == 1) {
-        vec3.copy(intersectionPoint, shapeAVertices[minAPoints[0]]);
-      } else if (maxBPoints.length == 1) {
-        vec3.copy(intersectionPoint, shapeBVertices[maxBPoints[0]]);
+    // Beräkna centrum för shapeA:s stödytor.
+    const faceCenterA = vec3.create();
+    let countA = 0;
+
+    const scale = Math.max(
+      1,
+      Math.abs(minA),
+      Math.abs(maxA),
+      Math.abs(minB),
+      Math.abs(maxB),
+    );
+    const tolerance = Math.max(Epsilon, scale * 1e-6);
+
+    for (const vertex of verticesA) {
+      const projection = vec3.dot(axis, vertex);
+
+      if (Math.abs(projection - surfaceA) <= tolerance) {
+        vec3.add(faceCenterA, faceCenterA, vertex);
+        countA++;
       }
     }
-    // averagePoint.multiply(1.0 / nrPoints);
-    return intersectionPoint;
+
+    if (countA === 0) {
+      return vec3.create();
+    }
+
+    vec3.scale(faceCenterA, faceCenterA, 1 / countA);
+
+    // Placera punkten mitt mellan stödplanen längs SAT-axeln,
+    // men behåll shapeA:s position i de vinkelräta riktningarna.
+    const targetProjection = (surfaceA + surfaceB) * 0.5;
+    const currentProjection = vec3.dot(axis, faceCenterA);
+    const correction = targetProjection - currentProjection;
+
+    return vec3.scaleAndAdd(vec3.create(), faceCenterA, axis, correction);
   }
 
   /**
@@ -293,7 +269,7 @@ export namespace SAT {
     shapeA: Shape,
     shapeB: Shape,
     intersectionAxis: vec3,
-    intersectionDepth: { depth: number }
+    intersectionDepth: { depth: number },
   ): boolean {
     intersectionDepth.depth = Infinity;
 
@@ -308,7 +284,7 @@ export namespace SAT {
         shapeAVertices,
         shapeBVertices,
         reverse,
-        shapeA.margin + shapeB.margin
+        shapeA.margin + shapeB.margin,
       );
 
       if (overlap < 0.0) {
@@ -352,7 +328,7 @@ export namespace SAT {
       let crossVector = vec3.cross(
         vec3.create(),
         shapeANormals[0],
-        shapeBNormals[0]
+        shapeBNormals[0],
       );
 
       if (vec3.sqrLen(crossVector) < Epsilon) {
@@ -406,7 +382,7 @@ export namespace SAT {
     shapeB: Shape,
     velocityA: ReadonlyVec3,
     velocityB: ReadonlyVec3,
-    timeMax: number
+    timeMax: number,
   ): [number, vec3] {
     // Treat shapeA as stationary and shapeB as moving
     let relativeVel = vec3.subtract(vec3.create(), velocityB, velocityA);
@@ -429,7 +405,7 @@ export namespace SAT {
           shapeAVertices,
           shapeBVertices,
           relativeVel,
-          info
+          info,
         )
       ) {
         return [Infinity, null];
@@ -444,7 +420,7 @@ export namespace SAT {
           shapeAVertices,
           shapeBVertices,
           relativeVel,
-          info
+          info,
         )
       ) {
         return [Infinity, null];
@@ -464,7 +440,7 @@ export namespace SAT {
       let crossVector = vec3.cross(
         vec3.create(),
         shapeANormals[0],
-        shapeBNormals[0]
+        shapeBNormals[0],
       );
 
       if (vec3.sqrLen(crossVector) < Epsilon) {
@@ -477,7 +453,7 @@ export namespace SAT {
               shapeAVertices,
               shapeBVertices,
               relativeVel,
-              info
+              info,
             )
           ) {
             return [Infinity, null];
@@ -491,7 +467,7 @@ export namespace SAT {
               shapeAVertices,
               shapeBVertices,
               relativeVel,
-              info
+              info,
             )
           ) {
             return [Infinity, null];
@@ -520,7 +496,7 @@ export namespace SAT {
               shapeAVertices,
               shapeBVertices,
               relativeVel,
-              info
+              info,
             )
           ) {
             return [Infinity, null];

@@ -27,7 +27,7 @@ export namespace IntersectionTester {
       depth: number,
       point: vec3,
       shapeA: Shape,
-      shapeB: Shape
+      shapeB: Shape,
     ) {
       this.axis = vec3.clone(axis);
       this.depth = depth;
@@ -45,7 +45,7 @@ export namespace IntersectionTester {
    */
   export function identifyIntersection(
     shapeArrayA: Array<Shape>,
-    shapeArrayB: Array<Shape>
+    shapeArrayB: Array<Shape>,
   ): boolean {
     let intersectionAxis = vec3.create();
     let intersectionDepth = { depth: Infinity };
@@ -56,7 +56,7 @@ export namespace IntersectionTester {
             shapeA,
             shapeB,
             intersectionAxis,
-            intersectionDepth
+            intersectionDepth,
           )
         ) {
           return true;
@@ -77,7 +77,7 @@ export namespace IntersectionTester {
   export function identifyIntersectionInformation(
     shapeArrayA: Array<Shape>,
     shapeArrayB: Array<Shape>,
-    intersectionInformation: Array<IntersectionInformation>
+    intersectionInformation: Array<IntersectionInformation>,
   ): boolean {
     let intersecting = false;
     let tempIntersectionAxis = vec3.create();
@@ -90,7 +90,7 @@ export namespace IntersectionTester {
             shapeA,
             shapeB,
             tempIntersectionAxis,
-            tempIntersectionDepth
+            tempIntersectionDepth,
           )
         ) {
           intersecting = true;
@@ -100,10 +100,10 @@ export namespace IntersectionTester {
             new IntersectionInformation(
               tempIntersectionAxis,
               tempIntersectionDepth.depth,
-              vec3.create(), //SAT.getIntersectionPoint(shapeA, shapeB, tempIntersectionAxis),
+              SAT.getIntersectionPoint(shapeA, shapeB, tempIntersectionAxis),
               shapeA,
-              shapeB
-            )
+              shapeB,
+            ),
           );
         }
       }
@@ -124,7 +124,7 @@ export namespace IntersectionTester {
     ray: Ray,
     shapeArray: Array<Shape>,
     maxDistance: number = Infinity,
-    breakOnFirstHit: boolean = false
+    breakOnFirstHit: boolean = false,
   ): number {
     let closestHit = Infinity;
 
@@ -134,7 +134,7 @@ export namespace IntersectionTester {
         shape,
         ray.getDir(),
         vec3.create(),
-        maxDistance
+        maxDistance,
       );
       if (dist < closestHit && dist < maxDistance) {
         closestHit = dist;
@@ -164,7 +164,7 @@ export namespace IntersectionTester {
     shapeBVelocity: ReadonlyVec3,
     maxDistance: number = Infinity,
     allow0Collision: boolean = true,
-    breakOnFirstHit: boolean = false
+    breakOnFirstHit: boolean = false,
   ): [number, vec3] {
     let earliestHit = Infinity;
     let intersectionVec = null;
@@ -176,7 +176,7 @@ export namespace IntersectionTester {
           shapeB,
           shapeAVelocity,
           shapeBVelocity,
-          maxDistance
+          maxDistance,
         );
 
         if (

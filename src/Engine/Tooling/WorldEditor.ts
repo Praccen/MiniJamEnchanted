@@ -9,11 +9,15 @@ import {
   PhysicsScene,
   Renderer3D,
   Scene,
+  ShapeGraphicsObject,
   TextObject2D,
   Transform,
 } from "../../Engine.js";
 import EditText from "../Rendering/GUI/Objects/Text/EditText.js";
 import TranslateGizmo from "./TranslateGizmo.js";
+import OBB from "../Physics/Physics/Shapes/OBB.js";
+
+export let collisionPointVisualizer: OBB;
 
 let json: {
   meshes: {
@@ -27,6 +31,7 @@ let json: {
     frictionCoefficient: number;
     collisionCoefficient: number;
     drag: number;
+    dynamicCollisionResponses: boolean;
     meshCollision: boolean;
     placements: {
       translation: number[];
@@ -253,6 +258,13 @@ export default class WorldEditor {
     this.physicsScene = physicsScene;
     this.internalPhysicsScene = new PhysicsScene();
     vec3.zero(this.internalPhysicsScene.gravity);
+
+    collisionPointVisualizer = new OBB();
+    collisionPointVisualizer.setMinAndMaxVectors(
+      vec3.fromValues(-0.1, -0.1, -0.1),
+      vec3.fromValues(0.1, 0.1, 0.1),
+    );
+    this.scene.addNewShape(collisionPointVisualizer);
 
     this.gizmo = new TranslateGizmo(camera, scene);
 
@@ -1269,6 +1281,9 @@ export default class WorldEditor {
               if (mesh.drag != undefined) {
                 po.drag = mesh.drag;
               }
+            }
+            if (mesh.dynamicCollisionResponses != undefined) {
+              po.dynamicCollisionResponses = mesh.dynamicCollisionResponses;
             }
           }
         }

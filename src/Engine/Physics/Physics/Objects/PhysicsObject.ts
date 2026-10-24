@@ -15,6 +15,7 @@ export let pathInternalTreeMap: Map<string, Tree> = new Map<string, Tree>();
 export default class PhysicsObject {
   static idCounter = 0;
   mass: number = 1.0;
+  massCenter: vec3 = vec3.create();
   frictionCoefficient: number = 0.0;
   collisionCoefficient: number = 0.0;
   drag: number = 0.0;
@@ -23,6 +24,10 @@ export default class PhysicsObject {
   force: vec3 = vec3.create();
   physicsObjectId: number;
   momentum: vec3 = vec3.create();
+  inverseInertiaLocal: vec3 = vec3.create();
+
+  testRotationAxis: vec3 = vec3.create();
+  testRotationActive = false;
 
   unearthVelocity: vec3 = vec3.create();
 
@@ -51,6 +56,11 @@ export default class PhysicsObject {
   ignoreGravity: boolean = false;
 
   /**
+   * True if this object should have dynamic collisions (rotations)
+   */
+  dynamicCollisionResponses: boolean = false;
+
+  /**
    * Tree holding the triangles of the mesh, if mesh collision has been set up for this object
    */
   internalTree?: Tree;
@@ -77,12 +87,34 @@ export default class PhysicsObject {
     this.boundingBox.setTransformMatrix(this.transform.matrix);
   }
 
+  // fullSize object size in local coordinates
+  calculateBoxInertia(fullSize: vec3): void {
+    if (this.isStatic || this.isImmovable || this.mass <= 0) {
+      vec3.zero(this.inverseInertiaLocal);
+      return;
+    }
+
+    const w = fullSize[0];
+    const h = fullSize[1];
+    const d = fullSize[2];
+    const m = this.mass;
+
+    const ix = (m / 12) * (h * h + d * d);
+    const iy = (m / 12) * (w * w + d * d);
+    const iz = (m / 12) * (w * w + h * h);
+
+    this.inverseInertiaLocal[0] = ix > 1e-8 ? 1 / ix : 0;
+    this.inverseInertiaLocal[1] = iy > 1e-8 ? 1 / iy : 0;
+    this.inverseInertiaLocal[2] = iz > 1e-8 ? 1 / iz : 0;
+  }
+
   setupBoundingBoxFromGraphicsBundle(bundle: GraphicsBundle) {
     bundle.updateMinAndMaxPositions();
-    this.boundingBox.setMinAndMaxVectors(
-      bundle.getMinAndMaxPositions().min,
-      bundle.getMinAndMaxPositions().max,
-    );
+    const min = bundle.getMinAndMaxPositions().min;
+    const max = bundle.getMinAndMaxPositions().max;
+
+    this.boundingBox.setMinAndMaxVectors(min, max);
+    this.calculateBoxInertia(vec3.sub(vec3.create(), max, min));
   }
 
   setupInternalTree(shapes: Array<Shape>) {

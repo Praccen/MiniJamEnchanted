@@ -8,12 +8,15 @@
       "collision": true,
       "isStatic": false,
       "frictionCoefficient": 0.4,
+      "dynamicCollisionResponses": true,
+      "mass": 1.0,
+      "collisionCoefficient": 0.7,
       "placements": [
         {
           "translation": [-4, 0, 0],
           "scale": [1, 1, 1],
           "oneLineFormat": null,
-          "rotation": [0, 0, 0, 1],
+          "rotation": [0.5, 0.2, 0.4, 1],
           "origin": [0, 0, 0]
         }
       ]

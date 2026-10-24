@@ -18,6 +18,10 @@ export default class Player {
   private pitch: number = 0;
   private jaw: number = 0;
 
+  private accelerationForce: number = 90.0;
+  private jumpImpulseSize: number = 50.0;
+  private mass: number = 10.0;
+
   constructor(scene: Scene, physicsScene: PhysicsScene, startPos: vec3) {
     this.proceduralAnimationModel = new ProceduralAnimationObject(
       scene,
@@ -27,6 +31,7 @@ export default class Player {
     this.physicsObject = physicsScene.addNewPhysicsObject(
       this.proceduralAnimationModel.baseJoint.gb.transform,
     );
+    this.physicsObject.mass = this.mass;
 
     this.proceduralAnimationModel.setupBoundingBox(this.physicsObject);
   }
@@ -114,13 +119,13 @@ export default class Player {
         this.physicsObject.force,
         this.physicsObject.force,
         accVec,
-        10.0,
+        this.accelerationForce,
       );
     }
 
     if (Input.keys[" "] || Input.buttons["A"]) {
       if (this.physicsObject.onGround) {
-        this.physicsObject.impulse[1] += 4.0;
+        this.physicsObject.impulse[1] += this.jumpImpulseSize;
       }
     }
 
@@ -158,7 +163,7 @@ export default class Player {
     // Update drag based on velocity
     let xzVelocity = vec3.clone(this.physicsObject.velocity);
     xzVelocity[1] = 0.0;
-    this.physicsObject.drag = 1.0 + vec3.len(xzVelocity);
+    this.physicsObject.drag = 0.5 + vec3.len(xzVelocity) * 0.5;
   }
 
   preRenderingUpdate(dt: number) {
