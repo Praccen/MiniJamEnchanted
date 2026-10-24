@@ -1,6 +1,7 @@
 import {
   GraphicsBundle,
   mat3,
+  PhysicsObject,
   quat,
   Scene,
   Transform,
@@ -128,6 +129,8 @@ export default class ProceduralAnimationObject {
   upDirection: vec3 = vec3.fromValues(0.0, 1.0, 0.0);
   localForward: vec3 = vec3.fromValues(1.0, 0.0, 0.0);
   forwardAdjustment: quat = quat.fromEuler(quat.create(), 0.0, -90, 0.0);
+  private bbMinVec: vec3 = null;
+  private bbMaxVec: vec3 = null;
 
   constructor(scene: Scene, startPos: vec3) {
     // this.buildSkeleton(startPos, scene, worm);
@@ -264,6 +267,25 @@ export default class ProceduralAnimationObject {
             },
           });
         }
+      } else if (line.startsWith("bb")) {
+        let parts = line.split(/\s+/);
+        parts.splice(0, 1); // Remove command
+
+        if (parts.length != 6) {
+          continue;
+        }
+
+        this.bbMinVec = vec3.fromValues(
+          parseFloat(parts[0]) * scale,
+          parseFloat(parts[1]) * scale,
+          parseFloat(parts[2]) * scale,
+        );
+
+        this.bbMaxVec = vec3.fromValues(
+          parseFloat(parts[3]) * scale,
+          parseFloat(parts[4]) * scale,
+          parseFloat(parts[5]) * scale,
+        );
       } else {
         const command = line.split("=")[0].trim();
         const arg = line.split("=")[1]?.trim();
@@ -645,6 +667,15 @@ export default class ProceduralAnimationObject {
     quat.mul(outQuat, outQuat, this.forwardAdjustment);
 
     return outQuat;
+  }
+
+  setupBoundingBox(physicsObject: PhysicsObject) {
+    if (this.bbMinVec && this.bbMaxVec) {
+      physicsObject.boundingBox.setMinAndMaxVectors(
+        this.bbMinVec,
+        this.bbMaxVec,
+      );
+    }
   }
 
   animate(dt: number) {

@@ -60,7 +60,6 @@ export default class Game {
     this.scene = new Scene(this.renderer);
     this.scene.getDirectionalLight().ambientMultiplier = 0.5;
     this.physicsScene = new PhysicsScene();
-    vec3.zero(this.physicsScene.gravity);
 
     this.player = new Player(this.scene, this.physicsScene, vec3.create());
 
@@ -71,10 +70,14 @@ export default class Game {
       this.guiRenderer,
     );
 
+    this.worldEditor.loadWorld("Assets/placements/placements.json");
+
     this.worldEditor.internalPhysicsScene.addNewPhysicsObject(
       null,
       this.player.physicsObject,
     );
+
+    this.physicsScene.update(0.0, true, false);
 
     addNewConsoleCommand(
       "add box",

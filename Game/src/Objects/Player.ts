@@ -22,6 +22,8 @@ export default class Player {
     this.physicsObject = physicsScene.addNewPhysicsObject(
       this.proceduralAnimationModel.baseJoint.gb.transform,
     );
+
+    this.proceduralAnimationModel.setupBoundingBox(this.physicsObject);
   }
 
   update(camera: Camera, dt: number) {
@@ -86,76 +88,72 @@ export default class Player {
         accVec,
         10.0,
       );
-
-      // Update camera
-      let cameraOffset = vec3.sub(
-        vec3.create(),
-        camera.getPosition(),
-        this.proceduralAnimationModel.baseJoint.position,
-      );
-
-      if (Input.keys["ARROWLEFT"]) {
-        vec3.scaleAndAdd(
-          cameraOffset,
-          cameraOffset,
-          camera.getRight(),
-          dt * 8.0,
-        );
-      } else if (Input.keys["ARROWRIGHT"]) {
-        vec3.scaleAndAdd(
-          cameraOffset,
-          cameraOffset,
-          camera.getRight(),
-          -dt * 8.0,
-        );
-      } else {
-        vec3.scaleAndAdd(
-          cameraOffset,
-          cameraOffset,
-          this.physicsObject.velocity,
-          -dt * 3.0,
-        );
-      }
-
-      // ---- Keep a good camera distance ----
-      let desiredDistance = 4.0;
-
-      vec3.scale(
-        cameraOffset,
-        cameraOffset,
-        Math.pow(desiredDistance / vec3.len(cameraOffset), 0.1),
-      );
-
-      cameraOffset[1] = Math.max(cameraOffset[1], 1.0);
-
-      let offsetXZ = vec3.fromValues(cameraOffset[0], 0.0, cameraOffset[2]);
-      let len2 = vec3.sqrLen(offsetXZ);
-      if (len2 < 1.0 && len2 > 0.001) {
-        vec3.normalize(offsetXZ, offsetXZ);
-        cameraOffset[0] = offsetXZ[0];
-        cameraOffset[2] = offsetXZ[2];
-      }
-
-      camera.setPosition(
-        vec3.add(
-          vec3.create(),
-          this.proceduralAnimationModel.baseJoint.position,
-          cameraOffset,
-        ),
-      );
-      camera.setDir(vec3.scale(vec3.create(), cameraOffset, -1.0));
-      // -------------------------------------
-
-      // Update drag based on velocity
-      let xzVelocity = vec3.clone(this.physicsObject.velocity);
-      xzVelocity[1] = 0.0;
-      this.physicsObject.drag = 1.0 + vec3.len(xzVelocity);
     }
+
+    // Update camera
+    let cameraOffset = vec3.sub(
+      vec3.create(),
+      camera.getPosition(),
+      this.proceduralAnimationModel.baseJoint.position,
+    );
+
+    if (Input.keys["ARROWLEFT"]) {
+      vec3.scaleAndAdd(cameraOffset, cameraOffset, camera.getRight(), dt * 8.0);
+    } else if (Input.keys["ARROWRIGHT"]) {
+      vec3.scaleAndAdd(
+        cameraOffset,
+        cameraOffset,
+        camera.getRight(),
+        -dt * 8.0,
+      );
+    } else {
+      vec3.scaleAndAdd(
+        cameraOffset,
+        cameraOffset,
+        this.physicsObject.velocity,
+        -dt * 3.0,
+      );
+    }
+
+    // ---- Keep a good camera distance ----
+    let desiredDistance = 4.0;
+
+    vec3.scale(
+      cameraOffset,
+      cameraOffset,
+      Math.pow(desiredDistance / vec3.len(cameraOffset), 0.1),
+    );
+
+    cameraOffset[1] = Math.max(cameraOffset[1], 1.0);
+
+    let offsetXZ = vec3.fromValues(cameraOffset[0], 0.0, cameraOffset[2]);
+    let len2 = vec3.sqrLen(offsetXZ);
+    if (len2 < 1.0 && len2 > 0.001) {
+      vec3.normalize(offsetXZ, offsetXZ);
+      cameraOffset[0] = offsetXZ[0];
+      cameraOffset[2] = offsetXZ[2];
+    }
+
+    camera.setPosition(
+      vec3.add(
+        vec3.create(),
+        this.proceduralAnimationModel.baseJoint.position,
+        cameraOffset,
+      ),
+    );
+    camera.setDir(vec3.scale(vec3.create(), cameraOffset, -1.0));
+    // -------------------------------------
+
+    // Update drag based on velocity
+    let xzVelocity = vec3.clone(this.physicsObject.velocity);
+    xzVelocity[1] = 0.0;
+    this.physicsObject.drag = 1.0 + vec3.len(xzVelocity);
   }
 
   preRenderingUpdate(dt: number) {
-    this.proceduralAnimationModel.baseJoint.position =
-      this.physicsObject.transform.position;
+    // this.proceduralAnimationModel.baseJoint.position = vec3.clone(
+    //   this.physicsObject.transform.position,
+    // );
     this.proceduralAnimationModel.animate(dt);
   }
 }

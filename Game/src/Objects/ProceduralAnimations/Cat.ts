@@ -127,4 +127,6 @@ make tail4
 
 exflerp leftFrontLeg rightFrontLeg
 exflerp leftHindLeg rightHindLeg
+
+bb -0.6, -3.0, -0.4, 0.6, 0.6, 4.0
 `;

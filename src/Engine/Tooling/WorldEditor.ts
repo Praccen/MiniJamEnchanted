@@ -195,7 +195,7 @@ export default class WorldEditor {
       gb: GraphicsBundle;
       po: PhysicsObject;
       jsonMesh: (typeof json.meshes)[number];
-      placmentIndex: number;
+      placementIndex: number;
     }[]
   >();
   private _currentlySelectedTransform: Transform = null;
@@ -1148,13 +1148,13 @@ export default class WorldEditor {
           const placement = mesh.placements[i];
           const bundle =
             mesh.meshPath.endsWith("glb") || mesh.meshPath.endsWith("gltf")
-              ? await this.scene.addNewAnimatedMesh(
+              ? this.scene.addNewAnimatedMesh(
                   mesh.meshPath,
                   mesh.diffuse,
                   mesh.specular,
                   true,
                 )
-              : await this.scene.addNewMesh(
+              : this.scene.addNewMesh(
                   mesh.meshPath,
                   mesh.diffuse,
                   mesh.specular,
@@ -1170,7 +1170,7 @@ export default class WorldEditor {
               gb: bundle,
               po: null,
               jsonMesh: mesh,
-              placmentIndex: i,
+              placementIndex: i,
             }) - 1;
           let placementsMapEntry = this.placementsMap.get(mesh.name)[index];
 
@@ -1231,10 +1231,7 @@ export default class WorldEditor {
             bundle.transform,
           );
           placementsMapEntry.po = physicsObject;
-          physicsObject.boundingBox.setMinAndMaxVectors(
-            bundle.getMinAndMaxPositions().min,
-            bundle.getMinAndMaxPositions().max,
-          );
+          physicsObject.setupBoundingBoxFromGraphicsBundle(bundle);
           physicsObject.isStatic = true;
 
           if (mesh.meshCollision) {
@@ -1245,13 +1242,14 @@ export default class WorldEditor {
           }
 
           if (mesh.collision) {
-            this.physicsScene.addNewPhysicsObject(
-              physicsObject.transform,
-              physicsObject,
-            );
+            // this.scene.addNewShape(physicsObject.boundingBox);
+            this.physicsScene.addNewPhysicsObject(null, physicsObject);
           }
         }
       }
+
+      this.internalPhysicsScene.update(0.0, true, false);
+      this.physicsScene.update(0.0, true, false);
     }
   }
 
@@ -1259,15 +1257,15 @@ export default class WorldEditor {
     this.saveNeeded = false;
     for (let entry of this.placementsMap) {
       for (let placement of entry[1]) {
-        placement.jsonMesh.placements[placement.placmentIndex].oneLineFormat =
+        placement.jsonMesh.placements[placement.placementIndex].oneLineFormat =
           null;
-        placement.jsonMesh.placements[placement.placmentIndex].translation =
+        placement.jsonMesh.placements[placement.placementIndex].translation =
           placement.gb.transform.position as Array<number>;
-        placement.jsonMesh.placements[placement.placmentIndex].rotation =
+        placement.jsonMesh.placements[placement.placementIndex].rotation =
           placement.gb.transform.rotation as Array<number>;
-        placement.jsonMesh.placements[placement.placmentIndex].scale = placement
-          .gb.transform.scale as Array<number>;
-        placement.jsonMesh.placements[placement.placmentIndex].origin =
+        placement.jsonMesh.placements[placement.placementIndex].scale =
+          placement.gb.transform.scale as Array<number>;
+        placement.jsonMesh.placements[placement.placementIndex].origin =
           placement.gb.transform.origin as Array<number>;
       }
     }
