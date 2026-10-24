@@ -32,20 +32,21 @@ export default class Player {
   }
 
   update(camera: Camera, dt: number) {
-    // if (Input.mouseClicked) {
-    //   document.getElementById("gameDiv").requestPointerLock();
-    // }
+    if (Input.mouseClicked && !document.pointerLockElement) {
+      document.body.requestPointerLock();
+      console.log("pointer lock");
+    }
 
     // Rotate camera with mouse click and drag
     let mouseDiff = Input.getMouseMovement();
 
-    if (document.pointerLockElement == document.getElementById("gameDiv")) {
+    if (document.pointerLockElement == document.body) {
       // Make sure the user is not changing a slider
       this.pitch -= mouseDiff[1] * sensitivity;
       this.jaw -= mouseDiff[0] * sensitivity;
     }
 
-    this.pitch = Math.max(Math.min(this.pitch, 89), -89); // Don't allow the camera to go past 89 degrees
+    this.pitch = Math.max(Math.min(this.pitch, 73), -73); // Don't allow the camera to go past 89 degrees
     this.jaw = this.jaw % 360;
 
     camera.setPitchJawDegrees(this.pitch, this.jaw); // Update the rotation of the camera
@@ -108,12 +109,19 @@ export default class Player {
     }
 
     if (vec3.sqrLen(accVec) > 0.001) {
+      vec3.normalize(accVec, accVec);
       vec3.scaleAndAdd(
         this.physicsObject.force,
         this.physicsObject.force,
         accVec,
         10.0,
       );
+    }
+
+    if (Input.keys[" "] || Input.buttons["A"]) {
+      if (this.physicsObject.onGround) {
+        this.physicsObject.impulse[1] += 4.0;
+      }
     }
 
     let cameraDistance = 2.0;

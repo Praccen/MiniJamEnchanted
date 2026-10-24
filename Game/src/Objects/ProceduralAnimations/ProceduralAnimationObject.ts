@@ -180,12 +180,6 @@ export default class ProceduralAnimationObject {
 
           vec3.set(
             this.baseJoint.gb.transform.scale,
-            0.1 * scale,
-            0.1 * scale,
-            0.1 * scale,
-          );
-          vec3.set(
-            this.baseJoint.gb.transform.scale,
             length * scale,
             width * scale,
             width * scale,
