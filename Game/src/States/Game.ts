@@ -52,7 +52,7 @@ export default class Game {
     this.camera.setPosition(vec3.fromValues(0.0, 10.0, 7.0));
     this.camera.setDir(vec3.fromValues(0.0, -1.0, -0.7));
     this.camera.setFarPlaneDistance(150);
-    this.camera.setFOV(50);
+    this.camera.setFOV(80);
 
     this.gui = new GameGUI(this.guiRenderer);
     this.gui.gameGuiDiv.setHidden(true);

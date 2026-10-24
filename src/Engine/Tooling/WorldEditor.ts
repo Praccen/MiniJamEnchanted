@@ -1272,7 +1272,7 @@ export default class WorldEditor {
 
     const type = "text/plain";
     const clipboardItemData = {
-      [type]: JSON.stringify(json),
+      [type]: JSON.stringify(json, null, 2),
     };
     const clipboardItem = new ClipboardItem(clipboardItemData);
     await navigator.clipboard.write([clipboardItem]);
