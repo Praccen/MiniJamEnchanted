@@ -1,157 +1,174 @@
 {
-    "meshes": [
+  "meshes": [
+    {
+      "name": "WallGroundFloorLeftSide_B_UU",
+      "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
+      "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
+      "specular": "CSS:rgb(0,0,0)",
+      "collision": true,
+      "meshCollision": true,
+      "placements": [
         {
-            "name": "WallGroundFloorLeftSide_B_UU",
-            "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
-            "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
-            "specular": "CSS:rgb(0,0,0)",
-            "collision": true,
-            "meshCollision": true,
-            "placements": [
-                {
-                    "translation": [0, 0.5, -30],
-                    "scale": [4, 4, 4],
-                    "oneLineFormat": null,
-                    "rotation": [0, 0, 0, 1],
-                    "origin": [0, 0, 0]
-                }
-            ]
-        },
-        {
-            "name": "WallGroundFloorLeftSide_B_URU",
-            "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
-            "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
-            "specular": "CSS:rgb(0,0,0)",
-            "collision": true,
-            "meshCollision": true,
-            "placements": [
-                {
-                    "translation": [20, 0.5, -30],
-                    "scale": [4, 4, 4],
-                    "oneLineFormat": null,
-                    "rotation": [0, 0, 0, 1],
-                    "origin": [0, 0, 0]
-                }
-            ]
-        },
-        {
-            "name": "WallGroundFloorLeftSide_B_URR",
-            "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
-            "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
-            "specular": "CSS:rgb(0,0,0)",
-            "collision": true,
-            "meshCollision": true,
-            "placements": [
-                {
-                    "translation": [30, 0.5, -20.118400214630967],
-                    "scale": [4, 4, 4],
-                    "oneLineFormat": null,
-                    "rotation": [0, -0.7071067811865475, 0, 0.7071067811865476],
-                    "origin": [0, 0, 0]
-                }
-            ]
-        },
-        {
-            "name": "WallGroundFloorLeftSide_B_RR",
-            "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
-            "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
-            "specular": "CSS:rgb(0,0,0)",
-            "collision": true,
-            "meshCollision": true,
-            "placements": [
-                {
-                    "translation": [30, 0.5, 20],
-                    "scale": [4, 4, 4],
-                    "oneLineFormat": null,
-                    "rotation": [0, -0.7071067811865475, 0, 0.7071067811865476],
-                    "origin": [0, 0, 0]
-                }
-            ]
-        },
-        {
-            "name": "WallGroundFloorLeftSide_B_DRR",
-            "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
-            "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
-            "specular": "CSS:rgb(0,0,0)",
-            "collision": true,
-            "meshCollision": true,
-            "placements": [
-                {
-                    "translation": [30, 0.5, 0],
-                    "scale": [4, 4, 4],
-                    "oneLineFormat": null,
-                    "rotation": [0, -0.7071067811865475, 0, 0.7071067811865476],
-                    "origin": [0, 0, 0]
-                }
-            ]
-        },
-        {
-            "name": "WallGroundFloorLeftSide_B_DRX",
-            "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
-            "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
-            "specular": "CSS:rgb(0,0,0)",
-            "collision": true,
-            "meshCollision": true,
-            "placements": [
-                {
-                    "translation": [19.5, 0.5, 30.5],
-                    "scale": [4, 4, 4],
-                    "oneLineFormat": null,
-                    "rotation": [0, 1, 0, 6.123233995736766e-17],
-                    "origin": [0, 0, 0]
-                }
-            ]
-        },
-        {
-            "name": "WallGroundFloorLeftSide_B_DD",
-            "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
-            "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
-            "specular": "CSS:rgb(0,0,0)",
-            "collision": true,
-            "meshCollision": true,
-            "placements": [
-                {
-                    "translation": [-0.5, 0.5, 30.5],
-                    "scale": [4, 4, 4],
-                    "oneLineFormat": null,
-                    "rotation": [0, 1, 0, 6.123233995736766e-17],
-                    "origin": [0, 0, 0]
-                }
-            ]
-        },
-        {
-            "name": "WallGroundFloorLeftSide_B_CL",
-            "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
-            "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
-            "specular": "CSS:rgb(0,0,0)",
-            "collision": true,
-            "meshCollision": true,
-            "placements": [
-                {
-                    "translation": [-9.5, 0.5, 0],
-                    "scale": [4, 4, 4],
-                    "oneLineFormat": null,
-                    "rotation": [0, 0.7071067811865475, 0, 0.7071067811865476],
-                    "origin": [0, 0, 0]
-                }
-            ]
-        },
-        {
-            "name": "WallGroundFloorLeftSide_B_ULL",
-            "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
-            "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
-            "specular": "CSS:rgb(0,0,0)",
-            "collision": true,
-            "meshCollision": true,
-            "placements": [
-                {
-                    "translation": [-9.5, 0.5, -20],
-                    "scale": [4, 4, 4],
-                    "oneLineFormat": null,
-                    "rotation": [0, 0.7071067811865475, 0, 0.7071067811865476],
-                    "origin": [0, 0, 0]
-                }
-            ]
+          "translation": [0, 0.5, -30],
+          "scale": [4, 4, 4],
+          "oneLineFormat": null,
+          "rotation": [0, 0, 0, 1],
+          "origin": [0, 0, 0]
         }
-    ]
+      ]
+    },
+    {
+      "name": "WallGroundFloorLeftSide_B_URU",
+      "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
+      "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
+      "specular": "CSS:rgb(0,0,0)",
+      "collision": true,
+      "meshCollision": true,
+      "placements": [
+        {
+          "translation": [20, 0.5, -30],
+          "scale": [4, 4, 4],
+          "oneLineFormat": null,
+          "rotation": [0, 0, 0, 1],
+          "origin": [0, 0, 0]
+        }
+      ]
+    },
+    {
+      "name": "WallGroundFloorLeftSide_B_URR",
+      "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
+      "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
+      "specular": "CSS:rgb(0,0,0)",
+      "collision": true,
+      "meshCollision": true,
+      "placements": [
+        {
+          "translation": [30, 0.5, -20],
+          "scale": [4, 4, 4],
+          "oneLineFormat": null,
+          "rotation": [0, -0.7071067811865475, 0, 0.7071067811865476],
+          "origin": [0, 0, 0]
+        }
+      ]
+    },
+    {
+      "name": "WallGroundFloorLeftSide_B_RR",
+      "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
+      "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
+      "specular": "CSS:rgb(0,0,0)",
+      "collision": true,
+      "meshCollision": true,
+      "placements": [
+        {
+          "translation": [30, 0.5, 20],
+          "scale": [4, 4, 4],
+          "oneLineFormat": null,
+          "rotation": [0, -0.7071067811865475, 0, 0.7071067811865476],
+          "origin": [0, 0, 0]
+        }
+      ]
+    },
+    {
+      "name": "WallGroundFloorLeftSide_B_DRR",
+      "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
+      "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
+      "specular": "CSS:rgb(0,0,0)",
+      "collision": true,
+      "meshCollision": true,
+      "placements": [
+        {
+          "translation": [30, 0.5, 0],
+          "scale": [4, 4, 4],
+          "oneLineFormat": null,
+          "rotation": [0, -0.7071067811865475, 0, 0.7071067811865476],
+          "origin": [0, 0, 0]
+        }
+      ]
+    },
+    {
+      "name": "WallGroundFloorLeftSide_B_DRX",
+      "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
+      "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
+      "specular": "CSS:rgb(0,0,0)",
+      "collision": true,
+      "meshCollision": true,
+      "placements": [
+        {
+          "translation": [19.5, 0.5, 30.5],
+          "scale": [4, 4, 4],
+          "oneLineFormat": null,
+          "rotation": [0, 1, 0, 6.123233995736766e-17],
+          "origin": [0, 0, 0]
+        }
+      ]
+    },
+    {
+      "name": "WallGroundFloorLeftSide_B_DD",
+      "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
+      "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
+      "specular": "CSS:rgb(0,0,0)",
+      "collision": true,
+      "meshCollision": true,
+      "placements": [
+        {
+          "translation": [-0.5, 0.5, 30.5],
+          "scale": [4, 4, 4],
+          "oneLineFormat": null,
+          "rotation": [0, 1, 0, 6.123233995736766e-17],
+          "origin": [0, 0, 0]
+        }
+      ]
+    },
+    {
+      "name": "WallGroundFloorLeftSide_B_CL",
+      "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
+      "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
+      "specular": "CSS:rgb(0,0,0)",
+      "collision": true,
+      "meshCollision": true,
+      "placements": [
+        {
+          "translation": [-9.5, 0.5, 0],
+          "scale": [4, 4, 4],
+          "oneLineFormat": null,
+          "rotation": [0, 0.7071067811865475, 0, 0.7071067811865476],
+          "origin": [0, 0, 0]
+        }
+      ]
+    },
+    {
+      "name": "WallGroundFloorLeftSide_B_DL",
+      "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
+      "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
+      "specular": "CSS:rgb(0,0,0)",
+      "collision": true,
+      "meshCollision": true,
+      "placements": [
+        {
+          "translation": [-9.5, 0.5, 25.5],
+          "scale": [4, 4, 4],
+          "oneLineFormat": null,
+          "rotation": [0, 0.7071067811865475, 0, 0.7071067811865476],
+          "origin": [0, 0, 0]
+        }
+      ]
+    },
+    {
+      "name": "WallGroundFloorLeftSide_B_ULL",
+      "meshPath": "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
+      "diffuse": "Assets/objs/VoxelInterior/textures/TX_HouseInterior.png",
+      "specular": "CSS:rgb(0,0,0)",
+      "collision": true,
+      "meshCollision": true,
+      "placements": [
+        {
+          "translation": [-9.5, 0.5, -20],
+          "scale": [4, 4, 4],
+          "oneLineFormat": null,
+          "rotation": [0, 0.7071067811865475, 0, 0.7071067811865476],
+          "origin": [0, 0, 0]
+        }
+      ]
+    }
+  ]
 }
