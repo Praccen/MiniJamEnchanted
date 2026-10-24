@@ -26,7 +26,7 @@ export default class DirectionalShadowInstancedShaderProgram extends ShaderProgr
       gl,
       "DirectionalShadowInstanced",
       shadowVertexShaderSrc,
-      shadowFragmentShaderSrc
+      shadowFragmentShaderSrc,
     );
 
     this.use();

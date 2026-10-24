@@ -21,7 +21,7 @@ export default class Renderer2D extends RendererBase {
     scene: Scene,
     camera: Camera,
     saveScreenshot: boolean = false,
-    screenshotName: string = "screencapture"
+    screenshotName: string = "screencapture",
   ) {
     this.gl.disable(this.gl.DEPTH_TEST);
     this.gl.enable(this.gl.BLEND);
@@ -38,12 +38,12 @@ export default class Renderer2D extends RendererBase {
       this.clearColour.r,
       this.clearColour.g,
       this.clearColour.b,
-      this.clearColour.a
+      this.clearColour.a,
     );
     this.gl.clear(
       this.gl.COLOR_BUFFER_BIT |
         this.gl.DEPTH_BUFFER_BIT |
-        this.gl.STENCIL_BUFFER_BIT
+        this.gl.STENCIL_BUFFER_BIT,
     );
 
     this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, null);
@@ -51,7 +51,7 @@ export default class Renderer2D extends RendererBase {
 
     camera.bindViewProjMatrix(
       this.gl,
-      this.guiShaderProgram.getUniformLocation("viewProjMatrix")[0]
+      this.guiShaderProgram.getUniformLocation("viewProjMatrix")[0],
     );
     scene.renderSceneInLayerOrder(this.guiShaderProgram);
 

@@ -39,7 +39,7 @@ export default class VolumetricLightingPass {
     screenQuadShaderProgram: ScreenQuadShaderProgram,
     positionTexture: Texture,
     fogTexture: Texture,
-    directionalDepthMap: Texture
+    directionalDepthMap: Texture,
   ) {
     this.gl = gl;
     this.volumetricLightingShaderProgram = volumetricLightingShaderProgram;
@@ -62,11 +62,11 @@ export default class VolumetricLightingPass {
       100,
       100,
       [new Texture(this.gl, false)],
-      null
+      null,
     );
     this.combineScreenQuad = new ScreenQuad(
       this.gl,
-      this.upscaleFramebuffer.textures
+      this.upscaleFramebuffer.textures,
     );
   }
 
@@ -75,7 +75,7 @@ export default class VolumetricLightingPass {
     this.height = y;
     this.upscaleFramebuffer.setProportions(
       x * this.renderScale,
-      y * this.renderScale
+      y * this.renderScale,
     );
   }
 
@@ -84,7 +84,7 @@ export default class VolumetricLightingPass {
       this.renderScale = renderScale;
       this.upscaleFramebuffer.setProportions(
         this.width * this.renderScale,
-        this.height * this.renderScale
+        this.height * this.renderScale,
       );
     }
   }
@@ -108,51 +108,51 @@ export default class VolumetricLightingPass {
       0,
       0,
       this.upscaleFramebuffer.getWidth(),
-      this.upscaleFramebuffer.getHeight()
+      this.upscaleFramebuffer.getHeight(),
     );
     this.gl.clearColor(0, 0, 0, 0);
     this.gl.clear(
       this.gl.COLOR_BUFFER_BIT |
         this.gl.DEPTH_BUFFER_BIT |
-        this.gl.STENCIL_BUFFER_BIT
+        this.gl.STENCIL_BUFFER_BIT,
     );
     this.volumetricLightingShaderProgram.use();
     this.gl.disable(this.gl.DEPTH_TEST);
     camera.bindViewProjMatrix(
       this.gl,
       this.volumetricLightingShaderProgram.getUniformLocation(
-        "viewProjMatrix"
-      )[0]
+        "viewProjMatrix",
+      )[0],
     );
     this.gl.uniform3fv(
       this.volumetricLightingShaderProgram.getUniformLocation("cameraPos")[0],
-      camera.getPosition()
+      camera.getPosition(),
     );
     scene.directionalLight.bind(this.gl, this.volumetricLightingShaderProgram);
     scene.directionalLight.sendLightSpaceMatrix(
       this.gl,
       this.volumetricLightingShaderProgram.getUniformLocation(
-        "lightSpaceMatrix"
-      )[0]
+        "lightSpaceMatrix",
+      )[0],
     );
 
     this.gl.uniform1f(
       this.volumetricLightingShaderProgram.getUniformLocation(
-        "fogMaxDistance"
+        "fogMaxDistance",
       )[0],
-      this.fogMaxDistance
+      this.fogMaxDistance,
     );
     this.gl.uniform1f(
       this.volumetricLightingShaderProgram.getUniformLocation("fogDensity")[0],
-      this.fogDensity
+      this.fogDensity,
     );
 
     // Point lights
     this.gl.uniform1i(
       this.volumetricLightingShaderProgram.getUniformLocation(
-        "nrOfPointLights"
+        "nrOfPointLights",
       )[0],
-      Math.min(scene.pointLights.length, pointLightsToAllocate)
+      Math.min(scene.pointLights.length, pointLightsToAllocate),
     );
 
     // Bind pointLights, with counter as depthMapIndex
@@ -165,7 +165,7 @@ export default class VolumetricLightingPass {
       scene.pointLights[i].bind(
         i,
         counter,
-        this.volumetricLightingShaderProgram
+        this.volumetricLightingShaderProgram,
       );
       if (scene.pointLights[i].castShadow) {
         counter++;
@@ -193,7 +193,7 @@ export default class VolumetricLightingPass {
     // Time for fog moving
     this.gl.uniform1f(
       this.volumetricLightingShaderProgram.getUniformLocation("currentTime")[0],
-      (Date.now() - applicationStartTime) * 0.001
+      (Date.now() - applicationStartTime) * 0.001,
     );
 
     this.volumetricScreenQuad.draw(this.volumetricLightingShaderProgram, true);

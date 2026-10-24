@@ -34,20 +34,20 @@ export default class ShaderProgram {
     shaderProgramName: string,
     vertexShaderSrc: string,
     fragmentShaderSrc: string,
-    debugShaderCompilation: boolean = false
+    debugShaderCompilation: boolean = false,
   ) {
     this.gl = gl;
     this.loadShaders(
       shaderProgramName,
       vertexShaderSrc,
       fragmentShaderSrc,
-      debugShaderCompilation
+      debugShaderCompilation,
     );
   }
 
   private setInterfaceFromShaderSource(
     vertexShaderString: string,
-    fragmentShaderString: string
+    fragmentShaderString: string,
   ) {
     this.use();
 
@@ -88,7 +88,7 @@ export default class ShaderProgram {
         // Find opening bracket and number
         let openingBracketIndex = name.indexOf("[");
         let uniformArraySize = parseInt(
-          name.substring(openingBracketIndex + 1, name.length - 1)
+          name.substring(openingBracketIndex + 1, name.length - 1),
         );
         for (let i = 0; i < uniformArraySize; i++) {
           const uniformArrayElementName =
@@ -96,17 +96,17 @@ export default class ShaderProgram {
           if (structsDeclared.has(type)) {
             for (const structMember of structsDeclared.get(type)!) {
               self.setUniformLocation(
-                uniformArrayElementName + "." + structMember.name
+                uniformArrayElementName + "." + structMember.name,
               );
               if (structMember.type.startsWith("sampler")) {
                 self.gl.uniform1i(
                   self.getUniformLocation(
-                    uniformArrayElementName + "." + structMember.name
+                    uniformArrayElementName + "." + structMember.name,
                   )[0],
-                  samplerNumber++
+                  samplerNumber++,
                 );
                 self.uniformSamplerBindings.push(
-                  uniformArrayElementName + "." + structMember.name
+                  uniformArrayElementName + "." + structMember.name,
                 );
               }
             }
@@ -115,7 +115,7 @@ export default class ShaderProgram {
             if (type.startsWith("sampler")) {
               self.gl.uniform1i(
                 self.getUniformLocation(uniformArrayElementName)[0],
-                samplerNumber++
+                samplerNumber++,
               );
               self.uniformSamplerBindings.push(uniformArrayElementName);
             }
@@ -129,7 +129,7 @@ export default class ShaderProgram {
             if (structMember.type.startsWith("sampler")) {
               self.gl.uniform1i(
                 self.getUniformLocation(name + "." + structMember.name)[0],
-                samplerNumber++
+                samplerNumber++,
               );
               self.uniformSamplerBindings.push(name + "." + structMember.name);
             }
@@ -147,7 +147,7 @@ export default class ShaderProgram {
     function parseShaderSrc(
       src: string,
       parseInputs: boolean,
-      parseOutputs: boolean
+      parseOutputs: boolean,
     ) {
       for (const word of src.split(/\s+/).filter((value) => value.length > 0)) {
         if (parseInputs && word == "in") {
@@ -178,7 +178,7 @@ export default class ShaderProgram {
           buffer += word + " ";
           if (word.includes(";")) {
             self.inputs.push(
-              glslInputToGlType[buffer.substring(0, buffer.indexOf(" "))]
+              glslInputToGlType[buffer.substring(0, buffer.indexOf(" "))],
             );
             resetBuffer();
           }
@@ -231,7 +231,7 @@ export default class ShaderProgram {
     shaderProgramName: string,
     vertexShaderString: string,
     fragmentShaderString: string,
-    debugShaderCompilation: boolean
+    debugShaderCompilation: boolean,
   ) {
     // link shaders
     if (this.shaderProgram != null) {
@@ -244,7 +244,7 @@ export default class ShaderProgram {
     const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
     if (vertexShader == undefined) {
       console.log(
-        "Vertex shader could not be created (" + shaderProgramName + ")"
+        "Vertex shader could not be created (" + shaderProgramName + ")",
       );
       return;
     }
@@ -258,11 +258,11 @@ export default class ShaderProgram {
     ) {
       console.log(
         "Vertex shader compiled successfully: " +
-          this.gl.getShaderParameter(vertexShader, this.gl.COMPILE_STATUS)
+          this.gl.getShaderParameter(vertexShader, this.gl.COMPILE_STATUS),
       );
       console.log(
         "Vertex shader compiler log: \n" +
-          this.gl.getShaderInfoLog(vertexShader)
+          this.gl.getShaderInfoLog(vertexShader),
       );
     }
 
@@ -270,7 +270,7 @@ export default class ShaderProgram {
     const fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
     if (fragmentShader == undefined) {
       console.log(
-        "Fragment shader could not be created (" + shaderProgramName + ")"
+        "Fragment shader could not be created (" + shaderProgramName + ")",
       );
       return;
     }
@@ -284,11 +284,11 @@ export default class ShaderProgram {
     ) {
       console.log(
         "Fragment shader compiled successfully: " +
-          this.gl.getShaderParameter(fragmentShader, this.gl.COMPILE_STATUS)
+          this.gl.getShaderParameter(fragmentShader, this.gl.COMPILE_STATUS),
       );
       console.log(
         "Fragment shader compiler log: \n" +
-          this.gl.getShaderInfoLog(fragmentShader)
+          this.gl.getShaderInfoLog(fragmentShader),
       );
     }
 
@@ -301,13 +301,13 @@ export default class ShaderProgram {
     // Check for linking errors?
     let linkedShaders = this.gl.getProgramParameter(
       this.shaderProgram,
-      this.gl.LINK_STATUS
+      this.gl.LINK_STATUS,
     );
     if (!linkedShaders || debugShaderCompilation) {
       console.log("Linked shaders successfully: " + linkedShaders);
       console.log(
         "Linking shaders log: \n" +
-          this.gl.getProgramInfoLog(this.shaderProgram)
+          this.gl.getProgramInfoLog(this.shaderProgram),
       );
     }
 
@@ -328,7 +328,7 @@ export default class ShaderProgram {
     }
     const uniformLoc = this.gl.getUniformLocation(
       this.shaderProgram,
-      uniformName
+      uniformName,
     );
     if (uniformLoc == undefined) {
       return;
@@ -352,7 +352,7 @@ export default class ShaderProgram {
     }
 
     let memberNameMatches = this.uniformSamplerBindings.findIndex((value) =>
-      value.includes("." + uniformName)
+      value.includes("." + uniformName),
     );
 
     return memberNameMatches; // Possibly -1, texture.bind will check.

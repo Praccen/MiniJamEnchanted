@@ -239,7 +239,7 @@ export default class VolumetricLightingShaderProgram extends ShaderProgram {
       "VolumetricLightingShaderProgram",
       screenQuadVertexSrc,
       getFragSrc(),
-      false
+      false,
     );
 
     this.use();

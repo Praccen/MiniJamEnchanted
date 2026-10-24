@@ -37,7 +37,7 @@ export default class VolumetricCombineShaderProgram extends ShaderProgram {
       gl,
       "volumetricCombineShaderProgram",
       screenQuadVertexSrc,
-      screenQuadFragmentSrc
+      screenQuadFragmentSrc,
     );
   }
 }

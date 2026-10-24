@@ -11,7 +11,7 @@ export default class ParticleRenderPass {
 
   constructor(
     gl: WebGL2RenderingContext,
-    particleShaderProgram: ParticleShaderProgram
+    particleShaderProgram: ParticleShaderProgram,
   ) {
     this.gl = gl;
     this.particleShaderProgram = particleShaderProgram;
@@ -33,16 +33,16 @@ export default class ParticleRenderPass {
       this.particleShaderProgram.use();
       camera.bindViewProjMatrix(
         this.gl,
-        this.particleShaderProgram.getUniformLocation("viewProjMatrix")[0]
+        this.particleShaderProgram.getUniformLocation("viewProjMatrix")[0],
       );
       this.gl.uniform3fv(
         this.particleShaderProgram.getUniformLocation("cameraPos")[0],
-        camera.getPosition()
+        camera.getPosition(),
       );
 
       this.gl.uniform1f(
         this.particleShaderProgram.getUniformLocation("currentTime")[0],
-        (Date.now() - applicationStartTime) * 0.001
+        (Date.now() - applicationStartTime) * 0.001,
       );
       for (const particleSpawner of scene.particleSpawners.values()) {
         particleSpawner.draw(this.particleShaderProgram);

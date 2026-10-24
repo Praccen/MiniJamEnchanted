@@ -63,7 +63,7 @@ export default class PointShadowShaderProgram extends ShaderProgram {
       gl,
       "PointShadowPass",
       pointShadowVertexShaderSrc,
-      pointShadowFragmentShaderSrc
+      pointShadowFragmentShaderSrc,
     );
 
     this.use();

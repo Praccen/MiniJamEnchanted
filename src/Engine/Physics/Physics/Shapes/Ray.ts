@@ -28,7 +28,7 @@ export default class Ray extends Shape {
     let end = vec3.transformMat4(
       vec3.create(),
       vec3.add(vec3.create(), this.start, this.dir),
-      this.inverseMatrix
+      this.inverseMatrix,
     );
 
     return vec3.subtract(vec3.create(), end, start); // Not normalized because we want to keep distances

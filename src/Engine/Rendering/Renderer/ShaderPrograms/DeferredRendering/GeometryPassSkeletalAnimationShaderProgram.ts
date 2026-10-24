@@ -52,7 +52,7 @@ export default class GeometryPassSkeletalAnimationShaderProgram extends ShaderPr
       gl,
       "GeometryPassSkeletalAnimation",
       geometryAnimationVertexShaderSrc,
-      geometryFragmentShaderSrc
+      geometryFragmentShaderSrc,
     );
 
     this.use();

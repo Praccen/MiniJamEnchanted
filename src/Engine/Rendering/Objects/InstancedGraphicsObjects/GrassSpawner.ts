@@ -10,7 +10,7 @@ export default class GrassSpawner extends GraphicsObject {
 
   constructor(
     gl: WebGL2RenderingContext,
-    numberOfStartingGrassStraws: number = 0
+    numberOfStartingGrassStraws: number = 0,
   ) {
     super(gl);
 
@@ -20,7 +20,7 @@ export default class GrassSpawner extends GraphicsObject {
     this.gl.bufferData(
       this.gl.ARRAY_BUFFER,
       numberOfStartingGrassStraws * 7 * 4,
-      this.gl.STATIC_DRAW
+      this.gl.STATIC_DRAW,
     );
     this.setupInstancedVertexAttributePointers();
     this.unbindVAO();
@@ -47,7 +47,7 @@ export default class GrassSpawner extends GraphicsObject {
     this.gl.bufferData(
       this.gl.ARRAY_BUFFER,
       this.numGrassStraws * 7 * 4,
-      this.gl.STATIC_DRAW
+      this.gl.STATIC_DRAW,
     );
     this.unbindVAO();
   }
@@ -60,7 +60,7 @@ export default class GrassSpawner extends GraphicsObject {
     particleIndex: number,
     startPosition: vec3,
     size: number,
-    tipOffset: vec3
+    tipOffset: vec3,
   ): boolean {
     if (particleIndex > this.numGrassStraws) {
       return false;

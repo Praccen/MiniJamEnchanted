@@ -100,7 +100,7 @@ export default class Renderer3D extends RendererBase {
 
     // ---- Shadows ----
     this.directionalShadowShaderProgram = new DirectionalShadowShaderProgram(
-      this.gl
+      this.gl,
     );
     this.directionalShaderInstancedShaderProgram =
       new DirectionalShadowInstancedShaderProgram(this.gl);
@@ -110,7 +110,7 @@ export default class Renderer3D extends RendererBase {
       this.gl,
       this.directionalShadowShaderProgram,
       this.directionalShaderInstancedShaderProgram,
-      this.directionalShadowSkeletalAnimationShaderProgram
+      this.directionalShadowSkeletalAnimationShaderProgram,
     );
 
     this.pointShadowShaderProgram = new PointShadowShaderProgram(this.gl);
@@ -122,7 +122,7 @@ export default class Renderer3D extends RendererBase {
       this.gl,
       this.pointShadowShaderProgram,
       this.pointShadowInstancedShaderProgram,
-      this.pointShadowSkeletalAnimationShaderProgram
+      this.pointShadowSkeletalAnimationShaderProgram,
     );
     // -----------------
 
@@ -136,7 +136,7 @@ export default class Renderer3D extends RendererBase {
       this.gl,
       this.geometryPassShaderProgram,
       this.geometryPassInstancedShaderProgram,
-      this.geometryPassSkeletalAnimationShaderProgram
+      this.geometryPassSkeletalAnimationShaderProgram,
     );
 
     this.lightingPassShaderProgram = new LightingPassShaderProgram(this.gl);
@@ -149,12 +149,12 @@ export default class Renderer3D extends RendererBase {
       textureArray.push(this.geometryRenderPass.outputFramebuffer.textures[i]);
     }
     textureArray.push(
-      this.directionalShadowRenderPass.shadowBuffer.depthTexture
+      this.directionalShadowRenderPass.shadowBuffer.depthTexture,
     );
     this.lightingRenderPass = new LightingRenderPass(
       this.gl,
       this.lightingPassShaderProgram,
-      textureArray
+      textureArray,
     );
     // ----------------------------
 
@@ -163,7 +163,7 @@ export default class Renderer3D extends RendererBase {
     this.useSkybox = false;
     this.skyboxRenderPass = new SkyboxRenderPass(
       this.gl,
-      this.skyboxShaderProgram
+      this.skyboxShaderProgram,
     );
     // ----------------
 
@@ -171,7 +171,7 @@ export default class Renderer3D extends RendererBase {
     this.particleShaderProgram = new ParticleShaderProgram(this.gl);
     this.particleRenderPass = new ParticleRenderPass(
       this.gl,
-      this.particleShaderProgram
+      this.particleShaderProgram,
     );
     // ------------------
 
@@ -187,16 +187,16 @@ export default class Renderer3D extends RendererBase {
           false,
           this.gl.R8,
           this.gl.RED,
-          this.gl.UNSIGNED_BYTE
+          this.gl.UNSIGNED_BYTE,
         ),
       ],
-      null
+      null,
     );
 
     this.blurMaskRenderPass = new ScreenQuadPass(
       this.gl,
       new BlurMaskShaderProgram(this.gl),
-      this.blurMaskFramebuffer.textures
+      this.blurMaskFramebuffer.textures,
     );
 
     // -------------------
@@ -209,7 +209,7 @@ export default class Renderer3D extends RendererBase {
       this.screenQuadShaderProgram,
       this.geometryRenderPass.outputFramebuffer.textures[0],
       this.textureStore.getTexture("CSS:rgb(255, 255, 255"),
-      this.directionalShadowRenderPass.shadowBuffer.depthTexture
+      this.directionalShadowRenderPass.shadowBuffer.depthTexture,
     );
     this.useVolumetric = false;
     // -----------------------------
@@ -218,7 +218,7 @@ export default class Renderer3D extends RendererBase {
     this.shapesShaderProgram = new ShapesShaderProgram(this.gl);
     this.shapesRenderPass = new ShapesRenderPass(
       this.gl,
-      this.shapesShaderProgram
+      this.shapesShaderProgram,
     );
     // ------------------------
 
@@ -227,7 +227,7 @@ export default class Renderer3D extends RendererBase {
       this.width,
       this.height,
       [new Texture(this.gl, false)],
-      null
+      null,
     );
 
     // Assign finished framebuffer to those render passes that should target it
@@ -238,7 +238,7 @@ export default class Renderer3D extends RendererBase {
     this.finishedOutputRenderPass = new ScreenQuadPass(
       this.gl,
       this.screenQuadShaderProgram,
-      this.finishedFramebuffer.textures
+      this.finishedFramebuffer.textures,
     );
   }
 
@@ -278,7 +278,7 @@ export default class Renderer3D extends RendererBase {
 
   setFogTexture(path: string) {
     this.volumetricLightingPass.setFogTexture(
-      this.textureStore.getTexture(path)
+      this.textureStore.getTexture(path),
     );
   }
 
@@ -287,7 +287,7 @@ export default class Renderer3D extends RendererBase {
     camera: Camera,
     cameraFrustum: Shape,
     saveScreenshot: boolean = false,
-    screenshotName: string = "screencapture"
+    screenshotName: string = "screencapture",
   ) {
     this.gl.enable(this.gl.DEPTH_TEST);
 
@@ -312,12 +312,12 @@ export default class Renderer3D extends RendererBase {
       this.clearColour.r,
       this.clearColour.g,
       this.clearColour.b,
-      this.clearColour.a
+      this.clearColour.a,
     );
     this.gl.clear(
       this.gl.COLOR_BUFFER_BIT |
         this.gl.DEPTH_BUFFER_BIT |
-        this.gl.STENCIL_BUFFER_BIT
+        this.gl.STENCIL_BUFFER_BIT,
     );
 
     // ---- Lighting pass ----
@@ -336,7 +336,7 @@ export default class Renderer3D extends RendererBase {
       this.width,
       this.height,
       this.gl.DEPTH_BUFFER_BIT,
-      this.gl.NEAREST
+      this.gl.NEAREST,
     );
 
     // ---- Skybox ----

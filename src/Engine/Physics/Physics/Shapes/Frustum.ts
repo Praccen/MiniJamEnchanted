@@ -91,11 +91,11 @@ export default class Frustum extends Shape {
         let vertex = vec4.transformMat4(
           vec4.create(),
           ndcCube[i],
-          this.transformMatrix
+          this.transformMatrix,
         );
         vec4.scale(vertex, vertex, 1.0 / vertex[3]);
         this.transformedVertices.push(
-          vec3.fromValues(vertex[0], vertex[1], vertex[2])
+          vec3.fromValues(vertex[0], vertex[1], vertex[2]),
         );
       }
       this.verticesNeedsUpdate = false;
@@ -116,20 +116,20 @@ export default class Frustum extends Shape {
   private crossProdForNormal(
     vertexIndex0: number,
     vertexIndex1: number,
-    vertexIndex2: number
+    vertexIndex2: number,
   ) {
     let normal = vec3.cross(
       vec3.create(),
       vec3.sub(
         vec3.create(),
         this.transformedVertices[vertexIndex1],
-        this.transformedVertices[vertexIndex0]
+        this.transformedVertices[vertexIndex0],
       ),
       vec3.sub(
         vec3.create(),
         this.transformedVertices[vertexIndex2],
-        this.transformedVertices[vertexIndex0]
-      )
+        this.transformedVertices[vertexIndex0],
+      ),
     );
     return vec3.normalize(normal, normal);
   }
@@ -167,7 +167,7 @@ export default class Frustum extends Shape {
     let edge = vec3.sub(
       vec3.create(),
       this.transformedVertices[vertexIndex0],
-      this.transformedVertices[vertexIndex1]
+      this.transformedVertices[vertexIndex1],
     );
     return vec3.normalize(edge, edge);
   }

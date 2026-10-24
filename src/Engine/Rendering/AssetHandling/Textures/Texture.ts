@@ -20,7 +20,7 @@ export default class Texture {
     internalFormat: number = gl.RGBA,
     format: number = gl.RGBA,
     dataStorageType: number = gl.UNSIGNED_BYTE,
-    textureTarget: number = gl.TEXTURE_2D
+    textureTarget: number = gl.TEXTURE_2D,
   ) {
     this.gl = gl;
     this.useMipMap = useMipMap;
@@ -38,22 +38,22 @@ export default class Texture {
     this.gl.texParameteri(
       this.textureTarget,
       this.gl.TEXTURE_WRAP_S,
-      this.gl.REPEAT
+      this.gl.REPEAT,
     );
     this.gl.texParameteri(
       this.textureTarget,
       this.gl.TEXTURE_WRAP_T,
-      this.gl.REPEAT
+      this.gl.REPEAT,
     );
     this.gl.texParameteri(
       this.textureTarget,
       this.gl.TEXTURE_MIN_FILTER,
-      this.gl.NEAREST
+      this.gl.NEAREST,
     );
     this.gl.texParameteri(
       this.textureTarget,
       this.gl.TEXTURE_MAG_FILTER,
-      this.gl.NEAREST
+      this.gl.NEAREST,
     );
     this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
 
@@ -66,7 +66,7 @@ export default class Texture {
   setTextureData(
     data: Uint8Array | Float32Array,
     width: number,
-    height: number
+    height: number,
   ) {
     this.width = width;
     this.height = height;
@@ -80,14 +80,14 @@ export default class Texture {
       0,
       this.format,
       this.dataStorageType,
-      data
+      data,
     );
     if (this.useMipMap) {
       this.gl.generateMipmap(this.textureTarget);
       this.gl.texParameteri(
         this.textureTarget,
         this.gl.TEXTURE_MIN_FILTER,
-        this.gl.LINEAR_MIPMAP_LINEAR
+        this.gl.LINEAR_MIPMAP_LINEAR,
       );
     }
     this.gl.bindTexture(this.textureTarget, null);
@@ -133,14 +133,14 @@ export default class Texture {
         self.internalFormat,
         self.format,
         self.dataStorageType,
-        image
+        image,
       );
       if (self.useMipMap) {
         self.gl.generateMipmap(self.textureTarget);
         self.gl.texParameteri(
           self.textureTarget,
           self.gl.TEXTURE_MIN_FILTER,
-          self.gl.LINEAR_MIPMAP_LINEAR
+          self.gl.LINEAR_MIPMAP_LINEAR,
         );
       }
       self.loadedFromFile = true;

@@ -97,7 +97,7 @@ export default class ParticleShaderProgram extends ShaderProgram {
       "ParticleShaderProgram",
       particleVertexShaderSrc,
       particleFragmentShaderSrc,
-      false
+      false,
     );
 
     this.use();

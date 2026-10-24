@@ -25,41 +25,41 @@ export default class DirectionalLight {
     this.frustum = new OBB();
     this.frustum.setMinAndMaxVectors(
       vec3.fromValues(-1, -1, -1),
-      vec3.fromValues(1, 1, 1)
+      vec3.fromValues(1, 1, 1),
     );
   }
 
   bind(gl: WebGL2RenderingContext, shaderProgram: ShaderProgram) {
     gl.uniform3fv(
       shaderProgram.getUniformLocation("directionalLight.direction")[0],
-      vec3.normalize(this.direction, this.direction)
+      vec3.normalize(this.direction, this.direction),
     );
     gl.uniform3fv(
       shaderProgram.getUniformLocation("directionalLight.colour")[0],
-      this.colour
+      this.colour,
     );
     gl.uniform1f(
       shaderProgram.getUniformLocation("directionalLight.ambientMultiplier")[0],
-      this.ambientMultiplier
+      this.ambientMultiplier,
     );
   }
 
   sendLightSpaceMatrix(
     gl: WebGL2RenderingContext,
-    uniformLocation: WebGLUniformLocation
+    uniformLocation: WebGLUniformLocation,
   ) {
     gl.uniformMatrix4fv(uniformLocation, false, this.lightSpaceMatrix);
   }
 
   calcAndSendLightSpaceMatrix(
     gl: WebGL2RenderingContext,
-    uniformLocation: WebGLUniformLocation
+    uniformLocation: WebGLUniformLocation,
   ) {
     let cameraPos = vec3.clone(this.shadowFocusPos);
     let offsetVec = vec3.scale(
       vec3.create(),
       vec3.normalize(vec3.create(), this.direction),
-      this.shadowCameraDistance
+      this.shadowCameraDistance,
     );
     this.lightSpaceMatrix = mat4.ortho(
       mat4.create(),
@@ -68,19 +68,19 @@ export default class DirectionalLight {
       -this.lightProjectionBoxSideLength,
       this.lightProjectionBoxSideLength,
       0.1,
-      this.shadowCameraDistance * 2.0
+      this.shadowCameraDistance * 2.0,
     ); // Start by setting it to projection
     vec3.subtract(cameraPos, cameraPos, offsetVec);
     let lightView = mat4.lookAt(
       mat4.create(),
       cameraPos,
       this.shadowFocusPos,
-      vec3.fromValues(0.0, 1.0, 0.0)
+      vec3.fromValues(0.0, 1.0, 0.0),
     ); // This will make it impossible to have exactly straight down shadows, but I'm fine with that
     mat4.mul(this.lightSpaceMatrix, this.lightSpaceMatrix, lightView);
     gl.uniformMatrix4fv(uniformLocation, false, this.lightSpaceMatrix);
     this.frustum.setTransformMatrix(
-      mat4.invert(mat4.create(), this.lightSpaceMatrix)
+      mat4.invert(mat4.create(), this.lightSpaceMatrix),
     );
   }
 

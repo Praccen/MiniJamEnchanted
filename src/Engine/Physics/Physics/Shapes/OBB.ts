@@ -65,7 +65,7 @@ export default class OBB extends Shape {
 
     this.setMinAndMaxVectors(
       vec3.fromValues(-0.5, -0.5, -0.5),
-      vec3.fromValues(0.5, 0.5, 0.5)
+      vec3.fromValues(0.5, 0.5, 0.5),
     );
   }
 
@@ -178,12 +178,12 @@ export default class OBB extends Shape {
       let resultingMatrix = mat4.mul(
         mat4.create(),
         this.inverseMatrix,
-        this.transformMatrix
+        this.transformMatrix,
       );
 
       for (const originalVertex of this.originalVertices) {
         this.transformedVertices.push(
-          vec3.transformMat4(vec3.create(), originalVertex, resultingMatrix)
+          vec3.transformMat4(vec3.create(), originalVertex, resultingMatrix),
         );
       }
       this.verticesNeedsUpdate = false;
@@ -198,7 +198,7 @@ export default class OBB extends Shape {
       let resultingMatrix = mat4.mul(
         mat4.create(),
         this.inverseMatrix,
-        this.transformMatrix
+        this.transformMatrix,
       );
 
       for (const originalNormal of this.originalNormals) {
@@ -208,9 +208,9 @@ export default class OBB extends Shape {
             vec3.transformMat3(
               vec3.create(),
               originalNormal,
-              mat3.normalFromMat4(mat3.create(), resultingMatrix)
-            )
-          )
+              mat3.normalFromMat4(mat3.create(), resultingMatrix),
+            ),
+          ),
         );
       }
 

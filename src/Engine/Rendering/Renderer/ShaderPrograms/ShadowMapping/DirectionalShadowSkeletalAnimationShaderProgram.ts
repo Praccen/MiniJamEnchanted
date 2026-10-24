@@ -43,7 +43,7 @@ export default class DirectionalShadowSkeletalAnimationShaderProgram extends Sha
       gl,
       "DirectionalShadowAnimated",
       shadowAnimationVertexShaderSrc,
-      shadowFragmentShaderSrc
+      shadowFragmentShaderSrc,
     );
 
     this.use();

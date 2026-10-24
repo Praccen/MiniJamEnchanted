@@ -81,7 +81,7 @@ export default class Camera {
   getPitchJawDegrees(): vec2 {
     return vec2.fromValues(
       (Math.asin(this.dir[1]) * 180) / Math.PI,
-      (Math.atan2(this.dir[0], this.dir[2]) * 180) / Math.PI
+      (Math.atan2(this.dir[0], this.dir[2]) * 180) / Math.PI,
     );
   }
 
@@ -108,7 +108,7 @@ export default class Camera {
     this.updateViewProjMatrix();
     if (frustum != undefined) {
       frustum.setTransformMatrix(
-        mat4.invert(mat4.create(), this.viewProjMatrix)
+        mat4.invert(mat4.create(), this.viewProjMatrix),
       );
       return frustum;
     }
@@ -140,7 +140,7 @@ export default class Camera {
       this.dir,
       Math.cos((pitch * Math.PI) / 180) * Math.sin((jaw * Math.PI) / 180),
       Math.sin((pitch * Math.PI) / 180),
-      Math.cos((pitch * Math.PI) / 180) * Math.cos((jaw * Math.PI) / 180)
+      Math.cos((pitch * Math.PI) / 180) * Math.cos((jaw * Math.PI) / 180),
     );
     this.viewMatrixNeedsUpdate = true;
   }
@@ -150,7 +150,7 @@ export default class Camera {
       this.dir,
       Math.cos(pitch) * Math.sin(jaw),
       Math.sin(pitch),
-      Math.cos(pitch) * Math.cos(jaw)
+      Math.cos(pitch) * Math.cos(jaw),
     );
     this.viewMatrixNeedsUpdate = true;
   }
@@ -179,7 +179,7 @@ export default class Camera {
     left: number,
     right: number,
     bottom: number,
-    top: number
+    top: number,
   ) {
     this.left = left;
     this.right = right;
@@ -195,7 +195,7 @@ export default class Camera {
         this.viewMatrix,
         this.pos,
         vec3.add(vec3.create(), this.pos, this.dir),
-        this.up
+        this.up,
       );
       this.viewMatrixNeedsUpdate = false;
       updateViewProj = true;
@@ -210,7 +210,7 @@ export default class Camera {
           this.bottom,
           this.top,
           0.01,
-          this.farPlaneDistance
+          this.farPlaneDistance,
         );
       } else {
         mat4.perspective(
@@ -218,7 +218,7 @@ export default class Camera {
           this.fov,
           this.ratio,
           0.01,
-          this.farPlaneDistance
+          this.farPlaneDistance,
         );
       }
     }
@@ -230,7 +230,7 @@ export default class Camera {
 
       // this.frustum.setTransformMatrix(mat4.mul(mat4.create(), mat4.invert(mat4.create(), this.projectionMatrix), this.viewMatrix));
       this.frustum.setTransformMatrix(
-        mat4.invert(mat4.create(), this.viewProjMatrix)
+        mat4.invert(mat4.create(), this.viewProjMatrix),
       );
     }
   }
@@ -238,7 +238,7 @@ export default class Camera {
   bindViewProjMatrix(
     gl: WebGL2RenderingContext,
     uniformLocation: WebGLUniformLocation,
-    skybox: boolean = false
+    skybox: boolean = false,
   ) {
     this.updateViewProjMatrix();
 
@@ -247,12 +247,12 @@ export default class Camera {
         mat4.create(),
         vec3.create(),
         this.dir,
-        this.up
+        this.up,
       );
       let tempViewProj = mat4.mul(
         mat4.create(),
         this.projectionMatrix,
-        tempViewMatrix
+        tempViewMatrix,
       );
 
       gl.uniformMatrix4fv(uniformLocation, false, tempViewProj);

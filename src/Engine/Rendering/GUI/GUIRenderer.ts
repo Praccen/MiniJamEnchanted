@@ -70,49 +70,49 @@ export class GUIRenderer {
 
   getNew3DText(parentDiv?: Div): TextObject3D {
     const length = this.guiObjects3D.push(
-      new TextObject3D(this.domElement, parentDiv)
+      new TextObject3D(this.domElement, parentDiv),
     );
     return this.guiObjects3D[length - 1];
   }
 
   getNew2DText(parentDiv?: Div): TextObject2D {
     const length = this.guiObjects2D.push(
-      new TextObject2D(this.domElement, parentDiv)
+      new TextObject2D(this.domElement, parentDiv),
     );
     return this.guiObjects2D[length - 1] as TextObject2D;
   }
 
   getNewCheckbox(parentDiv?: Div): Checkbox {
     const length = this.guiObjects2D.push(
-      new Checkbox(this.domElement, parentDiv)
+      new Checkbox(this.domElement, parentDiv),
     );
     return this.guiObjects2D[length - 1] as Checkbox;
   }
 
   getNewButton(parentDiv?: Div): Button {
     const length = this.guiObjects2D.push(
-      new Button(this.domElement, parentDiv)
+      new Button(this.domElement, parentDiv),
     );
     return this.guiObjects2D[length - 1] as Button;
   }
 
   getNewSlider(parentDiv?: Div): Slider {
     const length = this.guiObjects2D.push(
-      new Slider(this.domElement, parentDiv)
+      new Slider(this.domElement, parentDiv),
     );
     return this.guiObjects2D[length - 1] as Slider;
   }
 
   getNewEditText(parentDiv?: Div): EditText {
     const length = this.guiObjects2D.push(
-      new EditText(this.domElement, parentDiv)
+      new EditText(this.domElement, parentDiv),
     );
     return this.guiObjects2D[length - 1] as EditText;
   }
 
   getNewProgress(parentDiv?: Div): Progress {
     const length = this.guiObjects2D.push(
-      new Progress(this.domElement, parentDiv)
+      new Progress(this.domElement, parentDiv),
     );
     return this.guiObjects2D[length - 1] as Progress;
   }

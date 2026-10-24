@@ -33,7 +33,7 @@ export default class PointLight {
       false,
       this.gl.DEPTH_COMPONENT32F,
       this.gl.DEPTH_COMPONENT,
-      this.gl.FLOAT
+      this.gl.FLOAT,
     );
     this.pointShadowDepthMap.setTextureData(null, 501, 501);
 
@@ -42,7 +42,7 @@ export default class PointLight {
       501,
       501,
       [],
-      this.pointShadowDepthMap
+      this.pointShadowDepthMap,
     );
   }
 
@@ -64,45 +64,45 @@ export default class PointLight {
   bind(
     lightIndex: number,
     depthMapIndex: number,
-    shaderProgram: ShaderProgram
+    shaderProgram: ShaderProgram,
   ) {
     let ul = shaderProgram.getUniformLocation(
-      "pointLights[" + lightIndex + "].position"
+      "pointLights[" + lightIndex + "].position",
     );
     if (ul[1]) {
       this.gl.uniform3fv(
         ul[0],
-        vec3.add(vec3.create(), this.position, this.offset)
+        vec3.add(vec3.create(), this.position, this.offset),
       );
     }
     ul = shaderProgram.getUniformLocation(
-      "pointLights[" + lightIndex + "].colour"
+      "pointLights[" + lightIndex + "].colour",
     );
     if (ul[1]) {
       this.gl.uniform3fv(ul[0], this.colour);
     }
 
     ul = shaderProgram.getUniformLocation(
-      "pointLights[" + lightIndex + "].constant"
+      "pointLights[" + lightIndex + "].constant",
     );
     if (ul[1]) {
       this.gl.uniform1f(ul[0], this.constant);
     }
     ul = shaderProgram.getUniformLocation(
-      "pointLights[" + lightIndex + "].linear"
+      "pointLights[" + lightIndex + "].linear",
     );
     if (ul[1]) {
       this.gl.uniform1f(ul[0], this.linear);
     }
     ul = shaderProgram.getUniformLocation(
-      "pointLights[" + lightIndex + "].quadratic"
+      "pointLights[" + lightIndex + "].quadratic",
     );
     if (ul[1]) {
       this.gl.uniform1f(ul[0], this.quadratic);
     }
 
     ul = shaderProgram.getUniformLocation(
-      "pointLights[" + lightIndex + "].pointDepthMapIndex"
+      "pointLights[" + lightIndex + "].pointDepthMapIndex",
     );
     if (ul[1]) {
       this.gl.uniform1i(ul[0], this.castShadow ? depthMapIndex : -1);
@@ -114,7 +114,7 @@ export default class PointLight {
       (-this.linear +
         Math.sqrt(
           this.linear * this.linear -
-            4.0 * this.quadratic * (this.constant - 256.0 / 5.0)
+            4.0 * this.quadratic * (this.constant - 256.0 / 5.0),
         )) /
       (2.0 * this.quadratic);
     let obb = new OBB();
@@ -122,13 +122,13 @@ export default class PointLight {
       vec3.add(
         vec3.create(),
         vec3.add(vec3.create(), this.position, this.offset),
-        vec3.fromValues(-radius, -radius, -radius)
+        vec3.fromValues(-radius, -radius, -radius),
       ),
       vec3.add(
         vec3.create(),
         vec3.add(vec3.create(), this.position, this.offset),
-        vec3.fromValues(radius, radius, radius)
-      )
+        vec3.fromValues(radius, radius, radius),
+      ),
     );
     return obb;
   }

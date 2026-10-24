@@ -12,7 +12,7 @@ export default class ScreenQuadPass {
   constructor(
     gl: WebGL2RenderingContext,
     screenQuadShaderProgram: ScreenQuadShaderProgram,
-    inputTextures: Texture[]
+    inputTextures: Texture[],
   ) {
     this.gl = gl;
     this.screenQuad = new ScreenQuad(gl, inputTextures);

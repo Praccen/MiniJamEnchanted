@@ -315,7 +315,7 @@ export default class TranslateGizmo {
       part.shape.setLineVertices(vertices);
       vec4.copy(
         part.graphicsObject.colour,
-        handle == highlighted ? colourHighlight : part.colour
+        handle == highlighted ? colourHighlight : part.colour,
       );
     }
 
@@ -359,7 +359,7 @@ export default class TranslateGizmo {
     const toCamera = vec3.sub(
       vec3.create(),
       this.camera.getPosition(),
-      midPoint
+      midPoint,
     );
 
     let sideways = vec3.cross(vec3.create(), along, toCamera);
@@ -381,7 +381,7 @@ export default class TranslateGizmo {
     // reads as solid at any resolution.
     const copies = Math.min(
       maxLineCopies,
-      Math.max(2, Math.ceil(strokePixels / lineCopySpacingPixels) + 1)
+      Math.max(2, Math.ceil(strokePixels / lineCopySpacingPixels) + 1),
     );
 
     for (let i = 0; i < copies; i++) {
@@ -390,7 +390,7 @@ export default class TranslateGizmo {
       const offset = vec3.scale(vec3.create(), sideways, thickness * t);
       vertices.push(
         vec3.add(vec3.create(), start, offset),
-        vec3.add(vec3.create(), end, offset)
+        vec3.add(vec3.create(), end, offset),
       );
     }
   }
@@ -437,13 +437,13 @@ export default class TranslateGizmo {
         vec3.create(),
         base,
         perpendiculars[0],
-        Math.cos(angle) * headRadius
+        Math.cos(angle) * headRadius,
       );
       vec3.scaleAndAdd(
         rim,
         rim,
         perpendiculars[1],
-        Math.sin(angle) * headRadius
+        Math.sin(angle) * headRadius,
       );
 
       // Spoke from the rim up to the tip, which fills the cone in visually.
@@ -464,7 +464,7 @@ export default class TranslateGizmo {
   private appendPlaneHandle(
     vertices: Array<vec3>,
     origin: vec3,
-    handle: GizmoHandle
+    handle: GizmoHandle,
   ) {
     const axes = planeAxes[handle];
     const offset = this.axisLength * planeHandleOffset;
@@ -509,7 +509,7 @@ export default class TranslateGizmo {
         vec3.create(),
         origin,
         right,
-        size * rightSign
+        size * rightSign,
       );
       vec3.scaleAndAdd(corner, corner, up, size * upSign);
       corners.push(corner);
@@ -519,7 +519,7 @@ export default class TranslateGizmo {
       this.appendThickLine(
         vertices,
         corners[i],
-        corners[(i + 1) % corners.length]
+        corners[(i + 1) % corners.length],
       );
     }
 
@@ -600,7 +600,7 @@ export default class TranslateGizmo {
       const pixelDistance = this.axisPixelDistance(
         mousePosition,
         origin,
-        handle
+        handle,
       );
       if (pixelDistance != null && pixelDistance < closestPixelDistance) {
         closestPixelDistance = pixelDistance;
@@ -619,13 +619,13 @@ export default class TranslateGizmo {
   private axisPixelDistance(
     mousePosition: vec2,
     origin: vec3,
-    handle: GizmoHandle
+    handle: GizmoHandle,
   ): number {
     const tip = vec3.scaleAndAdd(
       vec3.create(),
       origin,
       axisDirections[handle],
-      this.axisLength
+      this.axisLength,
     );
 
     const originScreen = this.worldToScreen(origin);
@@ -637,14 +637,14 @@ export default class TranslateGizmo {
     return this.pointToSegmentDistance2D(
       mousePosition,
       originScreen,
-      tipScreen
+      tipScreen,
     );
   }
 
   private pickPlaneHandle(
     mousePosition: vec2,
     origin: vec3,
-    handle: GizmoHandle
+    handle: GizmoHandle,
   ): boolean {
     const axes = planeAxes[handle];
     const hit = this.rayPlaneIntersection(mousePosition, origin, axes.normal);
@@ -677,7 +677,7 @@ export default class TranslateGizmo {
    */
   private projectMouseOntoHandle(
     mousePosition: vec2,
-    handle: GizmoHandle
+    handle: GizmoHandle,
   ): vec3 {
     const origin =
       this.activeHandle == GizmoHandle.NONE
@@ -694,14 +694,14 @@ export default class TranslateGizmo {
       return this.rayPlaneIntersection(
         mousePosition,
         origin,
-        planeAxes[handle].normal
+        planeAxes[handle].normal,
       );
     }
 
     return this.closestPointOnAxis(
       mousePosition,
       origin,
-      axisDirections[handle]
+      axisDirections[handle],
     );
   }
 
@@ -713,7 +713,7 @@ export default class TranslateGizmo {
   private rayPlaneIntersection(
     mousePosition: vec2,
     planeOrigin: vec3,
-    planeNormal: vec3
+    planeNormal: vec3,
   ): vec3 {
     const ray = this.getMouseRay(mousePosition);
     if (ray == null) {
@@ -742,7 +742,7 @@ export default class TranslateGizmo {
   private closestPointOnAxis(
     mousePosition: vec2,
     axisOrigin: vec3,
-    axisDir: vec3
+    axisDir: vec3,
   ): vec3 {
     const ray = this.getMouseRay(mousePosition);
     if (ray == null) {
@@ -781,14 +781,14 @@ export default class TranslateGizmo {
 
     const ndc = vec2.fromValues(
       ((mousePosition[0] - rect.left) / rect.width) * 2.0 - 1.0,
-      ((mousePosition[1] - rect.top) / rect.height) * -2.0 + 1.0
+      ((mousePosition[1] - rect.top) / rect.height) * -2.0 + 1.0,
     );
 
     let clip = vec4.fromValues(ndc[0], ndc[1], -1.0, 1.0);
     let viewSpace = vec4.transformMat4(
       vec4.create(),
       clip,
-      mat4.invert(mat4.create(), this.camera.getProjectionMatrix())
+      mat4.invert(mat4.create(), this.camera.getProjectionMatrix()),
     );
     viewSpace[2] = -1.0;
     viewSpace[3] = 0.0;
@@ -796,12 +796,12 @@ export default class TranslateGizmo {
     const worldSpace = vec4.transformMat4(
       vec4.create(),
       viewSpace,
-      mat4.invert(mat4.create(), this.camera.getViewMatrix())
+      mat4.invert(mat4.create(), this.camera.getViewMatrix()),
     );
 
     const dir = vec3.normalize(
       vec3.create(),
-      vec3.fromValues(worldSpace[0], worldSpace[1], worldSpace[2])
+      vec3.fromValues(worldSpace[0], worldSpace[1], worldSpace[2]),
     );
 
     return { start: vec3.clone(this.camera.getPosition()), dir: dir };
@@ -820,7 +820,7 @@ export default class TranslateGizmo {
     let clip = vec4.transformMat4(
       vec4.create(),
       vec4.fromValues(world[0], world[1], world[2], 1.0),
-      this.camera.getViewProjMatrix()
+      this.camera.getViewProjMatrix(),
     );
 
     if (clip[3] <= 0.0001) {
@@ -832,14 +832,14 @@ export default class TranslateGizmo {
 
     return vec2.fromValues(
       rect.left + (ndcX + 1.0) * 0.5 * rect.width,
-      rect.top + (1.0 - ndcY) * 0.5 * rect.height
+      rect.top + (1.0 - ndcY) * 0.5 * rect.height,
     );
   }
 
   private pointToSegmentDistance2D(
     point: vec2,
     start: vec2,
-    end: vec2
+    end: vec2,
   ): number {
     const segment = vec2.sub(vec2.create(), end, start);
     const lengthSquared = vec2.squaredLength(segment);

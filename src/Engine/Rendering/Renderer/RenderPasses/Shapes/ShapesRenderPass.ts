@@ -8,7 +8,7 @@ export default class ShapesRenderPass {
 
   constructor(
     gl: WebGL2RenderingContext,
-    shapesShaderProgram: ShapesShaderProgram
+    shapesShaderProgram: ShapesShaderProgram,
   ) {
     this.gl = gl;
     this.shapesShaderProgram = shapesShaderProgram;

@@ -30,7 +30,7 @@ export default class Vec3Lerp {
       interpolatedOutput,
       this.start,
       this.diff,
-      Math.min(this.timer, this.duration) / this.duration
+      Math.min(this.timer, this.duration) / this.duration,
     );
     return this.timer > this.duration;
   }

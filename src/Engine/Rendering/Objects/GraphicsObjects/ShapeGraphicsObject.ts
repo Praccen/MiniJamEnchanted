@@ -52,7 +52,7 @@ export default class ShapeGraphicsObject extends GraphicsObject {
         this.mode,
         drawingInfo.indices.length,
         this.gl.UNSIGNED_INT,
-        0
+        0,
       );
     } else {
       this.gl.drawArrays(this.mode, 0, vertices.length / 3);

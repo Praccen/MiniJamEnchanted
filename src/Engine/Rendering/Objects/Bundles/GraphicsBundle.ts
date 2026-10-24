@@ -39,7 +39,7 @@ export default class GraphicsBundle {
     specular: Texture,
     graphicsObject: GraphicsObject,
     emissionMap?: Texture,
-    instanced: boolean = false
+    instanced: boolean = false,
   ) {
     this.gl = gl;
     this.diffuse = diffuse;
@@ -80,7 +80,7 @@ export default class GraphicsBundle {
   updateInstanceBuffer() {
     if (!this.instanced) {
       console.warn(
-        "Trying to update instance buffer for a non instanced object"
+        "Trying to update instance buffer for a non instanced object",
       );
       return;
     }
@@ -101,7 +101,7 @@ export default class GraphicsBundle {
     this.gl.bufferData(
       this.gl.ARRAY_BUFFER,
       new Float32Array(data),
-      this.gl.DYNAMIC_DRAW
+      this.gl.DYNAMIC_DRAW,
     );
     this.graphicsObject.unbindVAO();
   }
@@ -128,15 +128,19 @@ export default class GraphicsBundle {
   draw(shaderProgram: ShaderProgram) {
     if (this.enabled) {
       this.diffuse.bind(
-        shaderProgram.getTextureIndexFromSamplerUniformName("diffuse")
+        shaderProgram.getTextureIndexFromSamplerUniformName("diffuse"),
       );
 
       // only bind specular and emission if they exist on the shader and are part of material struct.
       this.specular.bind(
-        shaderProgram.getTextureIndexFromSamplerUniformName("material.specular")
+        shaderProgram.getTextureIndexFromSamplerUniformName(
+          "material.specular",
+        ),
       );
       this.emission.bind(
-        shaderProgram.getTextureIndexFromSamplerUniformName("material.emission")
+        shaderProgram.getTextureIndexFromSamplerUniformName(
+          "material.emission",
+        ),
       );
 
       let emissionColorU: [WebGLUniformLocation, boolean] =
@@ -160,7 +164,7 @@ export default class GraphicsBundle {
         this.gl.uniformMatrix3fv(
           normalReturn[0],
           false,
-          this.transform.normalMatrix
+          this.transform.normalMatrix,
         );
       }
 
@@ -171,7 +175,7 @@ export default class GraphicsBundle {
           customUniform[1].setUniformFunction.call(
             null,
             customUniformReturn[0],
-            ...customUniform[1].args
+            ...customUniform[1].args,
           );
         }
       }
@@ -190,7 +194,7 @@ export default class GraphicsBundle {
           this.gl.TRIANGLES,
           0,
           this.graphicsObject.getNumVertices(),
-          this.transformsActive
+          this.transformsActive,
         );
         this.graphicsObject.unbindVAO();
       } else {
@@ -204,7 +208,7 @@ export default class GraphicsBundle {
           customUniform[1].setUniformFunction.call(
             null,
             customUniformReturn[0],
-            ...customUniform[1].defaultArgs
+            ...customUniform[1].defaultArgs,
           );
         }
       }

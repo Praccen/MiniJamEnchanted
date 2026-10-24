@@ -116,18 +116,18 @@ export default class PhysicsObject {
 
   setupInternalTree(shapes: Array<Shape>) {
     this.internalTree = new Tree(
-      new TreeNode(1.0, vec3.create(), 0.05, 10, [true, true, true])
+      new TreeNode(1.0, vec3.create(), 0.05, 10, [true, true, true]),
     );
     this.internalTree.addContentArray(
       shapes.map<TreeNodeContentElement>((shape) => {
         return new TreeNodeContentElement(shape);
-      })
+      }),
     );
   }
 
   setupInternalTreeFromGraphicsObject(
     graphicsObject: GraphicsObject,
-    path?: string
+    path?: string,
   ) {
     if (path != undefined && pathInternalTreeMap.has(path)) {
       this.internalTree = pathInternalTreeMap.get(path);
@@ -142,12 +142,12 @@ export default class PhysicsObject {
       (<Triangle>treeNodes[index].shape).setVertices(
         positions[i],
         positions[i + 1],
-        positions[i + 2]
+        positions[i + 2],
       );
     }
 
     this.internalTree = new Tree(
-      new TreeNode(1.0, vec3.create(), 0.05, 10, [true, true, true])
+      new TreeNode(1.0, vec3.create(), 0.05, 10, [true, true, true]),
     );
     this.internalTree.addContentArray(treeNodes);
 

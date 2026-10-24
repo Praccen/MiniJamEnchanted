@@ -45,7 +45,7 @@ export default class PointShadowSkeletalAnimationShaderProgram extends ShaderPro
       gl,
       "PointShadowSkeletalAnimation",
       pointShadowAnimationVertexShaderSrc,
-      pointShadowFragmentShaderSrc
+      pointShadowFragmentShaderSrc,
     );
 
     this.use();

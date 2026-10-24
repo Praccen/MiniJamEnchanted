@@ -39,7 +39,7 @@ export default class GeometryPassInstancedShaderProgram extends ShaderProgram {
       gl,
       "GeometryPassInstanced",
       geometryInstancedVertexShaderSrc,
-      geometryFragmentShaderSrc
+      geometryFragmentShaderSrc,
     );
 
     this.use();

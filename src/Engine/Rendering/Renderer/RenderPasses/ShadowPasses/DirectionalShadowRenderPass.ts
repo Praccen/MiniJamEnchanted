@@ -23,7 +23,7 @@ export default class DirectionalShadowRenderPass {
     gl: WebGL2RenderingContext,
     directionalShadowShaderProgram: DirectionalShadowShaderProgram,
     directionalShadowInstancedShaderProgram: DirectionalShadowInstancedShaderProgram,
-    directionalShadowSkeletalAnimationShaderProgram: DirectionalShadowSkeletalAnimationShaderProgram
+    directionalShadowSkeletalAnimationShaderProgram: DirectionalShadowSkeletalAnimationShaderProgram,
   ) {
     this.gl = gl;
     this.directionalShadowShaderProgram = directionalShadowShaderProgram;
@@ -43,18 +43,18 @@ export default class DirectionalShadowRenderPass {
         false,
         this.gl.DEPTH_COMPONENT32F,
         this.gl.DEPTH_COMPONENT,
-        this.gl.FLOAT
-      )
+        this.gl.FLOAT,
+      ),
     );
     // ------------------------
 
     this.shadowBuffer.depthTexture.setTexParameterI(
       this.gl.TEXTURE_WRAP_S,
-      this.gl.CLAMP_TO_EDGE
+      this.gl.CLAMP_TO_EDGE,
     );
     this.shadowBuffer.depthTexture.setTexParameterI(
       this.gl.TEXTURE_WRAP_T,
-      this.gl.CLAMP_TO_EDGE
+      this.gl.CLAMP_TO_EDGE,
     );
     this.frameCounter = 0;
   }
@@ -79,7 +79,7 @@ export default class DirectionalShadowRenderPass {
       1,
       1,
       this.shadowResolution - 2,
-      this.shadowResolution - 2
+      this.shadowResolution - 2,
     ); // Leave one pixel at the border so that clamp to edge is consistent
     this.gl.clearColor(1.0, 1.0, 1.0, 1.0);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -91,8 +91,8 @@ export default class DirectionalShadowRenderPass {
     scene.directionalLight.calcAndSendLightSpaceMatrix(
       this.gl,
       this.directionalShadowShaderProgram.getUniformLocation(
-        "lightSpaceMatrix"
-      )[0]
+        "lightSpaceMatrix",
+      )[0],
     );
 
     //Render shadow pass
@@ -103,8 +103,8 @@ export default class DirectionalShadowRenderPass {
     scene.directionalLight.sendLightSpaceMatrix(
       this.gl,
       this.directionalShadowInstancedShaderProgram.getUniformLocation(
-        "lightSpaceMatrix"
-      )[0]
+        "lightSpaceMatrix",
+      )[0],
     );
     scene.renderSceneInstanced(this.directionalShadowInstancedShaderProgram);
 
@@ -113,11 +113,11 @@ export default class DirectionalShadowRenderPass {
     scene.directionalLight.sendLightSpaceMatrix(
       this.gl,
       this.directionalShadowSkeletalAnimationShaderProgram.getUniformLocation(
-        "lightSpaceMatrix"
-      )[0]
+        "lightSpaceMatrix",
+      )[0],
     );
     scene.renderSceneAnimated(
-      this.directionalShadowSkeletalAnimationShaderProgram
+      this.directionalShadowSkeletalAnimationShaderProgram,
     );
 
     this.gl.disable(this.gl.CULL_FACE);

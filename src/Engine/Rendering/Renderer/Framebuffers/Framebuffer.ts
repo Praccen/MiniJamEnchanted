@@ -23,7 +23,7 @@ export default class Framebuffer {
     width: number,
     height: number,
     textures: Array<Texture>,
-    depthTexture: Texture
+    depthTexture: Texture,
   ) {
     this.gl = gl;
     this.width = width;
@@ -58,33 +58,33 @@ export default class Framebuffer {
           this.gl.COLOR_ATTACHMENT0 + i,
           this.gl.TEXTURE_CUBE_MAP_POSITIVE_X,
           this.textures[i].texture,
-          0
+          0,
         );
         attachments.push(this.gl.COLOR_ATTACHMENT0 + i);
       } else {
         // This is a normal 2D texture, set TexParameters to something fitting for a framebuffer target, and set up the target.
         this.textures[i].setTexParameterI(
           this.gl.TEXTURE_MIN_FILTER,
-          this.gl.LINEAR
+          this.gl.LINEAR,
         );
         this.textures[i].setTexParameterI(
           this.gl.TEXTURE_MAG_FILTER,
-          this.gl.LINEAR
+          this.gl.LINEAR,
         );
         this.textures[i].setTexParameterI(
           this.gl.TEXTURE_WRAP_S,
-          this.gl.CLAMP_TO_EDGE
+          this.gl.CLAMP_TO_EDGE,
         );
         this.textures[i].setTexParameterI(
           this.gl.TEXTURE_WRAP_T,
-          this.gl.CLAMP_TO_EDGE
+          this.gl.CLAMP_TO_EDGE,
         );
         this.gl.framebufferTexture2D(
           this.gl.FRAMEBUFFER,
           this.gl.COLOR_ATTACHMENT0 + i,
           this.gl.TEXTURE_2D,
           this.textures[i].texture,
-          0
+          0,
         );
         attachments.push(this.gl.COLOR_ATTACHMENT0 + i);
       }
@@ -104,7 +104,7 @@ export default class Framebuffer {
           this.gl.DEPTH_ATTACHMENT,
           this.gl.TEXTURE_CUBE_MAP_POSITIVE_X,
           this.depthTexture.texture,
-          0
+          0,
         );
       } else {
         // The depth texture is a normal 2D texture, set up the appropriate target
@@ -113,7 +113,7 @@ export default class Framebuffer {
           this.gl.DEPTH_ATTACHMENT,
           this.gl.TEXTURE_2D,
           this.depthTexture.texture,
-          0
+          0,
         );
       }
     } else {
@@ -124,14 +124,14 @@ export default class Framebuffer {
         this.gl.RENDERBUFFER,
         this.gl.DEPTH_STENCIL,
         this.width,
-        this.height
+        this.height,
       );
 
       this.gl.framebufferRenderbuffer(
         this.gl.FRAMEBUFFER,
         this.gl.DEPTH_STENCIL_ATTACHMENT,
         this.gl.RENDERBUFFER,
-        this.rbo
+        this.rbo,
       );
     }
   }
@@ -159,7 +159,7 @@ export default class Framebuffer {
         this.gl.RENDERBUFFER,
         this.gl.DEPTH24_STENCIL8,
         width,
-        height
+        height,
       );
       this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
     }

@@ -41,7 +41,7 @@ export default class MeshStore {
    */
   async loadMeshes(
     paths: Array<string>,
-    progress: { loaded: number }
+    progress: { loaded: number },
   ): Promise<void> {
     return new Promise<void>((resolve, rejects) => {
       progress.loaded = 0;
@@ -96,7 +96,7 @@ export default class MeshStore {
     x: number = 2,
     y: number = 2,
     sizePerX: number = 1.0,
-    sizePerY: number = 1.0
+    sizePerY: number = 1.0,
   ): Promise<Heightmap> {
     return new Promise<Heightmap>(async (resolve, reject) => {
       let newHeightmap = new Heightmap(this.renderer.gl);
@@ -105,7 +105,7 @@ export default class MeshStore {
       }
       await newHeightmap.readHeightDataFromTexture(
         path,
-        useTextureSizeForResolution
+        useTextureSizeForResolution,
       );
       resolve(newHeightmap);
     });
@@ -129,7 +129,7 @@ export default class MeshStore {
       };
       if (!gltfObject.ok || gltfObject.getNumMeshes() == 0) {
         console.error(
-          "glTF file " + path + " couldn't load one or more binary files"
+          "glTF file " + path + " couldn't load one or more binary files",
         );
         reject("glTF file " + path + " couldn't load one or more binary files");
       }
@@ -139,7 +139,7 @@ export default class MeshStore {
         for (const primitive of data) {
           const index =
             newlyCreatedMesh.gos.push(
-              new AnimatedMesh(this.renderer.gl, primitive.vertexData)
+              new AnimatedMesh(this.renderer.gl, primitive.vertexData),
             ) - 1;
           if (primitive.indexData.length > 0) {
             newlyCreatedMesh.gos[index].setIndexData(primitive.indexData);
@@ -166,8 +166,8 @@ export default class MeshStore {
                       255 * baseColorFactor[1] +
                       "," +
                       255 * baseColorFactor[2] +
-                      ")"
-                  )
+                      ")",
+                  ),
                 );
               } else if (baseColorFactor.length == 4) {
                 newlyCreatedMesh.diffuseTextures.push(
@@ -180,8 +180,8 @@ export default class MeshStore {
                       255 * baseColorFactor[2] +
                       "," +
                       baseColorFactor[3] +
-                      ")"
-                  )
+                      ")",
+                  ),
                 );
               }
             }
@@ -202,7 +202,7 @@ export default class MeshStore {
         let texture = new Texture(this.renderer.gl);
         texture.loadFromFileContent(
           newlyCreatedMesh.gltfObject.images[imageIndex].mimeType,
-          content
+          content,
         );
         if (
           newlyCreatedMesh.gltfObject.images[imageIndex].name != undefined &&
@@ -210,7 +210,7 @@ export default class MeshStore {
         ) {
           this.textureStore.setTexture(
             newlyCreatedMesh.gltfObject.images[imageIndex].name,
-            texture
+            texture,
           );
         } else {
           this.textureStore.setTexture(path + "/" + imageIndex, texture);
@@ -333,7 +333,7 @@ export default class MeshStore {
                       mtls.get(lastMtl).diffuseColor,
                       parseFloat(colorValues[0]),
                       parseFloat(colorValues[1]),
-                      parseFloat(colorValues[2])
+                      parseFloat(colorValues[2]),
                     );
                   }
                 } else if (row.startsWith("Ks") && lastMtl != "") {
@@ -345,7 +345,7 @@ export default class MeshStore {
                       mtls.get(lastMtl).specularColor,
                       parseFloat(colorValues[0]),
                       parseFloat(colorValues[1]),
-                      parseFloat(colorValues[2])
+                      parseFloat(colorValues[2]),
                     );
                   }
                 } else if (row.startsWith("Ke") && lastMtl != "") {
@@ -357,7 +357,7 @@ export default class MeshStore {
                       mtls.get(lastMtl).emissionColor,
                       parseFloat(colorValues[0]),
                       parseFloat(colorValues[1]),
-                      parseFloat(colorValues[2])
+                      parseFloat(colorValues[2]),
                     );
                   }
                 } else if (row.startsWith("d") && lastMtl != "") {
@@ -404,7 +404,7 @@ export default class MeshStore {
               tempTexture.setTextureData(specularTextureData, index, 1);
               this.textureStore.setTexture(
                 mtlPath.substring(0, mtlPath.length - 4) + "_spec.mtl",
-                tempTexture
+                tempTexture,
               );
 
               let emissionTextureData = new Uint8Array(index * 4);
@@ -421,7 +421,7 @@ export default class MeshStore {
               tempTexture.setTextureData(emissionTextureData, index, 1);
               this.textureStore.setTexture(
                 mtlPath.substring(0, mtlPath.length - 4) + "_emission.mtl",
-                tempTexture
+                tempTexture,
               );
             }
           } catch (e) {}
@@ -434,7 +434,7 @@ export default class MeshStore {
           return element != "vt";
         });
         vertexTexCoords.push(
-          vec2.fromValues(parseFloat(coords[0]), parseFloat(coords[1]))
+          vec2.fromValues(parseFloat(coords[0]), parseFloat(coords[1])),
         );
       } else if (line.startsWith("vn")) {
         // Normal
@@ -445,8 +445,8 @@ export default class MeshStore {
           vec3.fromValues(
             parseFloat(coords[0]),
             parseFloat(coords[1]),
-            parseFloat(coords[2])
-          )
+            parseFloat(coords[2]),
+          ),
         );
       } else if (line.startsWith("v")) {
         // Position
@@ -457,8 +457,8 @@ export default class MeshStore {
           vec3.fromValues(
             parseFloat(coords[0]),
             parseFloat(coords[1]),
-            parseFloat(coords[2])
-          )
+            parseFloat(coords[2]),
+          ),
         );
       } else if (line.startsWith("f")) {
         // Faces
@@ -575,23 +575,23 @@ export default class MeshStore {
 
       while (offset < arrayBuffer.byteLength) {
         const chunkLength = new Int32Array(
-          arrayBuffer.slice(offset, offset + 4)
+          arrayBuffer.slice(offset, offset + 4),
         )[0];
         const chunkType = decoder.decode(
-          arrayBuffer.slice(offset + 4, offset + 8)
+          arrayBuffer.slice(offset + 4, offset + 8),
         );
 
         offset += 8;
 
         if (chunkType.startsWith("JSON")) {
           const jsonString = decoder.decode(
-            arrayBuffer.slice(offset, offset + chunkLength)
+            arrayBuffer.slice(offset, offset + chunkLength),
           );
           try {
             gltfContent = JSON.parse(jsonString);
           } catch (e: any) {
             console.warn(
-              "JSON parse error when parsing " + meshPath + ": " + e.message
+              "JSON parse error when parsing " + meshPath + ": " + e.message,
             );
             return null;
           }
@@ -599,13 +599,13 @@ export default class MeshStore {
           if (gltfContent.buffers == undefined) {
             console.warn(
               "Parsing glb chunk of type bin before json chunk in file " +
-                meshPath
+                meshPath,
             );
             return null;
           }
           gltfContent.buffers[bufferCounter] = arrayBuffer.slice(
             offset,
-            offset + chunkLength
+            offset + chunkLength,
           );
           bufferCounter++;
         }
@@ -620,7 +620,7 @@ export default class MeshStore {
           const url = new URL(buffer.uri, baseURL.href);
           const binResponse = await fetch(url);
           return await binResponse.arrayBuffer();
-        })
+        }),
       );
     }
 

@@ -29,7 +29,7 @@ export class TreeNode {
     position: vec3,
     minNodeSize: number,
     maxContentPerNode: number,
-    dimensions: boolean[]
+    dimensions: boolean[],
   ) {
     this.dimensions = dimensions;
     this.aabb = new TreeAABB();
@@ -44,19 +44,19 @@ export class TreeNode {
         vec3.fromValues(
           dimensions[0] ? -halfSize : -InfinityLike,
           dimensions[1] ? -halfSize : -InfinityLike,
-          dimensions[2] ? -halfSize : -InfinityLike
+          dimensions[2] ? -halfSize : -InfinityLike,
         ),
-        this.position
+        this.position,
       ),
       vec3.add(
         vec3.create(),
         vec3.fromValues(
           dimensions[0] ? halfSize : InfinityLike,
           dimensions[1] ? halfSize : InfinityLike,
-          dimensions[2] ? halfSize : InfinityLike
+          dimensions[2] ? halfSize : InfinityLike,
         ),
-        this.position
-      )
+        this.position,
+      ),
     );
 
     this.children = new Array<TreeNode>();
@@ -82,14 +82,14 @@ export class TreeNode {
                   vec3.fromValues(
                     x * quarterSize,
                     y * quarterSize,
-                    z * quarterSize
+                    z * quarterSize,
                   ),
-                  this.position
+                  this.position,
                 ),
                 this.minNodeSize,
                 this.maxContentPerNode,
-                this.dimensions
-              )
+                this.dimensions,
+              ),
             );
           }
         }
@@ -121,12 +121,12 @@ export class TreeNode {
       vec3.max(
         distMax,
         distMax,
-        vec3.sub(vec3.create(), vertex, this.position)
+        vec3.sub(vec3.create(), vertex, this.position),
       );
       vec3.min(
         distMin,
         distMin,
-        vec3.sub(vec3.create(), vertex, this.position)
+        vec3.sub(vec3.create(), vertex, this.position),
       );
     }
 
@@ -161,11 +161,11 @@ export class TreeNode {
         vec3.create(),
         this.position,
         expansionDirection,
-        this.size * 0.5
+        this.size * 0.5,
       ),
       this.minNodeSize,
       this.maxContentPerNode,
-      this.dimensions
+      this.dimensions,
     ); // Make a new base node with twice the size of the current. Set it's center in the expand direction
     if (!newBaseNode.createChildren()) {
       // Create children
@@ -179,7 +179,7 @@ export class TreeNode {
 
     if (childIndex == -1) {
       console.error(
-        "Octree: Couldn't find child to replace with previous base node when expanding base node"
+        "Octree: Couldn't find child to replace with previous base node when expanding base node",
       );
     } else {
       newBaseNode.children[childIndex] = this;
@@ -268,7 +268,7 @@ export class TreeNode {
 
   recalculate(
     recalculatedContentArray: Array<TreeNodeContentElement>,
-    performActionPerContent: (content: TreeNodeContentElement) => void
+    performActionPerContent: (content: TreeNodeContentElement) => void,
   ) {
     // Go to the bottom of the tree and pick up any content that no longer fits
     for (const child of this.children) {
@@ -311,13 +311,13 @@ export class TreeNode {
 
   getContentFromIntersection(
     intersectionShapes: Shape[],
-    contentArray: Array<TreeNodeContentElement>
+    contentArray: Array<TreeNodeContentElement>,
   ) {
     for (const intersectionShape of intersectionShapes) {
       if (
         !IntersectionTester.identifyIntersection(
           [intersectionShape],
-          [this.aabb]
+          [this.aabb],
         )
       ) {
         return;
@@ -338,7 +338,7 @@ export class TreeNode {
     velocity1: vec3,
     velocity2: vec3,
     contentArray: Array<TreeNodeContentElement>,
-    maxTime: number = Infinity
+    maxTime: number = Infinity,
   ) {
     if (
       IntersectionTester.doContinousIntersection(
@@ -346,7 +346,7 @@ export class TreeNode {
         velocity1,
         [this.aabb],
         velocity2,
-        maxTime
+        maxTime,
       )[0] >= 0.0
     ) {
       for (const child of this.children) {
@@ -355,7 +355,7 @@ export class TreeNode {
           velocity1,
           velocity2,
           contentArray,
-          maxTime
+          maxTime,
         );
       }
 
@@ -368,7 +368,7 @@ export class TreeNode {
   getContentForRayCast(
     ray: Ray,
     contentArray: Array<TreeNodeContentElement>,
-    maxDistance: number = Infinity
+    maxDistance: number = Infinity,
   ) {
     if (
       IntersectionTester.doRayCast(ray, [this.aabb], maxDistance) < Infinity
@@ -411,7 +411,7 @@ export default class Tree {
     if (!this.baseNode.addContent(content)) {
       // Expand root node, or rather create a level higher and add the current root node as one of the children
       const expansionDirection = this.baseNode.getExpansionDirection(
-        content.shape
+        content.shape,
       ); // Get the direction to expand in (this should be overwritten by child classes)
       const newBaseNode = this.baseNode.expand(expansionDirection);
       if (newBaseNode != undefined) {
@@ -434,14 +434,14 @@ export default class Tree {
 
   recalculate(
     performActionPerContent: (content: TreeNodeContentElement) => void = (
-      content
-    ) => {}
+      content,
+    ) => {},
   ) {
     let recalculatedContentArray = new Array<TreeNodeContentElement>(); // This will traverse the tree and pick up and place items that has moved
     // const countBefore = this.baseNode.count();
     this.baseNode.recalculate(
       recalculatedContentArray,
-      performActionPerContent
+      performActionPerContent,
     );
     // const countDuring = this.baseNode.count();
     // if (countBefore != countDuring + recalculatedContentArray.length) {
@@ -460,7 +460,7 @@ export default class Tree {
 
   getContentFromIntersection(
     intesectionShapes: Shape[],
-    contentArray: Array<TreeNodeContentElement>
+    contentArray: Array<TreeNodeContentElement>,
   ) {
     this.baseNode.getContentFromIntersection(intesectionShapes, contentArray);
   }
@@ -470,21 +470,21 @@ export default class Tree {
     velocity1: vec3,
     velocity2: vec3,
     contentArray: Array<TreeNodeContentElement>,
-    maxTime: number = Infinity
+    maxTime: number = Infinity,
   ) {
     this.baseNode.getContentFromContinousIntersection(
       intesectionShape,
       velocity1,
       velocity2,
       contentArray,
-      maxTime
+      maxTime,
     );
   }
 
   getContentForRayCast(
     ray: Ray,
     contentArray: Array<TreeNodeContentElement>,
-    maxDistance: number = Infinity
+    maxDistance: number = Infinity,
   ) {
     this.baseNode.getContentForRayCast(ray, contentArray, maxDistance);
   }

@@ -41,7 +41,7 @@ type OptionalModifier = {
 
 function applyOptionalModifierOnModifier(
   modifier: Modifier,
-  optionalModifier: OptionalModifier
+  optionalModifier: OptionalModifier,
 ) {
   modifier.boxMin = optionalModifier.boxMin ?? modifier.boxMin;
   modifier.boxMax = optionalModifier.boxMax ?? modifier.boxMax;
@@ -57,7 +57,7 @@ function applyOptionalModifierOnModifier(
 
 function randomizeBasedOnModifier(
   modifier: Modifier,
-  keyframeProgress: number
+  keyframeProgress: number,
 ): vec3 {
   let returnVector = vec3.create();
   if (modifier.amplitudeMin != 0.0 || modifier.amplitudeMax != 0.0) {
@@ -69,15 +69,15 @@ function randomizeBasedOnModifier(
         vec3.random(vec3.create(), 1.0),
         (Math.PI / 180) *
           (Math.random() * (modifier.degreesMax - modifier.degreesMin) +
-            modifier.degreesMin)
-      )
+            modifier.degreesMin),
+      ),
     );
 
     vec3.scale(
       returnVector,
       returnVector,
       Math.random() * (modifier.amplitudeMax - modifier.amplitudeMin) +
-        modifier.amplitudeMin
+        modifier.amplitudeMin,
     );
   }
 
@@ -90,8 +90,8 @@ function randomizeBasedOnModifier(
       (modifier.boxMax[1] - modifier.boxMin[1]) * Math.random() +
         modifier.boxMin[1],
       (modifier.boxMax[2] - modifier.boxMin[2]) * Math.random() +
-        modifier.boxMin[2]
-    )
+        modifier.boxMin[2],
+    ),
   );
 
   if (modifier.keyframes.length > 0) {
@@ -109,13 +109,13 @@ function randomizeBasedOnModifier(
       returnVector,
       returnVector,
       modifier.keyframes[lower],
-      1.0 - progressBetween
+      1.0 - progressBetween,
     );
     vec3.scaleAndAdd(
       returnVector,
       returnVector,
       modifier.keyframes[upper],
-      progressBetween
+      progressBetween,
     );
   }
 
@@ -188,7 +188,7 @@ export default class ParticleSpawner extends GraphicsObject {
   constructor(
     gl: WebGL2RenderingContext,
     texture: Texture,
-    numberOfStartingParticles: number = 0
+    numberOfStartingParticles: number = 0,
   ) {
     super(gl);
 
@@ -201,7 +201,7 @@ export default class ParticleSpawner extends GraphicsObject {
     this.gl.bufferData(
       this.gl.ARRAY_BUFFER,
       numberOfStartingParticles * 11 * 4,
-      this.gl.DYNAMIC_DRAW
+      this.gl.DYNAMIC_DRAW,
     );
     this.setupInstancedVertexAttributePointers();
     this.unbindVAO();
@@ -272,7 +272,7 @@ export default class ParticleSpawner extends GraphicsObject {
     this.gl.bufferData(
       this.gl.ARRAY_BUFFER,
       this.numParticles * 11 * 4,
-      this.gl.DYNAMIC_DRAW
+      this.gl.DYNAMIC_DRAW,
     );
     this.unbindVAO();
   }
@@ -302,7 +302,7 @@ export default class ParticleSpawner extends GraphicsObject {
     size: number,
     startVel: vec3,
     acceleration: vec3,
-    startTime?: number
+    startTime?: number,
   ): boolean {
     if (particleIndex > this.numParticles) {
       return false;
@@ -374,7 +374,7 @@ export default class ParticleSpawner extends GraphicsObject {
     }
     this.bufferSubDataUpdate(
       particleIndex * 11 + 7,
-      new Float32Array([(Date.now() - applicationStartTime) * 0.001])
+      new Float32Array([(Date.now() - applicationStartTime) * 0.001]),
     );
     return true;
   }
@@ -418,12 +418,12 @@ export default class ParticleSpawner extends GraphicsObject {
 
     let currentParticle = Math.floor(
       (this.resetTimer / Math.max(this.lifeTime, 0.00001)) *
-        this.getNumberOfParticles()
+        this.getNumberOfParticles(),
     );
     this.resetTimer += dt;
     let endParticle = Math.floor(
       (this.resetTimer / Math.max(this.lifeTime, 0.00001)) *
-        this.getNumberOfParticles()
+        this.getNumberOfParticles(),
     );
 
     this.fadeOutTimer = 0.0;
@@ -445,8 +445,8 @@ export default class ParticleSpawner extends GraphicsObject {
           vec3.add(vec3.create(), this.position, this.offset),
           randomizeBasedOnModifier(
             this.randomPositionModifier,
-            keyframeProgress
-          )
+            keyframeProgress,
+          ),
         ),
         (this.randomSizeModifier.sizeMax - this.randomSizeModifier.sizeMin) *
           Math.random() +
@@ -454,8 +454,8 @@ export default class ParticleSpawner extends GraphicsObject {
         randomizeBasedOnModifier(this.randomStartVelModifier, keyframeProgress),
         randomizeBasedOnModifier(
           this.randomAccelerationModifier,
-          keyframeProgress
-        )
+          keyframeProgress,
+        ),
       );
     }
     while (this.resetTimer > this.lifeTime) {
@@ -468,30 +468,30 @@ export default class ParticleSpawner extends GraphicsObject {
     this.bindVAO();
 
     this.startTexture.bind(
-      shaderProgram.getTextureIndexFromSamplerUniformName("texture0")
+      shaderProgram.getTextureIndexFromSamplerUniformName("texture0"),
     );
     this.endTexture.bind(
-      shaderProgram.getTextureIndexFromSamplerUniformName("texture1")
+      shaderProgram.getTextureIndexFromSamplerUniformName("texture1"),
     );
     this.gl.uniform1f(
       shaderProgram.getUniformLocation("fadePerSecond")[0],
-      this.fadePerSecond
+      this.fadePerSecond,
     );
     this.gl.uniform1f(
       shaderProgram.getUniformLocation("fadePerSecondSquared")[0],
-      this.fadePerSecondSquared
+      this.fadePerSecondSquared,
     );
     this.gl.uniform1f(
       shaderProgram.getUniformLocation("textureChangePerSecond")[0],
-      this.textureChangePerSecond
+      this.textureChangePerSecond,
     );
     this.gl.uniform1f(
       shaderProgram.getUniformLocation("sizeChangePerSecond")[0],
-      this.sizeChangePerSecond
+      this.sizeChangePerSecond,
     );
     this.gl.uniform1f(
       shaderProgram.getUniformLocation("lifeTime")[0],
-      this.lifeTime
+      this.lifeTime,
     );
 
     this.gl.drawElementsInstanced(
@@ -499,7 +499,7 @@ export default class ParticleSpawner extends GraphicsObject {
       6,
       this.gl.UNSIGNED_INT,
       0,
-      this.getNumberOfParticles()
+      this.getNumberOfParticles(),
     );
     this.unbindVAO();
   }

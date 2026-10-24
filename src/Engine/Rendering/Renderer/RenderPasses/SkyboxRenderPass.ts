@@ -10,7 +10,7 @@ export default class SkyboxRenderPass {
 
   constructor(
     gl: WebGL2RenderingContext,
-    skyboxShaderProgram: SkyboxShaderProgram
+    skyboxShaderProgram: SkyboxShaderProgram,
   ) {
     this.gl = gl;
     this.skyboxShaderProgram = skyboxShaderProgram;

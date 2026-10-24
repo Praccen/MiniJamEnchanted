@@ -55,8 +55,8 @@ export default class AnimatedMesh extends GraphicsObject {
         vec3.fromValues(
           this.vertices[i],
           this.vertices[i + 1],
-          this.vertices[i + 2]
-        )
+          this.vertices[i + 2],
+        ),
       );
     }
     return returnArr;
@@ -75,7 +75,7 @@ export default class AnimatedMesh extends GraphicsObject {
           this.mode,
           this.indices.length,
           this.gl.UNSIGNED_INT,
-          0
+          0,
         );
       } else {
         this.gl.drawArrays(this.mode, 0, this.vertices.length / 16);

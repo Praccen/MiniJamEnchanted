@@ -25,7 +25,7 @@ const setPropertyWithoutTypeConversion = function (
   gltfNode: Object,
   nodeMemberName: string,
   object: Object,
-  objectMemberName: string
+  objectMemberName: string,
 ): boolean {
   if (!object.hasOwnProperty(objectMemberName)) {
     console.error(
@@ -34,7 +34,7 @@ const setPropertyWithoutTypeConversion = function (
         " on " +
         object.toString() +
         ". But object doesn't have property " +
-        objectMemberName
+        objectMemberName,
     );
     return false;
   }
@@ -49,14 +49,14 @@ const setVec3 = function (
   gltfNode: Object,
   nodeMemberName: string,
   object: Object,
-  objectMemberName: string
+  objectMemberName: string,
 ): boolean {
   if (!object.hasOwnProperty(objectMemberName)) {
     console.error(
       "Trying to set " +
         objectMemberName +
         " on object, but object doesn't have property " +
-        objectMemberName
+        objectMemberName,
     );
     return false;
   }
@@ -65,7 +65,7 @@ const setVec3 = function (
     console.error(
       "Trying to set vec3 property " +
         objectMemberName +
-        " on object, but object member is not vec3"
+        " on object, but object member is not vec3",
     );
     return false;
   }
@@ -75,7 +75,7 @@ const setVec3 = function (
       object[objectMemberName],
       gltfNode[nodeMemberName][0],
       gltfNode[nodeMemberName][1],
-      gltfNode[nodeMemberName][2]
+      gltfNode[nodeMemberName][2],
     );
     return true;
   }
@@ -86,14 +86,14 @@ const setQuat = function (
   gltfNode: Object,
   nodeMemberName: string,
   object: Object,
-  objectMemberName: string
+  objectMemberName: string,
 ): boolean {
   if (!object.hasOwnProperty(objectMemberName)) {
     console.error(
       "Trying to set " +
         objectMemberName +
         " on object, but object doesn't have property " +
-        objectMemberName
+        objectMemberName,
     );
     return false;
   }
@@ -102,7 +102,7 @@ const setQuat = function (
     console.error(
       "Trying to set quat property " +
         objectMemberName +
-        " on object, but object member is not quat"
+        " on object, but object member is not quat",
     );
     return false;
   }
@@ -113,7 +113,7 @@ const setQuat = function (
       gltfNode[nodeMemberName][0],
       gltfNode[nodeMemberName][1],
       gltfNode[nodeMemberName][2],
-      gltfNode[nodeMemberName][3]
+      gltfNode[nodeMemberName][3],
     );
     return true;
   }
@@ -160,7 +160,7 @@ class GltfNode {
         gltfNode.matrix[12],
         gltfNode.matrix[13],
         gltfNode.matrix[14],
-        gltfNode.matrix[15]
+        gltfNode.matrix[15],
       );
       mat4.getRotation(this.transform.rotation, this.transform.matrix);
       mat4.getScaling(this.transform.scale, this.transform.matrix);
@@ -178,7 +178,7 @@ class GltfNode {
         gltfNode.rotation[0],
         gltfNode.rotation[1],
         gltfNode.rotation[2],
-        gltfNode.rotation[3]
+        gltfNode.rotation[3],
       );
       return true;
     }
@@ -199,20 +199,20 @@ class GltfAccessor {
       gltfAccessor,
       "bufferView",
       this,
-      "bufferView"
+      "bufferView",
     );
     setPropertyWithoutTypeConversion(
       gltfAccessor,
       "componentType",
       this,
-      "componentType"
+      "componentType",
     );
     setPropertyWithoutTypeConversion(gltfAccessor, "count", this, "count");
     setPropertyWithoutTypeConversion(
       gltfAccessor,
       "byteOffset",
       this,
-      "byteOffset"
+      "byteOffset",
     );
     setPropertyWithoutTypeConversion(gltfAccessor, "type", this, "type");
   }
@@ -231,19 +231,19 @@ class GltfBufferView {
       gltfBufferView,
       "byteLength",
       this,
-      "byteLength"
+      "byteLength",
     );
     setPropertyWithoutTypeConversion(
       gltfBufferView,
       "byteOffset",
       this,
-      "byteOffset"
+      "byteOffset",
     );
     setPropertyWithoutTypeConversion(
       gltfBufferView,
       "byteStride",
       this,
-      "byteStride"
+      "byteStride",
     );
     setPropertyWithoutTypeConversion(gltfBufferView, "target", this, "target");
   }
@@ -260,26 +260,26 @@ class GltfAttributes {
       gltfAttribute,
       "POSITION",
       this,
-      "POSITION"
+      "POSITION",
     );
     setPropertyWithoutTypeConversion(gltfAttribute, "NORMAL", this, "NORMAL");
     setPropertyWithoutTypeConversion(
       gltfAttribute,
       "TEXCOORD_0",
       this,
-      "TEXCOORD_0"
+      "TEXCOORD_0",
     );
     setPropertyWithoutTypeConversion(
       gltfAttribute,
       "JOINTS_0",
       this,
-      "JOINTS_0"
+      "JOINTS_0",
     );
     setPropertyWithoutTypeConversion(
       gltfAttribute,
       "WEIGHTS_0",
       this,
-      "WEIGHTS_0"
+      "WEIGHTS_0",
     );
   }
 }
@@ -295,7 +295,7 @@ class GltfPrimitive {
       gltfPrimitive,
       "material",
       this,
-      "material"
+      "material",
     );
   }
 }
@@ -324,7 +324,7 @@ class GltfMaterial {
       gltfMaterial,
       "pbrMetallicRoughness",
       this,
-      "pbrMetallicRoughness"
+      "pbrMetallicRoughness",
     );
   }
 }
@@ -340,7 +340,7 @@ class GltfImage {
       gltfImage,
       "bufferView",
       this,
-      "bufferView"
+      "bufferView",
     );
     setPropertyWithoutTypeConversion(gltfImage, "mimeType", this, "mimeType");
   }
@@ -357,7 +357,7 @@ class GltfSkin {
       gltfSkin,
       "inverseBindMatrices",
       this,
-      "inverseBindMatrices"
+      "inverseBindMatrices",
     );
     setPropertyWithoutTypeConversion(gltfSkin, "joints", this, "joints");
   }
@@ -382,7 +382,7 @@ class GltfSampler {
       gltfSampler,
       "interpolation",
       this,
-      "interpolation"
+      "interpolation",
     );
     setPropertyWithoutTypeConversion(gltfSampler, "output", this, "output");
   }
@@ -493,7 +493,7 @@ export default class GltfObject {
           if (this.meshToSkinMap.has(i)) {
             this.primitiveToSkinMap.set(
               primitiveCounter,
-              this.meshToSkinMap.get(i)
+              this.meshToSkinMap.get(i),
             );
           }
           this.primitiveToMeshMap.set(primitiveCounter, i);
@@ -568,20 +568,20 @@ export default class GltfObject {
       data: new glTypeToTypedArrayMap[accessor.componentType](
         this.gltfJsonContent.buffers[buffer],
         offset,
-        length
+        length,
       ),
     };
   }
 
   private getBufferInfoFromAttribute(
     primitive: GltfPrimitive,
-    attribute: string
+    attribute: string,
   ): { buffer: number; stride: number; data: any } {
     if (primitive.attributes[attribute] < 0) {
       return null;
     }
     return this.getBufferInfoForAccessor(
-      this.accessors[primitive.attributes[attribute]]
+      this.accessors[primitive.attributes[attribute]],
     );
   }
 
@@ -607,14 +607,14 @@ export default class GltfObject {
       this.gltfJsonContent.buffers[bufferView.buffer] as ArrayBuffer
     ).slice(
       bufferView.byteOffset,
-      bufferView.byteOffset + bufferView.byteLength
+      bufferView.byteOffset + bufferView.byteLength,
     );
 
     return slice;
   }
 
   getBufferData(
-    meshIdx: number
+    meshIdx: number,
   ): Array<{ vertexData: Float32Array; indexData: Int32Array }> {
     if (meshIdx >= this.meshes.length) {
       return null;
@@ -678,23 +678,23 @@ export default class GltfObject {
 
       let positionsBufferInfo = this.getBufferInfoFromAttribute(
         primitive,
-        "POSITION"
+        "POSITION",
       );
       let normalBufferInfo = this.getBufferInfoFromAttribute(
         primitive,
-        "NORMAL"
+        "NORMAL",
       );
       let texCoordsBufferInfo = this.getBufferInfoFromAttribute(
         primitive,
-        "TEXCOORD_0"
+        "TEXCOORD_0",
       );
       let weightsBufferInfo = this.getBufferInfoFromAttribute(
         primitive,
-        "WEIGHTS_0"
+        "WEIGHTS_0",
       );
       let jointsBufferInfo = this.getBufferInfoFromAttribute(
         primitive,
-        "JOINTS_0"
+        "JOINTS_0",
       );
 
       for (let i = 0; i < numberOfVertices; i++) {
@@ -735,7 +735,7 @@ export default class GltfObject {
               j -
                 texCoordsBufferInfo.data[
                   i * Math.max(stride, texCoordsBufferInfo.stride) + j
-                ]
+                ],
             ); // This flips the y-coordinate
           }
           o++;
@@ -777,7 +777,7 @@ export default class GltfObject {
       buffers[bufferIndex].indexData = new Int32Array(numberOfIndices);
 
       let indicesBufferInfo = this.getBufferInfoForAccessor(
-        this.accessors[primitive.indices]
+        this.accessors[primitive.indices],
       );
       for (let i = 0; i < numberOfIndices; i++) {
         buffers[bufferIndex].indexData[i] =
@@ -793,7 +793,7 @@ export default class GltfObject {
     }
 
     let inverseBindMatricesBufferInfo = this.getBufferInfoForAccessor(
-      this.accessors[this.skins[skinIdx].inverseBindMatrices]
+      this.accessors[this.skins[skinIdx].inverseBindMatrices],
     );
     let inverseBindMatrices = new Array<mat4>();
     let ibd = inverseBindMatricesBufferInfo.data;
@@ -817,8 +817,8 @@ export default class GltfObject {
           ibd[offset + 12],
           ibd[offset + 13],
           ibd[offset + 14],
-          ibd[offset + 15]
-        )
+          ibd[offset + 15],
+        ),
       );
     }
     return inverseBindMatrices;
@@ -867,7 +867,7 @@ export default class GltfObject {
       }
 
       let inputBufferInfo = this.getBufferInfoForAccessor(
-        this.accessors[animation.samplers[channel.sampler].input]
+        this.accessors[animation.samplers[channel.sampler].input],
       );
       let timeline = new Array<number>();
 
@@ -908,10 +908,10 @@ export default class GltfObject {
     // Then go through the channels to update the targets using the samplers output
     for (const channel of animation.channels) {
       let outputBufferInfo = this.getBufferInfoForAccessor(
-        this.accessors[animation.samplers[channel.sampler].output]
+        this.accessors[animation.samplers[channel.sampler].output],
       );
       const idx = timelineIndexMap.get(
-        animation.samplers[channel.sampler].input
+        animation.samplers[channel.sampler].input,
       );
       if (channel.target.path == "translation") {
         let translationIndex = idx * Math.max(3, outputBufferInfo.stride);
@@ -919,7 +919,7 @@ export default class GltfObject {
           this.nodes[channel.target.node].transform.position,
           outputBufferInfo.data[translationIndex],
           outputBufferInfo.data[translationIndex + 1],
-          outputBufferInfo.data[translationIndex + 2]
+          outputBufferInfo.data[translationIndex + 2],
         );
       }
       if (channel.target.path == "rotation") {
@@ -929,7 +929,7 @@ export default class GltfObject {
           outputBufferInfo.data[rotationIndex],
           outputBufferInfo.data[rotationIndex + 1],
           outputBufferInfo.data[rotationIndex + 2],
-          outputBufferInfo.data[rotationIndex + 3]
+          outputBufferInfo.data[rotationIndex + 3],
         );
       }
       if (channel.target.path == "scale") {
@@ -938,7 +938,7 @@ export default class GltfObject {
           this.nodes[channel.target.node].transform.scale,
           outputBufferInfo.data[scaleIndex],
           outputBufferInfo.data[scaleIndex + 1],
-          outputBufferInfo.data[scaleIndex + 2]
+          outputBufferInfo.data[scaleIndex + 2],
         );
       }
     }

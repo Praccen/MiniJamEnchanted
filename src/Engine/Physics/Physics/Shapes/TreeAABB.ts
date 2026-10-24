@@ -55,7 +55,7 @@ export default class TreeAABB extends Shape {
 
     this.setMinAndMaxVectors(
       vec3.fromValues(-0.5, -0.5, -0.5),
-      vec3.fromValues(0.5, 0.5, 0.5)
+      vec3.fromValues(0.5, 0.5, 0.5),
     );
   }
 

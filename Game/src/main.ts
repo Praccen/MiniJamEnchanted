@@ -116,7 +116,7 @@ function loadingScreenAnimate() {
   } else {
     splashScreen.destroy();
     gameContext.start(
-      localStorage.getItem("Seed") ? localStorage.getItem("Seed") : "seed"
+      localStorage.getItem("Seed") ? localStorage.getItem("Seed") : "seed",
     );
 
     resize(); // Resize since game context will create game when it's started, we resize it once to make sure the viewports are correct etc.

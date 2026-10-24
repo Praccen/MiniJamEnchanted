@@ -89,7 +89,7 @@ export default class GeometryPassShaderProgram extends ShaderProgram {
       gl,
       "GeometryPass",
       geometryVertexShaderSrc,
-      geometryFragmentShaderSrc
+      geometryFragmentShaderSrc,
     );
 
     this.use();

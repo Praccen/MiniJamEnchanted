@@ -72,7 +72,7 @@ export default class Skybox extends GraphicsObject {
       this.gl.TRIANGLES,
       this.indices.length,
       this.gl.UNSIGNED_INT,
-      0
+      0,
     );
   }
 }

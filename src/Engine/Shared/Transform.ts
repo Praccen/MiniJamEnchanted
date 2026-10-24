@@ -61,7 +61,7 @@ export default class Transform {
 
   calculateAnimationMatrix(
     matrix: mat4 = this.matrix,
-    identityMatrixFirst: boolean = true
+    identityMatrixFirst: boolean = true,
   ) {
     if (identityMatrixFirst) {
       mat4.identity(matrix);
@@ -79,7 +79,7 @@ export default class Transform {
   calculateMatrices(
     matrix: mat4 = this.matrix,
     normalMatrix: mat3 = this.normalMatrix,
-    identityMatrixFirst: boolean = true
+    identityMatrixFirst: boolean = true,
   ) {
     if (identityMatrixFirst) {
       mat4.identity(matrix);

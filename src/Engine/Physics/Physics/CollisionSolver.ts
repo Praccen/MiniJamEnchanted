@@ -6,7 +6,7 @@ const skin_width = 0.02;
 
 export namespace CollisionSolver {
   export function getTranslationNeeded(
-    intersectionInformation: Array<IntersectionTester.IntersectionInformation>
+    intersectionInformation: Array<IntersectionTester.IntersectionInformation>,
   ): vec3 {
     if (intersectionInformation.length == 0) {
       return vec3.create();
@@ -28,7 +28,7 @@ export namespace CollisionSolver {
         final_mtv,
         final_mtv,
         vec3.normalize(vec3.create(), inf.axis),
-        depth
+        depth,
       );
     }
 
@@ -51,7 +51,7 @@ export namespace CollisionSolver {
     return vec3.transformMat4(
       vec3.create(),
       object.massCenter,
-      object.transform.matrix
+      object.transform.matrix,
     );
   }
 
@@ -61,7 +61,7 @@ export namespace CollisionSolver {
    */
   function getAngularVelocityChange(
     object: PhysicsObject,
-    angularImpulse: vec3
+    angularImpulse: vec3,
   ): vec3 {
     if (
       object.isStatic ||
@@ -74,13 +74,13 @@ export namespace CollisionSolver {
 
     const inverseRotation = quat.invert(
       quat.create(),
-      object.transform.rotation
+      object.transform.rotation,
     );
 
     const localImpulse = vec3.transformQuat(
       vec3.create(),
       angularImpulse,
-      inverseRotation
+      inverseRotation,
     );
 
     localImpulse[0] *= object.inverseInertiaLocal[0];
@@ -90,7 +90,7 @@ export namespace CollisionSolver {
     return vec3.transformQuat(
       vec3.create(),
       localImpulse,
-      object.transform.rotation
+      object.transform.rotation,
     );
   }
 
@@ -101,7 +101,7 @@ export namespace CollisionSolver {
   function getEffectiveInverseMass(
     object: PhysicsObject,
     contactPoint: vec3,
-    direction: vec3
+    direction: vec3,
   ): number {
     const invMass = getInverseMass(object);
 
@@ -117,14 +117,14 @@ export namespace CollisionSolver {
 
     const angularVelocityChange = getAngularVelocityChange(
       object,
-      angularImpulse
+      angularImpulse,
     );
 
     // Change in contact point velocity caused by rotation.
     const rotationalVelocityChange = vec3.cross(
       vec3.create(),
       angularVelocityChange,
-      r
+      r,
     );
 
     return invMass + vec3.dot(direction, rotationalVelocityChange);
@@ -142,7 +142,7 @@ export namespace CollisionSolver {
     const rotationalVelocity = vec3.cross(
       vec3.create(),
       object.angularVelocity,
-      r
+      r,
     );
 
     return vec3.add(vec3.create(), object.velocity, rotationalVelocity);
@@ -151,7 +151,7 @@ export namespace CollisionSolver {
   function applyAngularImpulse(
     object: PhysicsObject,
     contactPoint: vec3,
-    impulse: vec3
+    impulse: vec3,
   ): void {
     if (object.isStatic || object.isImmovable || object.mass <= 0) {
       return;
@@ -160,7 +160,7 @@ export namespace CollisionSolver {
     let worldMassCenter = vec3.transformMat4(
       vec3.create(),
       object.massCenter,
-      object.transform.matrix
+      object.transform.matrix,
     );
 
     // Vector from the center of mass to the contact point.
@@ -172,13 +172,13 @@ export namespace CollisionSolver {
     // Transform the angular impulse into the object's local space.
     const inverseRotation = quat.invert(
       quat.create(),
-      object.transform.rotation
+      object.transform.rotation,
     );
 
     const localAngularImpulse = vec3.transformQuat(
       vec3.create(),
       angularImpulse,
-      inverseRotation
+      inverseRotation,
     );
 
     // Δω_local = I_local^-1 * ΔL_local.
@@ -190,21 +190,21 @@ export namespace CollisionSolver {
     const worldAngularVelocityChange = vec3.transformQuat(
       vec3.create(),
       localAngularImpulse,
-      object.transform.rotation
+      object.transform.rotation,
     );
 
     // angularVelocity is stored in world space (rad/s).
     vec3.add(
       object.angularVelocity,
       object.angularVelocity,
-      worldAngularVelocityChange
+      worldAngularVelocityChange,
     );
   }
 
   export function handleCollision(
     intersectionInformation: Array<IntersectionTester.IntersectionInformation>,
     po1: PhysicsObject,
-    po2: PhysicsObject
+    po2: PhysicsObject,
   ) {
     for (let inf of intersectionInformation) {
       if (inf.depth < skin_width) {
@@ -228,7 +228,7 @@ export namespace CollisionSolver {
       const relativeVelocity = vec3.subtract(
         vec3.create(),
         velocity1,
-        velocity2
+        velocity2,
       );
 
       // A negative velocity along the normal means the objects are approaching.
@@ -237,7 +237,7 @@ export namespace CollisionSolver {
       if (normalSpeed < 0) {
         const restitution = Math.max(
           0,
-          Math.max(po1.collisionCoefficient, po2.collisionCoefficient)
+          Math.max(po1.collisionCoefficient, po2.collisionCoefficient),
         );
 
         const normalMass =
@@ -252,7 +252,7 @@ export namespace CollisionSolver {
           const normalImpulse = vec3.scale(
             vec3.create(),
             axis,
-            normalImpulseMagnitude
+            normalImpulseMagnitude,
           );
 
           // Friction impulse along the contact tangent plane.
@@ -260,7 +260,7 @@ export namespace CollisionSolver {
             vec3.create(),
             relativeVelocity,
             axis,
-            -normalSpeed
+            -normalSpeed,
           );
 
           const tangentSpeed = vec3.length(tangentVelocity);
@@ -271,7 +271,7 @@ export namespace CollisionSolver {
             const tangent = vec3.scale(
               vec3.create(),
               tangentVelocity,
-              1 / tangentSpeed
+              1 / tangentSpeed,
             );
 
             const tangentMass =
@@ -281,7 +281,7 @@ export namespace CollisionSolver {
             if (tangentMass > 1e-8) {
               const frictionCoefficient = Math.max(
                 0,
-                Math.min(po1.frictionCoefficient, po2.frictionCoefficient)
+                Math.min(po1.frictionCoefficient, po2.frictionCoefficient),
               );
 
               // Coulomb-style friction, limited by the normal impulse.
@@ -291,13 +291,13 @@ export namespace CollisionSolver {
 
               const frictionMagnitude = Math.min(
                 desiredFrictionMagnitude,
-                maxFrictionMagnitude
+                maxFrictionMagnitude,
               );
 
               frictionImpulse = vec3.scale(
                 vec3.create(),
                 tangent,
-                -frictionMagnitude
+                -frictionMagnitude,
               );
             }
           }
@@ -306,7 +306,7 @@ export namespace CollisionSolver {
           const impulse = vec3.add(
             vec3.create(),
             normalImpulse,
-            frictionImpulse
+            frictionImpulse,
           );
 
           const oppositeImpulse = vec3.negate(vec3.create(), impulse);
@@ -318,7 +318,7 @@ export namespace CollisionSolver {
             po2.velocity,
             po2.velocity,
             oppositeImpulse,
-            invMass2
+            invMass2,
           );
 
           // Rotation. Static and immovable objects are ignored by the function.
@@ -336,7 +336,7 @@ export namespace CollisionSolver {
       }
 
       let displacement = CollisionSolver.getTranslationNeeded(
-        intersectionInformation
+        intersectionInformation,
       );
       let totalMass = po1.mass + po2.mass;
       let po1Part = 0.5;
@@ -359,7 +359,7 @@ export namespace CollisionSolver {
           po1.unearthVelocity,
           po1.unearthVelocity,
           displacement,
-          po1Part * 10.0
+          po1Part * 10.0,
         );
         // po1.transform.translate(vec3.scale(vec3.create(), displacement, po1Part));
       }
@@ -369,7 +369,7 @@ export namespace CollisionSolver {
           po2.unearthVelocity,
           po2.unearthVelocity,
           displacement,
-          -po2Part * 10.0
+          -po2Part * 10.0,
         );
         // po2.transform.translate(
         //   vec3.scale(vec3.create(), displacement, -po2Part)

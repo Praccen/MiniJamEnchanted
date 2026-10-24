@@ -28,7 +28,7 @@ export default class PointShadowInstancedShaderProgram extends ShaderProgram {
       gl,
       "PointShadowInstanced",
       pointShadowVertexShaderSrc,
-      pointShadowFragmentShaderSrc
+      pointShadowFragmentShaderSrc,
     );
 
     this.use();

@@ -43,7 +43,7 @@ export default class Heightmap extends Mesh {
     let middlePos = vec3.fromValues(
       0.0,
       this.vertices[z * this.xResolution * 8 + x * 8 + 1],
-      0.0
+      0.0,
     );
 
     let offsets = [
@@ -71,8 +71,8 @@ export default class Heightmap extends Mesh {
         vec3.cross(
           vec3.create(),
           vec3.subtract(vec3.create(), middlePos, vertex0),
-          vec3.subtract(vec3.create(), vertex2, middlePos)
-        )
+          vec3.subtract(vec3.create(), vertex2, middlePos),
+        ),
       );
       vec3.add(resultingNormal, resultingNormal, normal);
     }
@@ -88,14 +88,14 @@ export default class Heightmap extends Mesh {
     xResolution: number,
     zResolution: number,
     xQuadSize: number,
-    zQuadSize: number
+    zQuadSize: number,
   ) {
     this.xResolution = Math.max(Math.ceil(xResolution), 2);
     this.zResolution = Math.max(Math.ceil(zResolution), 2);
     this.xQuadSize = xQuadSize;
     this.zQuadSize = zQuadSize;
     this.vertices = new Float32Array(
-      this.xResolution * this.zResolution * 8
+      this.xResolution * this.zResolution * 8,
     ).fill(0.0);
     for (let z = 0; z < this.zResolution; z++) {
       for (let x = 0; x < this.xResolution; x++) {
@@ -115,7 +115,7 @@ export default class Heightmap extends Mesh {
     this.setVertexData(this.vertices);
 
     this.indices = new Int32Array(
-      (this.xResolution - 1) * (this.zResolution - 1) * 6
+      (this.xResolution - 1) * (this.zResolution - 1) * 6,
     ).fill(0);
 
     for (let z = 0; z < this.zResolution - 1; z++) {
@@ -153,7 +153,7 @@ export default class Heightmap extends Mesh {
    */
   async readHeightDataFromTexture(
     texturePath: string,
-    createResolutionFromPixels: boolean = true
+    createResolutionFromPixels: boolean = true,
   ) {
     let loadImage = function (src: string): Promise<HTMLImageElement> {
       return new Promise((resolve, reject) => {
@@ -167,7 +167,7 @@ export default class Heightmap extends Mesh {
     let resizeImage = function (
       image: HTMLImageElement,
       newWidth: number,
-      newHeight: number
+      newHeight: number,
     ): Uint8ClampedArray {
       var canvas = document.createElement("canvas");
       var ctx = canvas.getContext("2d");
@@ -192,7 +192,7 @@ export default class Heightmap extends Mesh {
         this.updateVertexHeight(
           x,
           z,
-          this.imageData[x * 4 + z * this.xResolution * 4] / 255.0
+          this.imageData[x * 4 + z * this.xResolution * 4] / 255.0,
         );
       }
     }
@@ -233,7 +233,7 @@ export default class Heightmap extends Mesh {
   getNormalFromWorldPosition(
     heightmapTransformMatrix: mat4,
     worldPosition: vec3,
-    invertedTransformMatrix?: mat4
+    invertedTransformMatrix?: mat4,
   ) {
     // Invert the transform matrix used for the heightmap
     let invertedMatrix: mat4;
@@ -247,7 +247,7 @@ export default class Heightmap extends Mesh {
     let transformedPos = vec3.transformMat4(
       vec3.create(),
       vec3.fromValues(worldPosition[0], worldPosition[1], worldPosition[2]),
-      invertedMatrix
+      invertedMatrix,
     );
 
     return this.getNormal(transformedPos[0], transformedPos[2]);
@@ -256,7 +256,7 @@ export default class Heightmap extends Mesh {
   getHeightFromWorldPosition(
     heightmapTransformMatrix: mat4,
     worldPosition: vec3,
-    invertedTransformMatrix?: mat4
+    invertedTransformMatrix?: mat4,
   ): number {
     // Invert the transform matrix used for the heightmap
     let invertedMatrix;
@@ -273,9 +273,9 @@ export default class Heightmap extends Mesh {
         worldPosition[0],
         worldPosition[1],
         worldPosition[2],
-        1.0
+        1.0,
       ),
-      invertedTransformMatrix
+      invertedTransformMatrix,
     );
 
     // Get the height of the heightmap at the corresponding position
@@ -291,7 +291,7 @@ export default class Heightmap extends Mesh {
     vec4.transformMat4(
       transformedPos,
       transformedPos,
-      heightmapTransformMatrix
+      heightmapTransformMatrix,
     ); // To world space! :D
 
     return transformedPos[1];
@@ -395,7 +395,7 @@ export default class Heightmap extends Mesh {
     let normal = vec3.fromValues(
       this.vertices[zCoord * this.xResolution * 8 + xCoord * 8 + 3],
       this.vertices[zCoord * this.xResolution * 8 + xCoord * 8 + 4],
-      this.vertices[zCoord * this.xResolution * 8 + xCoord * 8 + 5]
+      this.vertices[zCoord * this.xResolution * 8 + xCoord * 8 + 5],
     );
 
     return normal;
@@ -415,7 +415,7 @@ export default class Heightmap extends Mesh {
       this.gl.TRIANGLES,
       this.indices.length,
       this.gl.UNSIGNED_INT,
-      0
+      0,
     );
   }
 }

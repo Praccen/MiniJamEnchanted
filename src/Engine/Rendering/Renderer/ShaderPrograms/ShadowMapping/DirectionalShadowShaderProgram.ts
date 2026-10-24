@@ -51,7 +51,7 @@ export default class DirectionalShadowShaderProgram extends ShaderProgram {
       gl,
       "DirectionalShadow",
       shadowVertexShaderSrc,
-      shadowFragmentShaderSrc
+      shadowFragmentShaderSrc,
     );
 
     this.use();

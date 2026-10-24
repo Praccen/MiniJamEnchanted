@@ -17,7 +17,7 @@ export default class LightingRenderPass {
   constructor(
     gl: WebGL2RenderingContext,
     lightingPassShaderProgram: LightingPassShaderProgram,
-    inputTextures: Texture[]
+    inputTextures: Texture[],
   ) {
     this.gl = gl;
     this.lightingPassShaderProgram = lightingPassShaderProgram;
@@ -33,17 +33,17 @@ export default class LightingRenderPass {
 
     this.gl.uniform3fv(
       this.lightingPassShaderProgram.getUniformLocation("camPos")[0],
-      camera.getPosition()
+      camera.getPosition(),
     );
     scene.directionalLight.bind(this.gl, this.lightingPassShaderProgram);
     scene.directionalLight.sendLightSpaceMatrix(
       this.gl,
-      this.lightingPassShaderProgram.getUniformLocation("lightSpaceMatrix")[0]
+      this.lightingPassShaderProgram.getUniformLocation("lightSpaceMatrix")[0],
     );
     // Point lights
     this.gl.uniform1i(
       this.lightingPassShaderProgram.getUniformLocation("nrOfPointLights")[0],
-      Math.min(scene.pointLights.length, pointLightsToAllocate)
+      Math.min(scene.pointLights.length, pointLightsToAllocate),
     );
 
     // Bind pointLights, with counter as depthMapIndex

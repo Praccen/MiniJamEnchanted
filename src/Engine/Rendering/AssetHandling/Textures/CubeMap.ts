@@ -9,7 +9,7 @@ export default class CubeMap extends Texture {
     internalFormat: number = gl.RGBA,
     format: number = gl.RGBA,
     dataStorageType: number = gl.UNSIGNED_BYTE,
-    textureTarget: number = gl.TEXTURE_CUBE_MAP
+    textureTarget: number = gl.TEXTURE_CUBE_MAP,
   ) {
     super(
       gl,
@@ -17,7 +17,7 @@ export default class CubeMap extends Texture {
       internalFormat,
       format,
       dataStorageType,
-      textureTarget
+      textureTarget,
     );
 
     this.setTexParameterI(this.gl.TEXTURE_WRAP_R, gl.REPEAT);
@@ -35,7 +35,7 @@ export default class CubeMap extends Texture {
     data: Uint8Array,
     width: number,
     height: number,
-    face?: number
+    face?: number,
   ) {
     this.width = width;
     this.height = height;
@@ -53,7 +53,7 @@ export default class CubeMap extends Texture {
           0,
           this.format,
           this.dataStorageType,
-          data
+          data,
         );
       }
     } else {
@@ -67,7 +67,7 @@ export default class CubeMap extends Texture {
         0,
         this.format,
         this.dataStorageType,
-        data
+        data,
       );
     }
 
@@ -92,7 +92,7 @@ export default class CubeMap extends Texture {
           self.internalFormat,
           self.format,
           self.dataStorageType,
-          image
+          image,
         );
         self.sidesLoaded++;
         if (self.sidesLoaded >= 6) {
@@ -102,7 +102,7 @@ export default class CubeMap extends Texture {
             self.gl.texParameteri(
               self.textureTarget,
               self.gl.TEXTURE_MIN_FILTER,
-              self.gl.LINEAR_MIPMAP_LINEAR
+              self.gl.LINEAR_MIPMAP_LINEAR,
             );
           }
         }

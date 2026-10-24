@@ -18,7 +18,7 @@ export default class GeometryRenderPass {
     gl: WebGL2RenderingContext,
     geometryPassShaderProgram: GeometryPassShaderProgram,
     geometryPassInstancedShaderProgram: GeometryPassInstancedShaderProgram,
-    geometryPassSkeletalAnimationShaderProgram: GeometryPassSkeletalAnimationShaderProgram
+    geometryPassSkeletalAnimationShaderProgram: GeometryPassSkeletalAnimationShaderProgram,
   ) {
     this.gl = gl;
     this.geometryPassShaderProgram = geometryPassShaderProgram;
@@ -36,19 +36,19 @@ export default class GeometryRenderPass {
           false,
           this.gl.RGBA32F,
           this.gl.RGBA,
-          this.gl.FLOAT
+          this.gl.FLOAT,
         ),
         new Texture(
           this.gl,
           false,
           this.gl.RGBA32F,
           this.gl.RGBA,
-          this.gl.FLOAT
+          this.gl.FLOAT,
         ),
         new Texture(this.gl, false),
         new Texture(this.gl, false),
       ],
-      null
+      null,
     );
   }
 
@@ -62,7 +62,7 @@ export default class GeometryRenderPass {
       0.0,
       0.0,
       this.outputFramebuffer.getWidth(),
-      this.outputFramebuffer.getHeight()
+      this.outputFramebuffer.getHeight(),
     );
 
     // Bind gbuffer and clear that with 0,0,0,0 (the alpha = 0 is important to be able to identify fragments in the lighting pass that have not been written with geometry)
@@ -71,14 +71,14 @@ export default class GeometryRenderPass {
     this.gl.clear(
       this.gl.COLOR_BUFFER_BIT |
         this.gl.DEPTH_BUFFER_BIT |
-        this.gl.STENCIL_BUFFER_BIT
+        this.gl.STENCIL_BUFFER_BIT,
     );
 
     this.gl.disable(this.gl.BLEND);
 
     camera.bindViewProjMatrix(
       this.gl,
-      this.geometryPassShaderProgram.getUniformLocation("viewProjMatrix")[0]
+      this.geometryPassShaderProgram.getUniformLocation("viewProjMatrix")[0],
     );
 
     scene.renderScene(this.geometryPassShaderProgram);
@@ -87,8 +87,8 @@ export default class GeometryRenderPass {
     camera.bindViewProjMatrix(
       this.gl,
       this.geometryPassInstancedShaderProgram.getUniformLocation(
-        "viewProjMatrix"
-      )[0]
+        "viewProjMatrix",
+      )[0],
     );
 
     scene.renderSceneInstanced(this.geometryPassInstancedShaderProgram);
@@ -97,8 +97,8 @@ export default class GeometryRenderPass {
     camera.bindViewProjMatrix(
       this.gl,
       this.geometryPassSkeletalAnimationShaderProgram.getUniformLocation(
-        "viewProjMatrix"
-      )[0]
+        "viewProjMatrix",
+      )[0],
     );
 
     scene.renderSceneAnimated(this.geometryPassSkeletalAnimationShaderProgram);

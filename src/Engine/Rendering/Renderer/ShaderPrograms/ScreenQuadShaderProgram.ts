@@ -33,7 +33,7 @@ export default class ScreenQuadShaderProgram extends ShaderProgram {
       gl,
       "ScreenQuadShaderProgram",
       screenQuadVertexSrc,
-      screenQuadFragmentSrc
+      screenQuadFragmentSrc,
     );
   }
 }

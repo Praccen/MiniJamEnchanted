@@ -26,7 +26,7 @@ export default class PointShadowRenderPass {
     gl: WebGL2RenderingContext,
     pointShadowShaderProgram: PointShadowShaderProgram,
     pointShadowInstancedShaderProgram: PointShadowInstancedShaderProgram,
-    pointShadowSkeletalAnimationShaderProgram: PointShadowSkeletalAnimationShaderProgram
+    pointShadowSkeletalAnimationShaderProgram: PointShadowSkeletalAnimationShaderProgram,
   ) {
     this.pointShadowShaderProgram = pointShadowShaderProgram;
     this.pointShadowInstancedShaderProgram = pointShadowInstancedShaderProgram;
@@ -88,21 +88,21 @@ export default class PointShadowRenderPass {
         if (
           !IntersectionTester.identifyIntersection(
             [cameraFrustum],
-            [pointLightFrustum]
+            [pointLightFrustum],
           )
         ) {
           continue;
         }
 
         pointLightCamera.setPosition(
-          vec3.add(vec3.create(), pointLight.position, pointLight.offset)
+          vec3.add(vec3.create(), pointLight.position, pointLight.offset),
         );
 
         this.gl.viewport(
           0,
           0,
           pointLight.pointShadowBuffer.getWidth(),
-          pointLight.pointShadowBuffer.getHeight()
+          pointLight.pointShadowBuffer.getHeight(),
         );
         pointLight.pointShadowBuffer.bind(this.gl.FRAMEBUFFER);
 
@@ -114,7 +114,7 @@ export default class PointShadowRenderPass {
             this.gl.DEPTH_ATTACHMENT,
             this.gl.TEXTURE_CUBE_MAP_POSITIVE_X + i,
             pointLight.pointShadowDepthMap.texture,
-            0
+            0,
           );
 
           // ---- Shadow pass ----
@@ -124,8 +124,8 @@ export default class PointShadowRenderPass {
           pointLightCamera.bindViewProjMatrix(
             this.gl,
             this.pointShadowShaderProgram.getUniformLocation(
-              "lightSpaceMatrix"
-            )[0]
+              "lightSpaceMatrix",
+            )[0],
           );
 
           // this.frustumShapes.push(new Frustum());
@@ -135,7 +135,7 @@ export default class PointShadowRenderPass {
           if (
             !IntersectionTester.identifyIntersection(
               [cameraFrustum],
-              [pointLightCamera.getFrustum()]
+              [pointLightCamera.getFrustum()],
             )
           ) {
             // The pointLight frustum can't be seen from the camera, no need to render this side of the depth cube
@@ -146,7 +146,7 @@ export default class PointShadowRenderPass {
 
           this.gl.uniform3fv(
             this.pointShadowShaderProgram.getUniformLocation("cameraPos")[0],
-            pointLightCamera.getPosition()
+            pointLightCamera.getPosition(),
           );
 
           //Render shadow pass
@@ -159,14 +159,14 @@ export default class PointShadowRenderPass {
           pointLightCamera.bindViewProjMatrix(
             this.gl,
             this.pointShadowInstancedShaderProgram.getUniformLocation(
-              "lightSpaceMatrix"
-            )[0]
+              "lightSpaceMatrix",
+            )[0],
           );
           this.gl.uniform3fv(
             this.pointShadowInstancedShaderProgram.getUniformLocation(
-              "cameraPos"
+              "cameraPos",
             )[0],
-            pointLightCamera.getPosition()
+            pointLightCamera.getPosition(),
           );
 
           //Render shadow pass
@@ -179,19 +179,19 @@ export default class PointShadowRenderPass {
           pointLightCamera.bindViewProjMatrix(
             this.gl,
             this.pointShadowSkeletalAnimationShaderProgram.getUniformLocation(
-              "lightSpaceMatrix"
-            )[0]
+              "lightSpaceMatrix",
+            )[0],
           );
           this.gl.uniform3fv(
             this.pointShadowSkeletalAnimationShaderProgram.getUniformLocation(
-              "cameraPos"
+              "cameraPos",
             )[0],
-            pointLightCamera.getPosition()
+            pointLightCamera.getPosition(),
           );
 
           //Render shadow pass
           scene.renderSceneAnimated(
-            this.pointShadowSkeletalAnimationShaderProgram
+            this.pointShadowSkeletalAnimationShaderProgram,
           );
         }
       }

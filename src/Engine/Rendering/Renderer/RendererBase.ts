@@ -33,7 +33,7 @@ export default class RendererBase {
     this.gl = this.domElement.getContext("webgl2", { antialias: false });
     if (!this.gl.getExtension("EXT_color_buffer_float")) {
       alert(
-        "Rendering to floating point textures is not supported on this platform"
+        "Rendering to floating point textures is not supported on this platform",
       );
     }
     if (!this.gl.getExtension("OES_texture_float_linear")) {
@@ -50,12 +50,12 @@ export default class RendererBase {
       this.clearColour.r,
       this.clearColour.g,
       this.clearColour.b,
-      this.clearColour.a
+      this.clearColour.a,
     );
 
     pointShadowsToAllocate = Math.min(
       pointShadowsToAllocate,
-      this.gl.getParameter(this.gl.MAX_TEXTURE_IMAGE_UNITS) - 5
+      this.gl.getParameter(this.gl.MAX_TEXTURE_IMAGE_UNITS) - 5,
     );
 
     // Enable depth test
