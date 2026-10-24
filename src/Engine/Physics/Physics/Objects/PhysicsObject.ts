@@ -23,7 +23,7 @@ export default class PhysicsObject {
   impulse: vec3 = vec3.create();
   force: vec3 = vec3.create();
   physicsObjectId: number;
-  momentum: vec3 = vec3.create();
+  angularVelocity: vec3 = vec3.create();
   inverseInertiaLocal: vec3 = vec3.create();
 
   testRotationAxis: vec3 = vec3.create();

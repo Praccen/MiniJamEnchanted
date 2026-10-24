@@ -40,144 +40,6 @@ export namespace CollisionSolver {
     return final_mtv;
   }
 
-  function getInverseMass(object: PhysicsObject): number {
-    if (object.isStatic || object.isImmovable || object.mass <= 0) {
-      return 0;
-    }
-
-    return 1 / object.mass;
-  }
-
-  function getWorldMassCenter(object: PhysicsObject): vec3 {
-    return vec3.transformMat4(
-      vec3.create(),
-      object.massCenter,
-      object.transform.matrix,
-    );
-  }
-
-  /**
-   * Beräknar förändringen i vinkelhastighet från en
-   * vinkelimpuls, utan att faktiskt ändra objektet.
-   */
-  function getAngularVelocityChange(
-    object: PhysicsObject,
-    angularImpulse: vec3,
-  ): vec3 {
-    if (
-      object.isStatic ||
-      object.isImmovable ||
-      object.mass <= 0 ||
-      !object.dynamicCollisionResponses
-    ) {
-      return vec3.create();
-    }
-
-    const inverseRotation = quat.invert(
-      quat.create(),
-      object.transform.rotation,
-    );
-
-    const localImpulse = vec3.transformQuat(
-      vec3.create(),
-      angularImpulse,
-      inverseRotation,
-    );
-
-    localImpulse[0] *= object.inverseInertiaLocal[0];
-    localImpulse[1] *= object.inverseInertiaLocal[1];
-    localImpulse[2] *= object.inverseInertiaLocal[2];
-
-    return vec3.transformQuat(
-      vec3.create(),
-      localImpulse,
-      object.transform.rotation,
-    );
-  }
-
-  /**
-   * Effektiv invers massa i en viss riktning vid en kontaktpunkt.
-   * Tar hänsyn till både translation och rotation.
-   */
-  function getEffectiveInverseMass(
-    object: PhysicsObject,
-    contactPoint: vec3,
-    direction: vec3,
-  ): number {
-    const invMass = getInverseMass(object);
-
-    if (invMass === 0) {
-      return 0;
-    }
-
-    const worldCenter = getWorldMassCenter(object);
-    const r = vec3.subtract(vec3.create(), contactPoint, worldCenter);
-
-    // Vinkelimpuls som skapas av en enhetsimpuls i riktningen.
-    const angularImpulse = vec3.cross(vec3.create(), r, direction);
-
-    const angularVelocityChange = getAngularVelocityChange(
-      object,
-      angularImpulse,
-    );
-
-    // Kontaktpunktens hastighetsförändring från rotationen.
-    const rotationalVelocityChange = vec3.cross(
-      vec3.create(),
-      angularVelocityChange,
-      r,
-    );
-
-    return invMass + vec3.dot(direction, rotationalVelocityChange);
-  }
-
-  /**
-   * Hastigheten vid kontaktpunkten:
-   * linjär hastighet + vinkelhastighet × hävarm.
-   */
-  function getVelocityAtPoint(object: PhysicsObject, contactPoint: vec3): vec3 {
-    const worldCenter = getWorldMassCenter(object);
-
-    const r = vec3.subtract(vec3.create(), contactPoint, worldCenter);
-
-    const rotationalVelocity = vec3.cross(vec3.create(), object.momentum, r);
-
-    return vec3.add(vec3.create(), object.velocity, rotationalVelocity);
-  }
-
-  function applyTestRotation(
-    object: PhysicsObject,
-    contactPoint: vec3,
-    impulseDirection: vec3,
-  ): void {
-    if (object.isStatic || object.isImmovable) {
-      return;
-    }
-
-    // Från masscentrum till kontaktpunkten.
-    let worldMassCenter = vec3.transformMat4(
-      vec3.create(),
-      object.massCenter,
-      object.transform.matrix,
-    );
-
-    const r = vec3.subtract(vec3.create(), contactPoint, worldMassCenter);
-
-    // Rotationsaxel: r × impulsriktningen.
-    const axis = vec3.cross(vec3.create(), r, impulseDirection);
-
-    if (vec3.squaredLength(axis) < 1e-8) {
-      return;
-    }
-
-    vec3.normalize(axis, axis);
-
-    // 0,5 varv/s = π radianer/s.
-    // Spara axeln separat; hastigheten appliceras i update(dt).
-    vec3.copy(object.testRotationAxis, axis);
-    object.testRotationActive = true;
-  }
-
   function applyAngularImpulse(
     object: PhysicsObject,
     contactPoint: vec3,
@@ -224,7 +86,11 @@ export namespace CollisionSolver {
     );
 
     // momentum används här som vinkelhastighet (rad/s).
-    vec3.add(object.momentum, object.momentum, worldAngularVelocityChange);
+    vec3.add(
+      object.angularVelocity,
+      object.angularVelocity,
+      worldAngularVelocityChange,
+    );
   }
 
   export function handleCollision(
@@ -353,18 +219,18 @@ export namespace CollisionSolver {
 
         if (contactPoint) {
           // Linear impulses derived from the velocity changes.
-          const impulse1 = vec3.scale(vec3.create(), e1Change, po1.mass);
+          const impulse1 = vec3.scale(vec3.create(), e1Change, po1.mass * 0.1);
 
-          const impulse2 = vec3.scale(vec3.create(), e2Change, po2.mass);
+          const impulse2 = vec3.scale(vec3.create(), e2Change, po2.mass * 0.1);
 
           if (po1.dynamicCollisionResponses) {
-            applyTestRotation(po1, contactPoint, impulse1);
+            applyAngularImpulse(po1, contactPoint, impulse1);
             let visualizationMat = mat4.create();
             mat4.translate(visualizationMat, visualizationMat, contactPoint);
             collisionPointVisualizer.setTransformMatrix(visualizationMat);
           }
           if (po2.dynamicCollisionResponses) {
-            applyTestRotation(po2, contactPoint, impulse2);
+            applyAngularImpulse(po2, contactPoint, impulse2);
             let visualizationMat = mat4.create();
             mat4.translate(visualizationMat, visualizationMat, contactPoint);
             collisionPointVisualizer.setTransformMatrix(visualizationMat);

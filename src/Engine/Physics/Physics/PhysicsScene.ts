@@ -363,16 +363,16 @@ export default class PhysicsScene {
 
         if (
           vec3.len(translation) > 0.001 ||
-          vec3.len(physicsObject.momentum) > 0.001
+          vec3.len(physicsObject.angularVelocity) > 0.001
         ) {
           physicsObject.transform.translate(translation);
 
-          const angularSpeed = vec3.length(physicsObject.momentum);
+          const angularSpeed = vec3.length(physicsObject.angularVelocity);
 
           if (angularSpeed > 1e-8) {
             const axis = vec3.scale(
               vec3.create(),
-              physicsObject.momentum,
+              physicsObject.angularVelocity,
               1 / angularSpeed,
             );
 
@@ -382,16 +382,30 @@ export default class PhysicsScene {
               angularSpeed * dt,
             );
 
+            // Vinkelhastigheten uttrycks i världskoordinater.
             quat.multiply(
               physicsObject.transform.rotation,
-              physicsObject.transform.rotation,
               deltaRotation,
+              physicsObject.transform.rotation,
             );
 
             quat.normalize(
               physicsObject.transform.rotation,
               physicsObject.transform.rotation,
             );
+
+            const angularDamping = 2.0; // Per sekund; justera efter känsla.
+
+            vec3.scale(
+              physicsObject.angularVelocity,
+              physicsObject.angularVelocity,
+              Math.exp(-angularDamping * dt),
+            );
+
+            // Eliminera mycket små resthastigheter.
+            if (vec3.squaredLength(physicsObject.angularVelocity) < 1e-6) {
+              vec3.set(physicsObject.angularVelocity, 0, 0, 0);
+            }
           }
 
           if (physicsObject.testRotationActive) {
