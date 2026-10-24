@@ -485,7 +485,7 @@ export default class WorldEditor {
           if (
             self.gizmo.updateDrag(
               vec2.fromValues(self.mousePosition.x, self.mousePosition.y),
-              self.shiftHeld
+              self.shiftHeld,
             )
           ) {
             self.internalPhysicsScene.update(0.0, true, false);
@@ -495,7 +495,7 @@ export default class WorldEditor {
         }
 
         self.gizmo.updateHover(
-          vec2.fromValues(self.mousePosition.x, self.mousePosition.y)
+          vec2.fromValues(self.mousePosition.x, self.mousePosition.y),
         );
 
         if (!self.shiftHeld && (self.mouseMiddleHeld || self.mouseRightHeld)) {
@@ -546,7 +546,7 @@ export default class WorldEditor {
           // never doubles as a reselect or a hold T placement.
           if (
             self.gizmo.startDrag(
-              vec2.fromValues(self.mousePosition.x, self.mousePosition.y)
+              vec2.fromValues(self.mousePosition.x, self.mousePosition.y),
             )
           ) {
             // Handle grabbed, nothing else should act on this click.

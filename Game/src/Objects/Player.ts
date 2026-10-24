@@ -9,9 +9,14 @@ import {
 import ProceduralAnimationObject from "./ProceduralAnimations/ProceduralAnimationObject.js";
 import { Input } from "../Input.js";
 
+const sensitivity = 0.3;
+
 export default class Player {
   proceduralAnimationModel: ProceduralAnimationObject;
   physicsObject: PhysicsObject;
+
+  private pitch: number = 0;
+  private jaw: number = 0;
 
   constructor(scene: Scene, physicsScene: PhysicsScene, startPos: vec3) {
     this.proceduralAnimationModel = new ProceduralAnimationObject(
@@ -27,6 +32,28 @@ export default class Player {
   }
 
   update(camera: Camera, dt: number) {
+    // if (Input.mouseClicked) {
+    //   document.getElementById("gameDiv").requestPointerLock();
+    // }
+
+    // Rotate camera with mouse click and drag
+    let mouseDiff = Input.getMouseMovement();
+
+    if (document.pointerLockElement == document.getElementById("gameDiv")) {
+      // Make sure the user is not changing a slider
+      this.pitch -= mouseDiff[1] * sensitivity;
+      this.jaw -= mouseDiff[0] * sensitivity;
+    }
+
+    this.pitch = Math.max(Math.min(this.pitch, 89), -89); // Don't allow the camera to go past 89 degrees
+    this.jaw = this.jaw % 360;
+
+    camera.setPitchJawDegrees(this.pitch, this.jaw); // Update the rotation of the camera
+
+    this.proceduralAnimationModel.headingDirection = vec3.clone(
+      camera.getDir(),
+    );
+
     let accVec = vec3.create();
 
     // Movement input
@@ -81,7 +108,6 @@ export default class Player {
     }
 
     if (vec3.sqrLen(accVec) > 0.001) {
-      this.proceduralAnimationModel.headingDirection = accVec;
       vec3.scaleAndAdd(
         this.physicsObject.force,
         this.physicsObject.force,
@@ -90,49 +116,27 @@ export default class Player {
       );
     }
 
+    let cameraDistance = 2.0;
+    cameraDistance += vec3.len(this.physicsObject.velocity) * 0.5;
+    cameraDistance -= Math.abs(this.pitch) * (cameraDistance / 90);
+
     // Update camera
-    let cameraOffset = vec3.sub(
+    let cameraOffset = vec3.scale(
       vec3.create(),
-      camera.getPosition(),
-      this.proceduralAnimationModel.baseJoint.position,
+      camera.getDir(),
+      -cameraDistance,
     );
 
-    if (Input.keys["ARROWLEFT"]) {
-      vec3.scaleAndAdd(cameraOffset, cameraOffset, camera.getRight(), dt * 8.0);
-    } else if (Input.keys["ARROWRIGHT"]) {
-      vec3.scaleAndAdd(
-        cameraOffset,
-        cameraOffset,
-        camera.getRight(),
-        -dt * 8.0,
-      );
-    } else {
-      vec3.scaleAndAdd(
-        cameraOffset,
-        cameraOffset,
-        this.physicsObject.velocity,
-        -dt * 3.0,
-      );
-    }
-
-    // ---- Keep a good camera distance ----
-    let desiredDistance = 4.0;
-
-    vec3.scale(
+    vec3.scaleAndAdd(
       cameraOffset,
       cameraOffset,
-      Math.pow(desiredDistance / vec3.len(cameraOffset), 0.1),
+      camera.getRight(),
+      1.0 - Math.min(cameraDistance, 0.8),
     );
 
-    cameraOffset[1] = Math.max(cameraOffset[1], 1.0);
+    // cameraOffset[1] += 1.0;
 
-    let offsetXZ = vec3.fromValues(cameraOffset[0], 0.0, cameraOffset[2]);
-    let len2 = vec3.sqrLen(offsetXZ);
-    if (len2 < 1.0 && len2 > 0.001) {
-      vec3.normalize(offsetXZ, offsetXZ);
-      cameraOffset[0] = offsetXZ[0];
-      cameraOffset[2] = offsetXZ[2];
-    }
+    cameraOffset[1] = Math.max(-0.2, cameraOffset[1]);
 
     camera.setPosition(
       vec3.add(
@@ -141,7 +145,6 @@ export default class Player {
         cameraOffset,
       ),
     );
-    camera.setDir(vec3.scale(vec3.create(), cameraOffset, -1.0));
     // -------------------------------------
 
     // Update drag based on velocity
