@@ -21,6 +21,7 @@ export default class Camera {
   private viewMatrix: mat4;
   private projectionMatrix: mat4;
   private viewProjMatrix: mat4;
+  private invViewProjMatrix: mat4;
 
   private frustum: Frustum;
 
@@ -47,6 +48,7 @@ export default class Camera {
     // ------------
 
     this.viewProjMatrix = mat4.create();
+    this.invViewProjMatrix = mat4.create();
 
     this.frustum = new Frustum();
   }
@@ -221,18 +223,25 @@ export default class Camera {
           this.farPlaneDistance,
         );
       }
+      this.projMatrixNeedsUpdate = false;
+      updateViewProj = true;
     }
-    this.projMatrixNeedsUpdate = false;
-    updateViewProj = true;
 
     if (updateViewProj) {
       mat4.mul(this.viewProjMatrix, this.projectionMatrix, this.viewMatrix);
 
       // this.frustum.setTransformMatrix(mat4.mul(mat4.create(), mat4.invert(mat4.create(), this.projectionMatrix), this.viewMatrix));
-      this.frustum.setTransformMatrix(
-        mat4.invert(mat4.create(), this.viewProjMatrix),
-      );
+      mat4.invert(this.invViewProjMatrix, this.viewProjMatrix);
+      this.frustum.setTransformMatrix(this.invViewProjMatrix);
     }
+  }
+
+  /**
+   * Inverse of the view projection matrix.
+   */
+  getInvViewProjMatrix(): mat4 {
+    this.updateViewProjMatrix();
+    return this.invViewProjMatrix;
   }
 
   bindViewProjMatrix(
@@ -240,6 +249,10 @@ export default class Camera {
     uniformLocation: WebGLUniformLocation,
     skybox: boolean = false,
   ) {
+    if (!uniformLocation) {
+      return;
+    }
+
     this.updateViewProjMatrix();
 
     if (skybox) {

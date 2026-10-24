@@ -74,6 +74,11 @@ export default class Scene {
 
   cullingShapeTransformsToMarkAsGreen: Transform[] = [];
 
+  // Reused by renderCullingShapes so the debug view does not allocate GL
+  // objects or arrays per frame.
+  private cullingShapeGraphicsObject: ShapeGraphicsObject = null;
+  private cullingShapeContentScratch: Array<TreeNodeContentElement> = [];
+
   customFrustumCulling: (frustums: Shape[]) => void = null;
 
   constructor(renderer: RendererBase) {
@@ -532,63 +537,56 @@ export default class Scene {
   }
 
   renderCullingShapes(shaderProgram: ShaderProgram) {
-    const contentFromTree = new Array<TreeSceneContentElement>();
-    this.stillTree.getAllContent(contentFromTree);
-    for (const content of contentFromTree) {
-      if (content.graphicsBundle.enabled) {
-        let shapeGraphicsObject = new ShapeGraphicsObject(
-          this.renderer.gl,
-          content.shape,
-        );
-        if (
-          this.cullingShapeTransformsToMarkAsGreen.find(
-            (transform) => transform == content.graphicsBundle.transform,
-          ) != undefined
-        ) {
-          vec4.set(shapeGraphicsObject.colour, 0.0, 1.0, 0.0, 1.0);
-        }
-        shapeGraphicsObject.draw(shaderProgram);
+    // One reused ShapeGraphicsObject for every box. Allocating one per object
+    // per frame leaked a VAO and two buffers per object per frame, since
+    // GraphicsObject creates GL objects in its constructor and nothing here
+    // ever deleted them.
+    if (this.cullingShapeGraphicsObject == undefined) {
+      this.cullingShapeGraphicsObject = new ShapeGraphicsObject(
+        this.renderer.gl,
+        null,
+      );
+    }
+    const shapeGraphicsObject = this.cullingShapeGraphicsObject;
+
+    const drawBox = (shape: Shape, transform: Transform) => {
+      shapeGraphicsObject.shape = shape;
+      if (
+        this.cullingShapeTransformsToMarkAsGreen.find(
+          (candidate) => candidate == transform,
+        ) != undefined
+      ) {
+        vec4.set(shapeGraphicsObject.colour, 0.0, 1.0, 0.0, 1.0);
+      } else {
+        vec4.set(shapeGraphicsObject.colour, 1.0, 0.0, 0.0, 1.0);
+      }
+      shapeGraphicsObject.draw(shaderProgram);
+    };
+
+    this.cullingShapeContentScratch.length = 0;
+    this.stillTree.getAllContent(this.cullingShapeContentScratch);
+    for (const content of this.cullingShapeContentScratch) {
+      const element = content as TreeSceneContentElement;
+      if (element.graphicsBundle.enabled) {
+        drawBox(element.shape, element.graphicsBundle.transform);
       }
     }
 
-    const animatedContentFromTree = new Array<TreeSceneContentElement>();
-    this.animatedTree.getAllContent(animatedContentFromTree);
-
-    for (const content of animatedContentFromTree) {
-      if (content.graphicsBundle.enabled) {
-        let shapeGraphicsObject = new ShapeGraphicsObject(
-          this.renderer.gl,
-          content.shape,
-        );
-        if (
-          this.cullingShapeTransformsToMarkAsGreen.find(
-            (transform) => transform == content.graphicsBundle.transform,
-          ) != undefined
-        ) {
-          vec4.set(shapeGraphicsObject.colour, 0.0, 1.0, 0.0, 1.0);
-        }
-        shapeGraphicsObject.draw(shaderProgram);
+    this.cullingShapeContentScratch.length = 0;
+    this.animatedTree.getAllContent(this.cullingShapeContentScratch);
+    for (const content of this.cullingShapeContentScratch) {
+      const element = content as TreeSceneContentElement;
+      if (element.graphicsBundle.enabled) {
+        drawBox(element.shape, element.graphicsBundle.transform);
       }
     }
 
-    const instancedContentFromTree =
-      new Array<InstancedTreeSceneContentElement>();
-    this.instancedTree.getAllContent(instancedContentFromTree);
-
-    for (const content of instancedContentFromTree) {
-      if (content.transform.enabled) {
-        let shapeGraphicsObject = new ShapeGraphicsObject(
-          this.renderer.gl,
-          content.shape,
-        );
-        if (
-          this.cullingShapeTransformsToMarkAsGreen.find(
-            (transform) => transform == content.graphicsBundle.transform,
-          ) != undefined
-        ) {
-          vec4.set(shapeGraphicsObject.colour, 0.0, 1.0, 0.0, 1.0);
-        }
-        shapeGraphicsObject.draw(shaderProgram);
+    this.cullingShapeContentScratch.length = 0;
+    this.instancedTree.getAllContent(this.cullingShapeContentScratch);
+    for (const content of this.cullingShapeContentScratch) {
+      const element = content as InstancedTreeSceneContentElement;
+      if (element.transform.enabled) {
+        drawBox(element.shape, element.graphicsBundle.transform);
       }
     }
   }

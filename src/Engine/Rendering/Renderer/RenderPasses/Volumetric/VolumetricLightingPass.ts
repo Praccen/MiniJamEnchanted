@@ -22,12 +22,22 @@ export default class VolumetricLightingPass {
   fogMaxDistance: number;
   fogDensity: number;
 
+  // Raymarch steps. Clamped to the shader's maxSteps constant.
+  steps: number = 10;
+
   renderScale: number;
   blur: boolean;
   upscaleFramebuffer: Framebuffer;
 
+  // Resolution the raymarch buffer is derived from (display resolution, so
+  // SSAA does not scale the most expensive shader in the pipeline).
   private width: number;
   private height: number;
+
+  // Resolution the combine step writes to, which does follow SSAA since it
+  // targets a full size internal framebuffer.
+  private outputWidth: number;
+  private outputHeight: number;
 
   private volumetricScreenQuad: ScreenQuad;
   private combineScreenQuad: ScreenQuad;
@@ -52,6 +62,8 @@ export default class VolumetricLightingPass {
     this.blur = false;
     this.width = 100;
     this.height = 100;
+    this.outputWidth = 100;
+    this.outputHeight = 100;
     this.volumetricScreenQuad = new ScreenQuad(this.gl, [
       positionTexture,
       fogTexture,
@@ -77,6 +89,15 @@ export default class VolumetricLightingPass {
       x * this.renderScale,
       y * this.renderScale,
     );
+  }
+
+  /**
+   * Viewport the combine step draws to. This is the internal (supersampled)
+   * resolution, which is independent of the raymarch buffer size.
+   */
+  setOutputResolution(x: number, y: number) {
+    this.outputWidth = x;
+    this.outputHeight = y;
   }
 
   setRenderScale(renderScale) {
@@ -118,12 +139,18 @@ export default class VolumetricLightingPass {
     );
     this.volumetricLightingShaderProgram.use();
     this.gl.disable(this.gl.DEPTH_TEST);
-    camera.bindViewProjMatrix(
-      this.gl,
+    // This shader only needs the inverse, to unproject background pixels.
+    const invViewProjUL =
       this.volumetricLightingShaderProgram.getUniformLocation(
-        "viewProjMatrix",
-      )[0],
-    );
+        "invViewProjMatrix",
+      );
+    if (invViewProjUL[1]) {
+      this.gl.uniformMatrix4fv(
+        invViewProjUL[0],
+        false,
+        camera.getInvViewProjMatrix(),
+      );
+    }
     this.gl.uniform3fv(
       this.volumetricLightingShaderProgram.getUniformLocation("cameraPos")[0],
       camera.getPosition(),
@@ -145,6 +172,10 @@ export default class VolumetricLightingPass {
     this.gl.uniform1f(
       this.volumetricLightingShaderProgram.getUniformLocation("fogDensity")[0],
       this.fogDensity,
+    );
+    this.gl.uniform1f(
+      this.volumetricLightingShaderProgram.getUniformLocation("steps")[0],
+      this.steps,
     );
 
     // Point lights
@@ -202,7 +233,7 @@ export default class VolumetricLightingPass {
     this.gl.enable(this.gl.BLEND);
     this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE);
 
-    this.gl.viewport(0, 0, this.width, this.height);
+    this.gl.viewport(0, 0, this.outputWidth, this.outputHeight);
 
     // Here combine the texture in upscaleFramebuffer and pre-volumetric image
     if (this.blur) {

@@ -11,8 +11,31 @@ import PointShadowSkeletalAnimationShaderProgram from "../../ShaderPrograms/Shad
 import { IntersectionTester } from "../../../../Physics/Physics/IntersectionTester.js";
 import Shape from "../../../../Physics/Physics/Shapes/Shape.js";
 
+// Cube face directions and up vectors. Module level constants so draw() does
+// not rebuild twelve vec3s every frame.
+const directions = [
+  vec3.fromValues(1.0, 0.0, 0.0),
+  vec3.fromValues(-1.0, 0.0, 0.0),
+  vec3.fromValues(0.0, -1.0, 0.0),
+  vec3.fromValues(0.0, 1.0, 0.0),
+  vec3.fromValues(0.0, 0.0, -1.0),
+  vec3.fromValues(0.0, 0.0, 1.0),
+];
+const ups = [
+  vec3.fromValues(0.0, 1.0, 0.0),
+  vec3.fromValues(0.0, 1.0, 0.0),
+  vec3.fromValues(0.0, 0.0, -1.0),
+  vec3.fromValues(0.0, 0.0, 1.0),
+  vec3.fromValues(0.0, 1.0, 0.0),
+  vec3.fromValues(0.0, 1.0, 0.0),
+];
+
 export default class PointShadowRenderPass {
   private gl: WebGL2RenderingContext;
+
+  // Reused across frames rather than reallocated per draw.
+  private pointLightCamera: Camera;
+  private lightPosition: vec3 = vec3.create();
 
   private pointShadowShaderProgram: PointShadowShaderProgram;
   private pointShadowInstancedShaderProgram: PointShadowInstancedShaderProgram;
@@ -33,9 +56,19 @@ export default class PointShadowRenderPass {
     this.pointShadowSkeletalAnimationShaderProgram =
       pointShadowSkeletalAnimationShaderProgram;
     this.gl = gl;
+
+    this.pointLightCamera = new Camera();
+    this.pointLightCamera.setFOV(90);
+    this.pointLightCamera.setAspectRatio(1);
+    this.pointLightCamera.setFarPlaneDistance(35.0);
   }
 
   draw(scene: Scene, cameraFrustum: Shape) {
+    // Nothing to render if no light casts a shadow. Avoids all the state
+    // changes and the cull face flip below.
+    if (scene.pointLights.length == 0) {
+      return;
+    }
     // for (const frustumShape of this.frustumShapes) {
     //   scene.deleteShape(frustumShape);
     // }
@@ -46,27 +79,7 @@ export default class PointShadowRenderPass {
     this.gl.enable(this.gl.CULL_FACE);
     this.gl.cullFace(this.gl.FRONT);
 
-    let pointLightCamera = new Camera();
-    pointLightCamera.setFOV(90);
-    pointLightCamera.setAspectRatio(1);
-    pointLightCamera.setFarPlaneDistance(35.0);
-
-    const directions = [
-      vec3.fromValues(1.0, 0.0, 0.0),
-      vec3.fromValues(-1.0, 0.0, 0.0),
-      vec3.fromValues(0.0, -1.0, 0.0),
-      vec3.fromValues(0.0, 1.0, 0.0),
-      vec3.fromValues(0.0, 0.0, -1.0),
-      vec3.fromValues(0.0, 0.0, 1.0),
-    ];
-    const ups = [
-      vec3.fromValues(0.0, 1.0, 0.0),
-      vec3.fromValues(0.0, 1.0, 0.0),
-      vec3.fromValues(0.0, 0.0, -1.0),
-      vec3.fromValues(0.0, 0.0, 1.0),
-      vec3.fromValues(0.0, 1.0, 0.0),
-      vec3.fromValues(0.0, 1.0, 0.0),
-    ];
+    const pointLightCamera = this.pointLightCamera;
 
     let counter = 0;
     for (
@@ -95,7 +108,7 @@ export default class PointShadowRenderPass {
         }
 
         pointLightCamera.setPosition(
-          vec3.add(vec3.create(), pointLight.position, pointLight.offset),
+          vec3.add(this.lightPosition, pointLight.position, pointLight.offset),
         );
 
         this.gl.viewport(

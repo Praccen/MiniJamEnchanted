@@ -254,7 +254,14 @@ export default class Renderer3D extends RendererBase {
     this.geometryRenderPass.setResolution(this.width, this.height);
     this.finishedFramebuffer.setProportions(this.width, this.height);
     this.blurMaskFramebuffer.setProportions(this.width, this.height);
-    this.volumetricLightingPass.setResolution(this.width, this.height);
+
+    // Base volumetric pass resolution on display and not SSAA res
+    this.volumetricLightingPass.setResolution(
+      this.displayWidth,
+      this.displayHeight,
+    );
+    // Combine still has to cover the full internal resolution.
+    this.volumetricLightingPass.setOutputResolution(this.width, this.height);
 
     this.downsampleShaderProgram.use();
     this.gl.uniform1i(
@@ -274,6 +281,54 @@ export default class Renderer3D extends RendererBase {
 
   setFogDensity(density: number) {
     this.volumetricLightingPass.fogDensity = density;
+  }
+
+  /**
+   * Resolution of the directional shadow map, in texels per side.
+   */
+  setShadowMappingResolution(resolution: number) {
+    this.directionalShadowRenderPass.setShadowMappingResolution(resolution);
+  }
+
+  getShadowMappingResolution(): number {
+    return this.directionalShadowRenderPass.getShadowMappingResolution();
+  }
+
+  /**
+   * How many frames pass between directional shadow map updates. 1 means
+   * every frame.
+   */
+  setShadowUpdateInterval(frames: number) {
+    this.directionalShadowRenderPass.updateInterval = Math.max(
+      1,
+      Math.round(frames),
+    );
+  }
+
+  getShadowUpdateInterval(): number {
+    return this.directionalShadowRenderPass.updateInterval;
+  }
+
+  getFogRenderScale(): number {
+    return this.volumetricLightingPass.renderScale;
+  }
+
+  getFogDensity(): number {
+    return this.volumetricLightingPass.fogDensity;
+  }
+
+  /**
+   * Raymarch steps in the volumetric pass. Clamped to the shader's maximum.
+   */
+  setFogSteps(steps: number) {
+    this.volumetricLightingPass.steps = Math.min(
+      Math.max(Math.round(steps), 1),
+      64,
+    );
+  }
+
+  getFogSteps(): number {
+    return this.volumetricLightingPass.steps;
   }
 
   setFogRenderScale(scale: number) {

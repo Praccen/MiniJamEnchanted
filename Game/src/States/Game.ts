@@ -116,6 +116,88 @@ export default class Game {
     addNewConsoleCommand("get ssaa", () => {
       return "SSAA factor: " + this.renderer.getSSAAFactor();
     });
+
+    // ---- Performance tunables ----
+    addNewConsoleCommand("set fogscale", (args: string[]) => {
+      const requested = parseFloat(args[2]);
+      if (isNaN(requested)) {
+        return (
+          "Usage: set fogscale <scale>, current: " +
+          this.renderer.getFogRenderScale()
+        );
+      }
+      this.renderer.setFogRenderScale(Math.min(Math.max(requested, 0.1), 1.0));
+      return "Fog render scale set to " + this.renderer.getFogRenderScale();
+    });
+
+    addNewConsoleCommand("get fogscale", () => {
+      return "Fog render scale: " + this.renderer.getFogRenderScale();
+    });
+
+    addNewConsoleCommand("set fogsteps", (args: string[]) => {
+      const requested = parseInt(args[2]);
+      if (isNaN(requested)) {
+        return (
+          "Usage: set fogsteps <steps>, current: " + this.renderer.getFogSteps()
+        );
+      }
+      this.renderer.setFogSteps(requested);
+      return "Fog raymarch steps set to " + this.renderer.getFogSteps();
+    });
+
+    addNewConsoleCommand("get fogsteps", () => {
+      return "Fog raymarch steps: " + this.renderer.getFogSteps();
+    });
+
+    addNewConsoleCommand("toggle fog", () => {
+      this.renderer.useVolumetric = !this.renderer.useVolumetric;
+      return "Volumetric fog " + (this.renderer.useVolumetric ? "on" : "off");
+    });
+
+    addNewConsoleCommand("set shadowres", (args: string[]) => {
+      const requested = parseInt(args[2]);
+      if (isNaN(requested)) {
+        return (
+          "Usage: set shadowres <texels>, current: " +
+          this.renderer.getShadowMappingResolution()
+        );
+      }
+      this.renderer.setShadowMappingResolution(
+        Math.min(Math.max(requested, 64), 4096),
+      );
+      return (
+        "Shadow map resolution set to " +
+        this.renderer.getShadowMappingResolution()
+      );
+    });
+
+    addNewConsoleCommand("get shadowres", () => {
+      return (
+        "Shadow map resolution: " + this.renderer.getShadowMappingResolution()
+      );
+    });
+
+    addNewConsoleCommand("set shadowinterval", (args: string[]) => {
+      const requested = parseInt(args[2]);
+      if (isNaN(requested)) {
+        return (
+          "Usage: set shadowinterval <frames>, current: " +
+          this.renderer.getShadowUpdateInterval()
+        );
+      }
+      this.renderer.setShadowUpdateInterval(requested);
+      return (
+        "Shadow update interval set to " +
+        this.renderer.getShadowUpdateInterval()
+      );
+    });
+
+    addNewConsoleCommand("get shadowinterval", () => {
+      return (
+        "Shadow update interval: " + this.renderer.getShadowUpdateInterval()
+      );
+    });
+    // ------------------------------
   }
 
   resize(width: number, height: number) {

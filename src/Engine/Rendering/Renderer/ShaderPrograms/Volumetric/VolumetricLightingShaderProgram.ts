@@ -12,7 +12,8 @@ function getFragSrc() {
 
   in vec2 texCoords;
 
-  uniform mat4 viewProjMatrix;
+  // Inverse view projection
+  uniform mat4 invViewProjMatrix;
   uniform vec3 cameraPos;
   uniform float fogMaxDistance;
   uniform float fogDensity;
@@ -49,11 +50,14 @@ function getFragSrc() {
   uniform int nrOfPointLights;
   uniform float currentTime;
 
+  // Raymarch step count.
+  uniform float steps;
+
   out vec4 FragColor;
   const float far_plane = 100.0;
 
   const float scattering = 0.0;
-  const float steps = 10.0;
+  const float maxSteps = 64.0;
 
   const mat4 offsetMatrix = mat4(
     0.0f, 0.5f, 0.125f, 0.625f,
@@ -182,7 +186,7 @@ function getFragSrc() {
 
     if (gPosValues.a < 0.01) {
       //discard;
-      vec4 clipSpacePos = inverse(viewProjMatrix) * vec4(texCoords.xy * 2.0 - vec2(1.0, 1.0), 1.0, 1.0);
+      vec4 clipSpacePos = invViewProjMatrix * vec4(texCoords.xy * 2.0 - vec2(1.0, 1.0), 1.0, 1.0);
       vec3 worldPos = vec3(clipSpacePos.xyz / clipSpacePos.w);
       fragPos = cameraPos + normalize(worldPos - cameraPos) * fogMaxDistance;
     }
@@ -197,7 +201,7 @@ function getFragSrc() {
     vec3 stepOffset = dir * (maxDistance / steps);
     vec3 startPos = cameraPos + stepOffset * offsetMatrix[int(floor(mod(gl_FragCoord.x, 4.0)))][int(floor(mod(gl_FragCoord.y, 4.0)))];
 
-    for (float step = 0.0; step < steps; step += 1.0) {
+    for (float step = 0.0; step < min(steps, maxSteps); step += 1.0) {
       vec4 tempResult;
       float effectedCounter = 0.0;
       vec3 pos = startPos + stepOffset * step;

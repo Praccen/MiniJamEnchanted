@@ -19,6 +19,11 @@ export default class DirectionalShadowRenderPass {
 
   private frameCounter: number;
 
+  /**
+   * Frames between shadow map updates. 1 renders the shadow map every frame.
+   */
+  updateInterval: number = 5;
+
   constructor(
     gl: WebGL2RenderingContext,
     directionalShadowShaderProgram: DirectionalShadowShaderProgram,
@@ -64,8 +69,12 @@ export default class DirectionalShadowRenderPass {
     this.shadowBuffer.setProportions(res, res);
   }
 
+  getShadowMappingResolution(): number {
+    return this.shadowResolution;
+  }
+
   draw(scene: Scene) {
-    if (this.frameCounter++ % 5 != 0) {
+    if (this.frameCounter++ % this.updateInterval != 0) {
       return;
     }
 
