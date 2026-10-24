@@ -51,6 +51,7 @@ export default class GameContext {
         "Assets/objs/VoxelInterior/ChairBirchBlueSeat_00.obj",
         "Assets/objs/VoxelInterior/TilesWoodenGroundFloor_01.obj",
         "Assets/objs/VoxelInterior/WallpaperPaleGreenBack_00.obj",
+        "Assets/objs/VoxelInterior/WallpaperDarkBrownSide_B_00.obj",
       ];
 
       progress.requested = meshes.length;

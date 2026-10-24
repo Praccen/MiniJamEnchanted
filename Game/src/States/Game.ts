@@ -74,6 +74,7 @@ export default class Game {
       "Assets/placements/placements.json",
       "Assets/placements/floor.json",
       "Assets/placements/walls-livingroom.json",
+      "Assets/placements/walls-hallway.json",
     ]);
 
     this.worldEditor.internalPhysicsScene.addNewPhysicsObject(
